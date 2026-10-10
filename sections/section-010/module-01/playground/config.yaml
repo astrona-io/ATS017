@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Set Requests, Limits And QoS Classes (PLAYGROUND) — playground environment.
+# A clean sandbox: it starts, installs metrics-server, applies the three
+# `scout` variants and the `shuttle` client, then stays running for free
+# exploration. No task, no grading, no `astrona submit`.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-playground-010-01
+  docs:
+    guide: docs/overview.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      metricsServer: true
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+
+# What the learner starts with: `scout` in three resource variants (one per
+# QoS class) and the `shuttle` client. No LimitRange, no ResourceQuota.
+bootstrap:
+  manifests:
+    - name: lab-start
+      type: file
+      source: manifests/lab-start.yaml
+  waitFor:
+    - resource: deploy/scout-guaranteed
+      namespace: starfleet
+    - resource: deploy/scout-burstable
+      namespace: starfleet
+    - resource: deploy/scout-besteffort
+      namespace: starfleet
+    - resource: deploy/shuttle
+      namespace: starfleet
+
+teardown:
+  keepCluster: false

@@ -1,0 +1,120 @@
+# Starting state for the requests, limits and QoS playground: three copies of
+# `scout` (podinfo) that differ only in their resources, and a client pod.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-guaranteed
+  namespace: starfleet
+  labels:
+    app: scout-guaranteed
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-guaranteed
+  template:
+    metadata:
+      labels:
+        app: scout-guaranteed
+    spec:
+      containers:
+        - name: scout
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-burstable
+  namespace: starfleet
+  labels:
+    app: scout-burstable
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-burstable
+  template:
+    metadata:
+      labels:
+        app: scout-burstable
+    spec:
+      containers:
+        - name: scout
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-besteffort
+  namespace: starfleet
+  labels:
+    app: scout-besteffort
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-besteffort
+  template:
+    metadata:
+      labels:
+        app: scout-besteffort
+    spec:
+      containers:
+        - name: scout
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shuttle
+  namespace: starfleet
+  labels:
+    app: shuttle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shuttle
+  template:
+    metadata:
+      labels:
+        app: shuttle
+    spec:
+      containers:
+        - name: shuttle
+          image: curlimages/curl:8.22.0
+          command: ["sh", "-c", "while true; do sleep 30; done"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 32Mi

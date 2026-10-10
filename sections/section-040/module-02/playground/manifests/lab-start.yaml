@@ -1,0 +1,263 @@
+# Workloads for the cost-by-label playground: starfleet workloads carry a team
+# label, outpost's archive Deployment does not, and scout-overprovisioned
+# requests far more than it uses.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: outpost
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout
+  namespace: starfleet
+  labels:
+    app: scout
+    team: navigation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout
+  template:
+    metadata:
+      labels:
+        app: scout
+        team: navigation
+    spec:
+      containers:
+        - name: scout
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout
+  namespace: starfleet
+spec:
+  selector:
+    app: scout
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probe
+  namespace: starfleet
+  labels:
+    app: probe
+    team: navigation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probe
+  template:
+    metadata:
+      labels:
+        app: probe
+        team: navigation
+    spec:
+      containers:
+        - name: probe
+          image: mccutchen/go-httpbin:v2.25.0
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: probe
+  namespace: starfleet
+spec:
+  selector:
+    app: probe
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-overprovisioned
+  namespace: starfleet
+  labels:
+    app: scout-overprovisioned
+    team: science
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-overprovisioned
+  template:
+    metadata:
+      labels:
+        app: scout-overprovisioned
+        team: science
+    spec:
+      containers:
+        - name: scout-overprovisioned
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+          resources:
+            requests:
+              cpu: 1500m
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout-overprovisioned
+  namespace: starfleet
+spec:
+  selector:
+    app: scout-overprovisioned
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shuttle
+  namespace: starfleet
+  labels:
+    app: shuttle
+    team: navigation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shuttle
+  template:
+    metadata:
+      labels:
+        app: shuttle
+        team: navigation
+    spec:
+      containers:
+        - name: shuttle
+          image: curlimages/curl:8.22.0
+          # Steady background load on scout and probe.
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                curl -s -o /dev/null http://scout
+                curl -s -o /dev/null http://probe
+                sleep 1
+              done
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probe
+  namespace: outpost
+  labels:
+    app: probe
+    team: research
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: probe
+  template:
+    metadata:
+      labels:
+        app: probe
+        team: research
+    spec:
+      containers:
+        - name: probe
+          image: mccutchen/go-httpbin:v2.25.0
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: probe
+  namespace: outpost
+spec:
+  selector:
+    app: probe
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: archive
+  namespace: outpost
+  labels:
+    app: archive
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: archive
+  template:
+    metadata:
+      labels:
+        app: archive
+    spec:
+      containers:
+        - name: archive
+          image: mccutchen/go-httpbin:v2.25.0
+          ports:
+            - name: http
+              containerPort: 8080
+          resources:
+            requests:
+              cpu: 300m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: archive
+  namespace: outpost
+spec:
+  selector:
+    app: archive
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

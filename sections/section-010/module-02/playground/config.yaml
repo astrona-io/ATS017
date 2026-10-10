@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Place Workloads With Affinity, Taints And Topology Spread (PLAYGROUND).
+# A three-node cluster (one control plane, two workers) with zone labels, an
+# `ssd` disk label and a taint on one worker. No task, no grading.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-playground-010-02
+  docs:
+    guide: docs/overview.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    nodes:
+      controlPlanes: 1
+      workers: 2
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:v2.25.0
+
+# Node labels and the taint first, then the workloads, so `scout` lands with
+# no placement rules on whatever nodes the scheduler picks.
+bootstrap:
+  init:
+    - name: prepare-nodes
+      description: "Label the two workers with zones and a disk type, and taint the zone-b worker for outpost"
+      type: file
+      source: bootstrap/prepare.sh
+  manifests:
+    - name: lab-start
+      type: file
+      source: manifests/lab-start.yaml
+  waitFor:
+    - resource: deploy/scout
+      namespace: starfleet
+    - resource: deploy/shuttle
+      namespace: starfleet
+
+teardown:
+  keepCluster: false

@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Read Cost Allocation With OpenCost (PLAYGROUND).
+# OpenCost reads usage from a small Prometheus (plumbing) and prices it with
+# its default on-premises price list, because kind has no cloud bill.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-playground-040-01
+  docs:
+    guide: docs/overview.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      metricsServer: true
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:v2.25.0
+      - quay.io/prometheus/prometheus:v3.15.0
+
+bootstrap:
+  manifests:
+    - name: prometheus
+      type: file
+      source: manifests/prometheus.yaml
+    - name: opencost
+      type: file
+      source: manifests/opencost.yaml
+    - name: lab-start
+      type: file
+      source: manifests/lab-start.yaml
+  waitFor:
+    - resource: deploy/prometheus
+      namespace: monitoring
+    - resource: deploy/opencost
+      namespace: opencost
+      timeout: 5m
+    - resource: deploy/shuttle
+      namespace: starfleet
+
+teardown:
+  keepCluster: false

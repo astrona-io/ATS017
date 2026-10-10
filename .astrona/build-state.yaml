@@ -1,0 +1,171 @@
+# Phase-3 build progress — written by /astrona-course-domain-build.
+# Commit it: a later session resumes from here.
+
+version: 1
+items:
+- key: section-010/module-01/playground
+  kind: playground
+  what: 'playground for module 1: Set Requests, Limits And QoS Classes'
+  status: done
+  note: astrona developer; kindest/node:v1.35.8 + metricsServer addon; booted and verified 2026-10-10
+- key: section-010/module-01/course
+  kind: course
+  what: 'chapter for module 1: Set Requests, Limits And QoS Classes'
+  status: done
+  note: landing + 4 parts + summary; real output; podinfo stress via --stress-cpu/--stress-memory flags
+    (no endpoints)
+- key: section-010/module-02/playground
+  kind: playground
+  what: 'playground for module 2: Place Workloads With Affinity, Taints And Topology Spread'
+  status: pending
+  note: ''
+- key: section-010/module-02/course
+  kind: course
+  what: 'chapter for module 2: Place Workloads With Affinity, Taints And Topology Spread'
+  status: pending
+  note: ''
+- key: section-010/quiz
+  kind: quiz
+  what: 'knowledge check for section-010: Compute Placement And Sizing'
+  status: pending
+  note: ''
+- key: section-010/capstone
+  kind: capstone
+  what: 'capstone lab: Compute Placement And Sizing Capstone'
+  status: pending
+  note: ''
+- key: section-020/module-01/playground
+  kind: playground
+  what: 'playground for module 1: Route Traffic With The Gateway API'
+  status: pending
+  note: ''
+- key: section-020/module-01/course
+  kind: course
+  what: 'chapter for module 1: Route Traffic With The Gateway API'
+  status: pending
+  note: ''
+- key: section-020/module-02/playground
+  kind: playground
+  what: 'playground for module 2: Isolate Traffic With NetworkPolicy'
+  status: pending
+  note: ''
+- key: section-020/module-02/course
+  kind: course
+  what: 'chapter for module 2: Isolate Traffic With NetworkPolicy'
+  status: pending
+  note: ''
+- key: section-020/module-03/playground
+  kind: playground
+  what: 'playground for module 3: Provision Storage With StorageClasses'
+  status: pending
+  note: ''
+- key: section-020/module-03/course
+  kind: course
+  what: 'chapter for module 3: Provision Storage With StorageClasses'
+  status: pending
+  note: ''
+- key: section-020/quiz
+  kind: quiz
+  what: 'knowledge check for section-020: Networking And Storage'
+  status: pending
+  note: ''
+- key: section-020/capstone
+  kind: capstone
+  what: 'capstone lab: Networking And Storage Capstone'
+  status: pending
+  note: ''
+- key: section-030/module-01/playground
+  kind: playground
+  what: 'playground for module 1: Scale Workloads With The HorizontalPodAutoscaler'
+  status: pending
+  note: ''
+- key: section-030/module-01/course
+  kind: course
+  what: 'chapter for module 1: Scale Workloads With The HorizontalPodAutoscaler'
+  status: pending
+  note: ''
+- key: section-030/module-02/playground
+  kind: playground
+  what: 'playground for module 2: Right-Size Workloads With VPA Recommendations'
+  status: pending
+  note: ''
+- key: section-030/module-02/course
+  kind: course
+  what: 'chapter for module 2: Right-Size Workloads With VPA Recommendations'
+  status: pending
+  note: ''
+- key: section-030/quiz
+  kind: quiz
+  what: 'knowledge check for section-030: Right-Sizing And Autoscaling'
+  status: pending
+  note: ''
+- key: section-030/capstone
+  kind: capstone
+  what: 'capstone lab: Right-Sizing And Autoscaling Capstone'
+  status: pending
+  note: ''
+- key: section-040/module-01/playground
+  kind: playground
+  what: 'playground for module 1: Read Cost Allocation With OpenCost'
+  status: pending
+  note: ''
+- key: section-040/module-01/course
+  kind: course
+  what: 'chapter for module 1: Read Cost Allocation With OpenCost'
+  status: pending
+  note: ''
+- key: section-040/module-02/playground
+  kind: playground
+  what: 'playground for module 2: Attribute Cost By Label And Find Idle Spend'
+  status: pending
+  note: ''
+- key: section-040/module-02/course
+  kind: course
+  what: 'chapter for module 2: Attribute Cost By Label And Find Idle Spend'
+  status: pending
+  note: ''
+- key: section-040/quiz
+  kind: quiz
+  what: 'knowledge check for section-040: Cost Visibility With OpenCost'
+  status: pending
+  note: ''
+- key: section-040/capstone
+  kind: capstone
+  what: 'capstone lab: Cost Visibility Capstone'
+  status: pending
+  note: ''
+- key: section-050/module-01/playground
+  kind: playground
+  what: 'playground for module 1: Bound Tenants With ResourceQuota And LimitRange'
+  status: pending
+  note: ''
+- key: section-050/module-01/course
+  kind: course
+  what: 'chapter for module 1: Bound Tenants With ResourceQuota And LimitRange'
+  status: pending
+  note: ''
+- key: section-050/module-02/playground
+  kind: playground
+  what: 'playground for module 2: Share Capacity With PriorityClasses And Quota Scopes'
+  status: pending
+  note: ''
+- key: section-050/module-02/course
+  kind: course
+  what: 'chapter for module 2: Share Capacity With PriorityClasses And Quota Scopes'
+  status: pending
+  note: ''
+- key: section-050/quiz
+  kind: quiz
+  what: 'knowledge check for section-050: Multi-Tenancy Resources'
+  status: pending
+  note: ''
+- key: section-050/capstone
+  kind: capstone
+  what: 'capstone lab: Multi-Tenancy Resources Capstone'
+  status: pending
+  note: ''
+- key: course/final-quiz
+  kind: quiz
+  what: final domain quiz across every section
+  status: pending
+  note: ''

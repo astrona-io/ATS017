@@ -1,0 +1,140 @@
+# Starting state for the right-sizing playground: one scout that requests far
+# more than it uses, one that requests less memory than it uses, steady load
+# from shuttle, and the shuttle client. No HPA.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-overprovisioned
+  namespace: starfleet
+  labels:
+    app: scout-overprovisioned
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-overprovisioned
+  template:
+    metadata:
+      labels:
+        app: scout-overprovisioned
+    spec:
+      containers:
+        - name: scout
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 1Gi
+            limits:
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout-overprovisioned
+  namespace: starfleet
+spec:
+  selector:
+    app: scout-overprovisioned
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-underprovisioned
+  namespace: starfleet
+  labels:
+    app: scout-underprovisioned
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-underprovisioned
+  template:
+    metadata:
+      labels:
+        app: scout-underprovisioned
+    spec:
+      containers:
+        - name: scout
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          args: ["./podinfo", "--stress-memory=150"]
+          ports:
+            - name: http
+              containerPort: 9898
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout-underprovisioned
+  namespace: starfleet
+spec:
+  selector:
+    app: scout-underprovisioned
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shuttle
+  namespace: starfleet
+  labels:
+    app: shuttle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shuttle
+  template:
+    metadata:
+      labels:
+        app: shuttle
+    spec:
+      containers:
+        - name: shuttle
+          image: curlimages/curl:8.22.0
+          # Steady background load: one request to each scout every second.
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                curl -s -o /dev/null http://scout-overprovisioned
+                curl -s -o /dev/null http://scout-underprovisioned
+                sleep 1
+              done
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 32Mi

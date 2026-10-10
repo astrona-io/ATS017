@@ -1,0 +1,429 @@
+# Curriculum blueprint — written by /astrona-course-domain-plan, consumed by
+# /astrona-course-domain-scaffold and /astrona-course-domain-build.
+#
+# This file is the design record for the course. Commit it. Edit it by hand and
+# re-run scaffold/build; both are idempotent and will not overwrite written prose.
+#
+# Schema: references/blueprint-schema.md in the astrona-course-domain-plan skill.
+
+version: 1
+mode: extend                    # astrona.yaml exists (intro module only)
+
+course:
+  id: ATS017
+  title: "CNPE: Platform Architecture and Infrastructure"
+  git_url: ssh://git@github.com/astrona-io/ATS017.git
+  description: >
+    Training for the Platform Architecture and Infrastructure domain (15%) of
+    the Certified Cloud Native Platform Engineer (CNPE) exam. The reader sizes
+    and places workloads, routes traffic with the Gateway API, isolates it
+    with NetworkPolicy, provisions storage dynamically, scales workloads with
+    the HPA and right-sizes them from measured usage with in-place pod
+    resize, reads cost
+    allocation with OpenCost, and shares a cluster between tenants with
+    ResourceQuota, LimitRange and PriorityClass. Breadth over depth: each tool
+    is taught for the job the exam asks of it, and every page shows where the
+    fields live in the Kubernetes documentation, the only documentation
+    allowed in the exam besides a per-task Quick Reference.
+  certification:
+    name: Certified Cloud Native Platform Engineer
+    code: CNPE
+    provider: CNCF / Linux Foundation
+    domain: Platform Architecture and Infrastructure
+    weight: 15
+  environment:
+    runtime: kind
+    kind: "v0.33.0"
+    kubernetes: "v1.35.8"
+    metrics-server: "v0.9.0"
+    gateway-api: "v1.6.3"
+    gateway-controller: "astrona gatewayAPI addon (envoy), plumbing only"
+    opencost: "1.121.3"
+    prometheus: "pin at build (small prometheus-community/prometheus chart, not kube-prometheus-stack)"
+    tool-scope: "official CNPE tool list plus built-in Kubernetes only; metrics-server, the gateway controller and Prometheus-for-OpenCost are plumbing"
+    helm: "4.3.0"
+    podinfo: "6.15.0"
+    go-httpbin: "v2.25.0"
+
+defaults:
+  playground: true
+  module_lab: false
+  capstone: true
+  section_quiz: true
+  final_quiz: true
+
+existing:
+  schema: v1
+  sections: []                  # only sections/intro (module-intro) exists
+
+sections:
+  - id: section-010
+    title: Compute Placement And Sizing
+    curriculum_item: "Applying Platform Architecture Best Practices for Networking, Storage, and Compute"
+    description: >
+      The reader gives one workload the CPU and memory it needs and puts its
+      pods on the right nodes. Requests and limits come first because every
+      later section builds on them: the scheduler places by requests, the HPA
+      scales on utilisation of requests, OpenCost allocates by requests, and
+      quotas count them.
+    modules:
+      - id: module-01
+        title: Set Requests, Limits And QoS Classes
+        objectives:
+          - Set CPU and memory requests and limits on a container and read them back with kubectl get -o yaml
+          - Predict the QoS class (Guaranteed, Burstable, BestEffort) of a pod from its resources and confirm it in status.qosClass
+          - Diagnose a Pending pod whose requests do not fit any node from its FailedScheduling event
+          - Distinguish a container killed for exceeding its memory limit (OOMKilled) from a CPU-throttled container
+          - Compare a node's allocatable capacity with the sum of requests using kubectl describe node
+          - Locate the resources fields in the Kubernetes API reference and the resource management documentation
+        outline:
+          - What requests and limits are, and which component reads each (scheduler, kubelet, kernel cgroups)
+          - CPU units and memory units, and what happens at each limit (throttling versus OOMKilled)
+          - QoS classes, how Kubernetes derives them, and eviction order under node pressure
+          - Reading node capacity, allocatable and allocated resources, and diagnosing Pending pods
+        diagrams:
+          - type: flowchart
+            shows: Decision tree from a pod's requests and limits to its QoS class
+          - type: sequence
+            shows: Scheduler filters nodes by requests, kubelet sets cgroup limits, kernel throttles CPU or kills on memory
+        playground_env: >
+          Single-node kind cluster (Kubernetes 1.35) with metrics-server
+          (--kubelet-insecure-tls). Namespace `starfleet` with `scout`
+          (podinfo) in three variants: `scout-guaranteed` (requests equal
+          limits), `scout-burstable` (requests below limits) and
+          `scout-besteffort` (no resources), plus `shuttle`. A manifest for a
+          `scout-oversized` Deployment whose memory request exceeds the node's
+          allocatable is ready to apply, so the reader can see a Pending pod.
+          podinfo's stress endpoints are reachable from `shuttle` to show CPU
+          throttling and an OOMKilled restart. No LimitRange or ResourceQuota.
+      - id: module-02
+        title: Place Workloads With Affinity, Taints And Topology Spread
+        objectives:
+          - Pin pods to labelled nodes with required node affinity and prefer nodes with preferred node affinity
+          - Reserve a node for one workload with a NoSchedule taint and a matching toleration
+          - Explain from pod events why a toleration alone does not move a pod onto a tainted node
+          - Keep replicas apart with pod anti-affinity on kubernetes.io/hostname
+          - Spread replicas evenly across zones with a topology spread constraint and read the effect of maxSkew and whenUnsatisfiable
+          - Diagnose a Pending pod caused by an unmatched affinity rule or an untolerated taint from its FailedScheduling message
+        outline:
+          - Node labels and the well-known labels (kubernetes.io/hostname, topology.kubernetes.io/zone)
+          - nodeSelector and node affinity, required versus preferred
+          - Taints and tolerations, and combining them with affinity to dedicate nodes
+          - Pod anti-affinity and topology spread constraints for high availability
+        diagrams:
+          - type: flowchart
+            shows: Scheduler filter and score steps for taints, node affinity and topology spread
+          - type: flowchart
+            shows: Replicas placed across two zones with maxSkew 1
+        playground_env: >
+          Three-node kind cluster (one control plane, two workers; note the
+          extra memory cost). Workers labelled
+          topology.kubernetes.io/zone=zone-a and zone-b, and one worker
+          labelled `disktype=ssd`. The zone-b worker carries the taint
+          `dedicated=outpost:NoSchedule`. Namespace `starfleet` with `scout`
+          (3 replicas, no placement rules, so the reader sees uneven
+          placement) and `shuttle`. Namespace `outpost` with `probe` without a
+          toleration. No PriorityClasses.
+    capstone:
+      title: Compute Placement And Sizing Capstone
+      objective: >
+        A three-node cluster runs `scout` with no resources set, all replicas
+        on one worker, and a `probe` in `outpost` stuck Pending on a tainted
+        node. The reader sets requests and limits that give `scout` the
+        Guaranteed QoS class, spreads its replicas across both zones, and
+        dedicates the tainted worker to `outpost` with a toleration plus node
+        affinity, proving each with pod placement and status.qosClass.
+
+  - id: section-020
+    title: Networking And Storage
+    curriculum_item: "Applying Platform Architecture Best Practices for Networking, Storage, and Compute"
+    description: >
+      The reader connects workloads safely and gives them storage: traffic
+      enters through the Gateway API, NetworkPolicy allows only the flows a
+      workload needs, and PersistentVolumeClaims get storage from a
+      StorageClass on demand. It follows compute because a placed workload is
+      what these objects connect and attach to.
+    modules:
+      - id: module-01
+        title: Route Traffic With The Gateway API
+        objectives:
+          - Name the roles of GatewayClass, Gateway and HTTPRoute and which team owns each
+          - Create a Gateway listener and attach an HTTPRoute to it with parentRefs
+          - Route requests by path and by header to two backend Services
+          - Split traffic between two backends with backendRefs weights
+          - Diagnose a route that does not attach from its status.parents conditions (Accepted, ResolvedRefs)
+          - Allow a route from another namespace with allowedRoutes and a ReferenceGrant where needed
+        outline:
+          - Why the Gateway API replaces Ingress, and the role-oriented resource model
+          - GatewayClass and the controller that implements it (named once; the lesson teaches the Gateway API objects, not the controller)
+          - Gateway listeners and HTTPRoute matches, filters and backendRefs
+          - Reading route and gateway status conditions to find attachment errors
+          - Cross-namespace routing with allowedRoutes and ReferenceGrant
+        diagrams:
+          - type: flowchart
+            shows: GatewayClass to Gateway to HTTPRoute to Services, with owning roles
+          - type: sequence
+            shows: Request from shuttle through the gateway's data plane proxy to the matched backend
+        playground_env: >
+          Single-node kind cluster with the Gateway API standard CRDs and a
+          Gateway API controller from the astrona `gatewayAPI` addon (plumbing;
+          read the GatewayClass name from the cluster). Namespace `starfleet` with
+          `bridge` (nginx), `scout` and `probe` Services and `shuttle`.
+          Namespace `outpost` with its own `probe`. No Gateway or HTTPRoute
+          yet. Requests are sent from `shuttle` to the Gateway's in-cluster
+          Service address, or through kubectl port-forward, because kind has
+          no load balancer.
+      - id: module-02
+        title: Isolate Traffic With NetworkPolicy
+        objectives:
+          - Apply a default-deny ingress and egress policy to a namespace and prove that requests now time out
+          - Allow one flow between two workloads with podSelector and ports
+          - Allow traffic from another namespace with namespaceSelector, and tell apart AND versus OR selector combinations
+          - Restore DNS for selected pods with an egress rule to kube-dns on port 53 UDP and TCP
+          - Diagnose which policy blocks a request by listing the policies that select a pod
+        outline:
+          - How NetworkPolicy works, the CNI that enforces it, and why selecting a pod makes it default-deny
+          - Default-deny policies and the DNS egress rule every namespace needs
+          - Ingress and egress rules with podSelector, namespaceSelector and ipBlock
+          - The from-list pitfall, one item with two selectors versus two items
+        diagrams:
+          - type: flowchart
+            shows: Allowed and denied flows between shuttle, scout and probe across starfleet and outpost
+        playground_env: >
+          Single-node kind cluster (kind's default CNI kindnet enforces
+          NetworkPolicy since kind v0.24.0). Namespaces `starfleet` (`scout`,
+          `probe`, `shuttle`) and `outpost` (`probe`, a second `shuttle`),
+          each namespace labelled with kubernetes.io/metadata.name. No
+          NetworkPolicy at all, so every request succeeds at the start and the
+          reader sees each policy remove traffic.
+      - id: module-03
+        title: Provision Storage With StorageClasses
+        objectives:
+          - Read a StorageClass's provisioner, reclaimPolicy, volumeBindingMode and allowVolumeExpansion fields
+          - Create a PersistentVolumeClaim and explain why it stays Pending under WaitForFirstConsumer until a pod uses it
+          - Mount a claim in a pod and prove that data survives a pod restart
+          - Choose an access mode (ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod) for a workload
+          - Predict what happens to the volume when a claim is deleted under Delete and Retain reclaim policies
+          - Set the default StorageClass with the is-default-class annotation
+        outline:
+          - Volumes, PersistentVolumes and PersistentVolumeClaims, and who creates each
+          - StorageClasses and dynamic provisioning, with kind's local-path provisioner as the example
+          - Binding modes, access modes and reclaim policies
+          - StatefulSet volumeClaimTemplates for one claim per replica
+        diagrams:
+          - type: sequence
+            shows: PVC created, pod scheduled, provisioner creates PV, PV binds to PVC, kubelet mounts it
+          - type: state
+            shows: PVC and PV lifecycle (Pending, Bound, Released) under each reclaim policy
+        playground_env: >
+          Single-node kind cluster with kind's default StorageClass `standard`
+          (rancher.io/local-path, WaitForFirstConsumer). A second StorageClass
+          `standard-retain` with reclaimPolicy Retain. Namespace `starfleet`
+          with `shuttle` and no PersistentVolumeClaims. A `probe` StatefulSet
+          manifest with volumeClaimTemplates is ready to apply.
+    capstone:
+      title: Networking And Storage Capstone
+      objective: >
+        `starfleet` must expose `bridge` through a Gateway, routing /api to
+        `scout`, while a default-deny policy blocks everything except the
+        gateway-to-workload flows and DNS; `scout` must also keep its data on
+        a PersistentVolumeClaim from the Retain StorageClass. The reader
+        builds the Gateway and HTTPRoute, the NetworkPolicies and the claim,
+        and proves each with requests from `shuttle` and data that survives a
+        pod restart.
+
+  - id: section-030
+    title: Right-Sizing And Autoscaling
+    curriculum_item: "Using Cost Management Solutions for Right-Sizing and Scaling"
+    description: >
+      The reader matches capacity to load: the HPA adds and removes replicas
+      as utilisation changes, and requests are right-sized from measured
+      usage with built-in tools and in-place pod resize. It follows networking and storage because autoscaling acts on a
+      complete, reachable workload, and it comes before cost because
+      right-sizing is the main lever cost reports point at.
+    modules:
+      - id: module-01
+        title: Scale Workloads With The HorizontalPodAutoscaler
+        objectives:
+          - Create an autoscaling/v2 HPA with a CPU utilisation target and minReplicas and maxReplicas
+          - Calculate the desired replica count from current and target utilisation with the HPA formula
+          - Generate load from shuttle and watch the HPA scale up and back down with kubectl get hpa --watch
+          - Diagnose an HPA that shows unknown targets because the pods have no CPU requests or metrics-server is missing
+          - Slow down scale-down with behavior.scaleDown stabilizationWindowSeconds and policies
+        outline:
+          - The Metrics API, metrics-server and kubectl top
+          - The HPA control loop and its replica formula
+          - Writing an autoscaling/v2 HPA with resource metrics
+          - Reading HPA status, conditions and events, and fixing unknown targets
+          - Scaling behavior and stabilization windows
+        diagrams:
+          - type: sequence
+            shows: metrics-server collects from kubelets, HPA controller reads Metrics API, updates Deployment replicas
+          - type: flowchart
+            shows: HPA decision from current utilisation, target and behavior limits to the new replica count
+        playground_env: >
+          Single-node kind cluster with metrics-server
+          (--kubelet-insecure-tls). Namespace `starfleet` with `scout`
+          (1 replica, CPU request 100m) and `scout-norequests` (no resources
+          set, the deliberate variation that gives an HPA unknown targets),
+          plus `shuttle` with a load loop script that calls podinfo's CPU
+          endpoint. No HPA yet.
+      - id: module-02
+        title: Right-Size Workloads From Measured Usage
+        objectives:
+          - Compare a container's requests with its measured usage from kubectl top and find over- and under-provisioned workloads
+          - Query usage over time with PromQL (container_cpu_usage_seconds_total, container_memory_working_set_bytes) and derive a request from a high percentile
+          - Resize a running pod's CPU and memory in place with kubectl patch --subresource resize and read status.containerStatuses[].resources
+          - Set resizePolicy so a memory change restarts the container while a CPU change does not, and read the pod's resize conditions
+          - Apply the new requests to the Deployment template, and explain why an HPA on CPU and manual CPU right-sizing must not fight each other
+        outline:
+          - What right-sizing is, and why requests drive scheduling, autoscaling and cost
+          - Measuring usage now with kubectl top, and over time with Prometheus queries
+          - Choosing requests and limits from usage percentiles and headroom
+          - In-place pod resize in Kubernetes 1.35 and resizePolicy
+          - Making the change permanent in the workload template, and right-sizing next to an HPA
+        diagrams:
+          - type: flowchart
+            shows: Usage from the kubelet through metrics-server and Prometheus to a new request, applied in place or through the Deployment
+          - type: sequence
+            shows: kubectl patch --subresource resize, API server, kubelet, container runtime cgroup update, status updated
+        playground_env: >
+          Single-node kind cluster with metrics-server (astrona addon) and a
+          small Prometheus that scrapes the kubelet's cAdvisor metrics
+          (plumbing for the queries, not a monitoring course). Namespace
+          `starfleet` with `scout-overprovisioned` (CPU and memory requests far
+          above usage) and `scout-underprovisioned` (memory request below
+          usage, Burstable), each under steady load from `shuttle` so usage
+          data exists within a few minutes. No HPA. In-place pod resize is
+          available in Kubernetes 1.35 (verify state and kubectl syntax).
+        notes: >
+          Replaces the VPA module (VPA is not on the official CNPE tool list).
+    capstone:
+      title: Right-Sizing And Autoscaling Capstone
+      objective: >
+        `scout` is over-provisioned and does not scale under load. The reader
+        measures its real usage, right-sizes its requests from that data, adds an HPA on CPU
+        with a scale-down stabilization window, and proves the result with
+        the new requests, the HPA scaling up under load from `shuttle`, and
+        scaling back down after the window.
+
+  - id: section-040
+    title: Cost Visibility With OpenCost
+    curriculum_item: "Using Cost Management Solutions for Right-Sizing and Scaling"
+    description: >
+      The reader makes cost visible: OpenCost splits node, storage and
+      network cost across namespaces, workloads and labels, and shows idle
+      capacity. It follows autoscaling because the reader can now act on what
+      the cost report shows.
+    modules:
+      - id: module-01
+        title: Read Cost Allocation With OpenCost
+        objectives:
+          - Name the data OpenCost needs (Prometheus metrics, node prices) and where each comes from on a cluster without cloud billing
+          - Query cost allocation by namespace and by controller with the OpenCost API and the kubectl cost style output
+          - Read the CPU, memory and storage parts of a workload's cost and the efficiency figure
+          - Explain how OpenCost allocates cost from the larger of requests and usage
+        outline:
+          - What cost allocation is, and how OpenCost computes it from requests, usage and prices
+          - Installing OpenCost with Prometheus and the default on-premises price list
+          - Querying the allocation API by window and aggregate, and the user interface
+          - Reading cost efficiency
+        diagrams:
+          - type: flowchart
+            shows: Prometheus metrics and the price list flowing into OpenCost allocation by namespace and workload
+        playground_env: >
+          Single-node kind cluster with metrics-server, a small Prometheus
+          (prometheus-community/prometheus chart) and OpenCost 1.121.3 with its
+          default on-premises price list. Namespaces `starfleet` (`scout`,
+          `probe`, `shuttle` with load) and `outpost` (`probe`), running long
+          enough before the reader arrives for allocation data to be non-zero.
+          The OpenCost UI is reachable through kubectl port-forward.
+      - id: module-02
+        title: Attribute Cost By Label And Find Idle Spend
+        objectives:
+          - Aggregate cost by a team label and by namespace in the OpenCost API
+          - Find workloads with low cost efficiency and name the requests to change
+          - Read idle cost and explain how it shrinks when requests fit the nodes better
+          - Add cost-attribution labels to workloads and confirm OpenCost picks them up
+        outline:
+          - Labels as the unit of showback and chargeback
+          - Aggregating by label, namespace and controller
+          - Idle cost, shared cost, and what to change to reduce each
+        diagrams: []
+        playground_env: >
+          Same base as the OpenCost reading module: kind, metrics-server,
+          Prometheus, OpenCost with the default price list. `starfleet`
+          workloads carry a `team` label; one `outpost` Deployment has no
+          `team` label (the deliberate gap), and `scout-overprovisioned`
+          requests far more than it uses, so low efficiency and idle cost are
+          visible.
+    capstone:
+      title: Cost Visibility Capstone
+      objective: >
+        The finance team needs the cost of each team. The reader labels every
+        workload with its team, reports cost per team for the last hour from
+        the OpenCost API, finds the least efficient workload and right-sizes
+        its requests, and shows the efficiency change.
+
+  - id: section-050
+    title: Multi-Tenancy Resources
+    curriculum_item: "Optimizing Multi-Tenancy Resource Usage"
+    description: >
+      The reader shares one cluster fairly: each tenant namespace gets a
+      quota and default container resources, and priorities decide which
+      pods run when the cluster is full. It comes last because it combines
+      requests, placement and cost into rules for many teams.
+    modules:
+      - id: module-01
+        title: Bound Tenants With ResourceQuota And LimitRange
+        objectives:
+          - Cap a namespace's total CPU and memory requests and limits and object counts with a ResourceQuota
+          - Read used against hard in kubectl describe resourcequota
+          - Diagnose a pod or ReplicaSet rejected by a quota from the Forbidden message and the ReplicaSet events
+          - Set default requests and limits and per-container minimum and maximum with a LimitRange
+          - Explain why a compute quota requires every new pod to declare requests, and how a LimitRange default solves that
+        outline:
+          - Why tenants need limits, and the namespace as the tenant boundary
+          - ResourceQuota for compute, storage and object counts
+          - LimitRange defaults, minimum, maximum and ratios
+          - How the two admission steps work together, and finding rejections in ReplicaSet events
+        diagrams:
+          - type: sequence
+            shows: Pod create passes LimitRange defaulting, then ResourceQuota admission, then is accepted or rejected
+        playground_env: >
+          Single-node kind cluster. Namespaces `starfleet` and `outpost`, each
+          with `scout` and `shuttle`. `outpost` has a `probe` Deployment
+          without resources. No ResourceQuota or LimitRange, so the reader
+          first sees an unbounded tenant and then adds the limits.
+      - id: module-02
+        title: Share Capacity With PriorityClasses And Quota Scopes
+        objectives:
+          - Create PriorityClasses and assign them to pods with priorityClassName
+          - Observe a higher-priority pod preempt lower-priority pods on a full node and read the Preempted events
+          - Prevent preemption by a class with preemptionPolicy Never
+          - Limit how much of a namespace's quota high-priority pods may use with a PriorityClass scopeSelector
+          - Count only BestEffort or Terminating pods with quota scopes
+        outline:
+          - Pod priority and the scheduler's preemption step
+          - PriorityClass fields, globalDefault and the system classes
+          - Quota scopes and scopeSelector on PriorityClass
+          - Designing a fair priority scheme for tenants
+        diagrams:
+          - type: sequence
+            shows: High-priority pod cannot fit, scheduler picks victims, evicts them, binds the pending pod
+        playground_env: >
+          Three-node kind cluster (one control plane, two workers; note the
+          extra memory cost). Namespaces `starfleet` and `outpost`. `outpost`
+          runs `probe` replicas with large requests that fill the workers'
+          allocatable CPU, so a new pod cannot fit. A `scout-critical`
+          Deployment manifest is ready to apply. No PriorityClasses except the
+          built-in system classes, and no ResourceQuota.
+    capstone:
+      title: Multi-Tenancy Resources Capstone
+      objective: >
+        Two tenants share a small cluster. The reader gives `outpost` a
+        ResourceQuota and a LimitRange so its pods get default requests and
+        cannot exceed its share, creates a PriorityClass so `starfleet`'s
+        `scout` can preempt `outpost` batch pods but `outpost` cannot preempt
+        anyone, and limits high-priority usage with a scoped quota, proving
+        each with admission errors, quota usage and preemption events.

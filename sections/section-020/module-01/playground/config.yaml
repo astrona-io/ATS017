@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Route Traffic With The Gateway API (PLAYGROUND) — playground environment.
+# The Gateway API CRDs and a controller come from astrona's `gatewayAPI`
+# addon (plumbing). No Gateway or HTTPRoute exists yet. No task, no grading.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-playground-020-01
+  docs:
+    guide: docs/overview.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      gatewayAPI: envoy
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:v2.25.0
+      - nginx:1.31.6-alpine
+
+bootstrap:
+  manifests:
+    - name: lab-start
+      type: file
+      source: manifests/lab-start.yaml
+  waitFor:
+    - resource: deploy/bridge
+      namespace: starfleet
+    - resource: deploy/scout
+      namespace: starfleet
+    - resource: deploy/probe
+      namespace: starfleet
+    - resource: deploy/probe
+      namespace: outpost
+    - resource: deploy/shuttle
+      namespace: starfleet
+
+teardown:
+  keepCluster: false

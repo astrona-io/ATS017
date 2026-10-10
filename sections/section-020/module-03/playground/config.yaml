@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Provision Storage With StorageClasses (PLAYGROUND) — playground environment.
+# kind's default StorageClass `standard` (local-path provisioner) plus a
+# second class `standard-retain` with reclaimPolicy Retain. No claims yet.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-playground-020-03
+  docs:
+    guide: docs/overview.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - mccutchen/go-httpbin:v2.25.0
+      - busybox:1.37
+
+bootstrap:
+  manifests:
+    - name: lab-start
+      type: file
+      source: manifests/lab-start.yaml
+  waitFor:
+    - resource: deploy/shuttle
+      namespace: starfleet
+
+teardown:
+  keepCluster: false

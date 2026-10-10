@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Right-Size Workloads From Measured Usage (PLAYGROUND).
+# metrics-server comes from the astrona addon; a small Prometheus scrapes the
+# kubelet's cAdvisor metrics so usage can be queried over time. Both are
+# plumbing. No HPA, no VPA.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-playground-030-02
+  docs:
+    guide: docs/overview.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      metricsServer: true
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - quay.io/prometheus/prometheus:v3.15.0
+
+bootstrap:
+  manifests:
+    - name: prometheus
+      type: file
+      source: manifests/prometheus.yaml
+    - name: lab-start
+      type: file
+      source: manifests/lab-start.yaml
+  waitFor:
+    - resource: deploy/prometheus
+      namespace: monitoring
+    - resource: deploy/scout-overprovisioned
+      namespace: starfleet
+    - resource: deploy/scout-underprovisioned
+      namespace: starfleet
+    - resource: deploy/shuttle
+      namespace: starfleet
+
+teardown:
+  keepCluster: false

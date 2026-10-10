@@ -1,0 +1,191 @@
+# Course manifest for ATS017 - Platform Architecture and Infrastructure
+# (Certified Cloud Native Platform Engineer).
+#
+# One entry per section under `modules:`. Each section lists, in order: its
+# README, then for each module the landing page (course.md), its parts
+# (course-0N-*.md), and right after the part a lab tests, the lab's
+# question.md reading and the `type: lab` entry. The module's wrap-up page
+# comes last. The section capstone closes the section. Playgrounds are not
+# listed: the landing page's playground marker shows them. solution.md is
+# never listed.
+#
+# Every `path:` is relative to this file.
+
+training:
+  id: ATS017
+  title: "CNPE: Platform Architecture and Infrastructure"
+  description: >
+    Training material covering the Certified Cloud Native Platform Engineer
+    (CNPE) Platform Architecture and Infrastructure domain: CPU and memory
+    requests, limits and QoS classes, pod placement with affinity, taints and
+    topology spread, traffic routing with the Gateway API, NetworkPolicy,
+    dynamic storage provisioning, horizontal autoscaling and right-sizing
+    with in-place pod resize, cost
+    allocation with OpenCost, and sharing a cluster between tenants with
+    ResourceQuota, LimitRange and PriorityClass. Each module pairs a layered
+    reader with an ungraded hands-on playground. Each section closes with an
+    integration capstone.
+    Built and verified against Kubernetes 1.35.
+
+  certification:
+    name: Certified Cloud Native Platform Engineer
+    code: CNPE
+    provider: CNCF / Linux Foundation
+    domain: Platform Architecture and Infrastructure
+    weight: 15
+    competencies:
+      - "Applying Platform Architecture Best Practices for Networking, Storage, and Compute"
+      - "Using Cost Management Solutions for Right-Sizing and Scaling"
+      - "Optimizing Multi-Tenancy Resource Usage"
+
+modules:
+
+  - id: module-intro
+    title: "Introduction"
+    description: >
+      Start here. What this course trains you to do, how it is laid out, how
+      to get your machine ready with the astrona command-line tool, how the
+      content is written and checked, who maintains it, and how to report a
+      mistake.
+
+    content:
+      - type: reading
+        title: Introduction
+        path: sections/intro/README.md
+      - type: reading
+        title: "Welcome To The Course"
+        path: sections/intro/course-01-welcome.md
+      - type: reading
+        title: "Get Your Machine Ready"
+        path: sections/intro/course-02-get-your-machine-ready.md
+      - type: reading
+        title: "How This Course Is Made"
+        path: sections/intro/course-03-how-this-course-is-made.md
+
+  - id: module-010
+    title: "Compute Placement And Sizing"
+    description: >
+      The reader gives one workload the CPU and memory it needs and puts
+      its pods on the right nodes. Requests and limits come first
+      because every later section builds on them: the scheduler places
+      by requests, the HPA scales on utilisation of requests, OpenCost
+      allocates by requests, and quotas count them.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-010/README.md
+
+      - type: reading
+        title: "Set Requests, Limits And QoS Classes"
+        path: sections/section-010/module-01/course.md
+      - type: reading
+        title: "Requests, Limits And Who Reads Them"
+        path: sections/section-010/module-01/course-01-requests-limits-and-who-reads-them.md
+      - type: reading
+        title: "What Happens At The Limit"
+        path: sections/section-010/module-01/course-02-what-happens-at-the-limit.md
+      - type: reading
+        title: "QoS Classes And Eviction"
+        path: sections/section-010/module-01/course-03-qos-classes-and-eviction.md
+      - type: reading
+        title: "Node Capacity And Pending Pods"
+        path: sections/section-010/module-01/course-04-node-capacity-and-pending-pods.md
+      - type: reading
+        title: Summary
+        path: sections/section-010/module-01/course-05-summary.md
+
+      - type: reading
+        title: "Place Workloads With Affinity, Taints And Topology Spread"
+        path: sections/section-010/module-02/course.md
+
+  - id: module-020
+    title: "Networking And Storage"
+    description: >
+      The reader connects workloads safely and gives them storage:
+      traffic enters through the Gateway API, NetworkPolicy allows only
+      the flows a workload needs, and PersistentVolumeClaims get storage
+      from a StorageClass on demand. It follows compute because a placed
+      workload is what these objects connect and attach to.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-020/README.md
+
+      - type: reading
+        title: "Route Traffic With The Gateway API"
+        path: sections/section-020/module-01/course.md
+
+      - type: reading
+        title: "Isolate Traffic With NetworkPolicy"
+        path: sections/section-020/module-02/course.md
+
+      - type: reading
+        title: "Provision Storage With StorageClasses"
+        path: sections/section-020/module-03/course.md
+
+  - id: module-030
+    title: "Right-Sizing And Autoscaling"
+    description: >
+      The reader matches capacity to load: the HPA adds and removes
+      replicas as utilisation changes, and requests are right-sized from
+      measured usage with built-in tools and in-place pod resize. It follows networking and storage because
+      autoscaling acts on a complete, reachable workload, and it comes
+      before cost because right-sizing is the main lever cost reports
+      point at.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-030/README.md
+
+      - type: reading
+        title: "Scale Workloads With The HorizontalPodAutoscaler"
+        path: sections/section-030/module-01/course.md
+
+      - type: reading
+        title: "Right-Size Workloads From Measured Usage"
+        path: sections/section-030/module-02/course.md
+
+  - id: module-040
+    title: "Cost Visibility With OpenCost"
+    description: >
+      The reader makes cost visible: OpenCost splits node, storage and
+      network cost across namespaces, workloads and labels, and shows
+      idle capacity. It follows autoscaling because the reader can now
+      act on what the cost report shows.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-040/README.md
+
+      - type: reading
+        title: "Read Cost Allocation With OpenCost"
+        path: sections/section-040/module-01/course.md
+
+      - type: reading
+        title: "Attribute Cost By Label And Find Idle Spend"
+        path: sections/section-040/module-02/course.md
+
+  - id: module-050
+    title: "Multi-Tenancy Resources"
+    description: >
+      The reader shares one cluster fairly: each tenant namespace gets a
+      quota and default container resources, and priorities decide which
+      pods run when the cluster is full. It comes last because it
+      combines requests, placement and cost into rules for many teams.
+
+    content:
+      - type: reading
+        title: Section Overview
+        path: sections/section-050/README.md
+
+      - type: reading
+        title: "Bound Tenants With ResourceQuota And LimitRange"
+        path: sections/section-050/module-01/course.md
+
+      - type: reading
+        title: "Share Capacity With PriorityClasses And Quota Scopes"
+        path: sections/section-050/module-02/course.md
