@@ -17,13 +17,13 @@ items:
 - key: section-010/module-02/playground
   kind: playground
   what: 'playground for module 2: Place Workloads With Affinity, Taints And Topology Spread'
-  status: pending
-  note: ''
+  status: done
+  note: 3-node kind; prepare.sh labels/taints workers (bash 3.2 safe); verified 2026-10-10
 - key: section-010/module-02/course
   kind: course
   what: 'chapter for module 2: Place Workloads With Affinity, Taints And Topology Spread'
-  status: pending
-  note: ''
+  status: done
+  note: landing + 3 parts + summary; real output incl. DoNotSchedule Pending via cordon
 - key: section-010/quiz
   kind: quiz
   what: 'knowledge check for section-010: Compute Placement And Sizing'

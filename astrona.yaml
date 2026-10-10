@@ -94,6 +94,21 @@ modules:
       - type: reading
         title: Summary
         path: sections/section-010/module-01/course-05-summary.md
+      - type: reading
+        title: "Place Workloads With Affinity, Taints And Topology Spread"
+        path: sections/section-010/module-02/course.md
+      - type: reading
+        title: "Node Labels And Node Affinity"
+        path: sections/section-010/module-02/course-01-node-labels-and-node-affinity.md
+      - type: reading
+        title: "Taints And Tolerations"
+        path: sections/section-010/module-02/course-02-taints-and-tolerations.md
+      - type: reading
+        title: "Spreading Replicas"
+        path: sections/section-010/module-02/course-03-spreading-replicas.md
+      - type: reading
+        title: Summary
+        path: sections/section-010/module-02/course-04-summary.md
 
   - id: module-020
     title: "Networking And Storage"

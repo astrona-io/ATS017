@@ -1,41 +1,37 @@
 # Place Workloads With Affinity, Taints And Topology Spread
 
-<!-- astrona:playground -->
-> [!NOTE]
-> This module has a playground — a throwaway environment to run the commands in.
-> ```bash
-> astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-010/module-02/playground
-> ```
+Left alone, the scheduler puts a new pod on any node that has room for its requests. That is fine for one test pod. It is not fine when a database must run on the nodes with fast disks, when one team paid for its own nodes, or when three replicas of a service all land on the same node and one node failure takes the whole service down.
 
-<!-- TODO(build): opening framing — what this module settles, and the contrast that sharpens its boundary. -->
+Kubernetes gives you three tools for this, and each one answers a different question. **Node affinity** answers "which nodes may this pod use?" from the node's labels. **Taints and tolerations** answer "which pods may this node accept?" from the node's side. **Pod anti-affinity and topology spread constraints** answer "how should the replicas of one workload be spread out?" from the pods already running.
+
+Keep one sentence in mind for this module: **the scheduler first filters out every node a pod may not use, and only then scores the nodes that are left.** Required rules and taints filter; preferences only change the score. Almost every surprise in this module comes from mixing up the two steps.
+
+The module has three parts. **Node Labels And Node Affinity** reads the labels on the playground's nodes and pins pods to them with `nodeSelector` and node affinity, both required and preferred. **Taints And Tolerations** reserves a node for one tenant and shows why a toleration alone does not move a pod there. **Spreading Replicas** keeps replicas apart with pod anti-affinity and spreads them evenly across zones with a topology spread constraint.
 
 ## Learning objectives
 
-- Pin pods to labelled nodes with required node affinity and prefer nodes with preferred node affinity
-- Reserve a node for one workload with a NoSchedule taint and a matching toleration
-- Explain from pod events why a toleration alone does not move a pod onto a tainted node
-- Keep replicas apart with pod anti-affinity on kubernetes.io/hostname
-- Spread replicas evenly across zones with a topology spread constraint and read the effect of maxSkew and whenUnsatisfiable
-- Diagnose a Pending pod caused by an unmatched affinity rule or an untolerated taint from its FailedScheduling message
+After this module you can:
+
+- Pin pods to labelled nodes with required node affinity, and prefer nodes with preferred node affinity.
+- Reserve a node for one workload with a `NoSchedule` taint and a matching toleration.
+- Explain from pod placement why a toleration alone does not move a pod onto a tainted node.
+- Keep replicas apart with pod anti-affinity on `kubernetes.io/hostname`.
+- Spread replicas evenly across zones with a topology spread constraint, and read the effect of `maxSkew` and `whenUnsatisfiable`.
+- Diagnose a `Pending` pod caused by an unmatched affinity rule or an untolerated taint from its `FailedScheduling` message.
 
 ## Before you start
 
-<!-- TODO(build): assumed knowledge, and what the playground already provides. -->
+You need Kubernetes basics: pods, Deployments, labels and selectors, namespaces, and the commands `kubectl get`, `kubectl apply`, `kubectl describe` and `kubectl scale`. You should know that each container's CPU and memory requests decide whether a pod fits on a node; this module adds the rules that decide which nodes it may use.
 
-## Outline
+Your playground is a `kind` cluster with three nodes, running Kubernetes 1.35: one control plane node and two worker nodes. The control plane node carries the taint `node-role.kubernetes.io/control-plane:NoSchedule`, so ordinary pods never run there. The two workers are labelled like this:
 
-<!-- TODO(build): each beat below becomes a section of this module (or a deep-dive part via /astrona-course-deep-dive). Delete this Outline section once written. -->
+| Node | Labels | Taint |
+| --- | --- | --- |
+| `...-worker` | `topology.kubernetes.io/zone=zone-a`, `disktype=ssd` | none |
+| `...-worker2` | `topology.kubernetes.io/zone=zone-b` | `dedicated=outpost:NoSchedule` |
 
-- Node labels and the well-known labels (kubernetes.io/hostname, topology.kubernetes.io/zone)
-- nodeSelector and node affinity, required versus preferred
-- Taints and tolerations, and combining them with affinity to dedicate nodes
-- Pod anti-affinity and topology spread constraints for high availability
+The full node names start with the playground's name, for example `astro-ats-017-playground-010-02-worker`. The namespace `starfleet` runs `scout` (three replicas of `podinfo`, a small web application, with no placement rules) and `shuttle`, a client pod. The namespace `outpost` runs `probe`, an HTTP echo server, with no toleration. Every command in the parts runs against the playground cluster, and `kubectl` already points at it.
 
-## Diagrams planned
+Launch your playground now, and keep it running next to you while you read the parts:
 
-<!-- TODO(build): mermaid `flowchart` — Scheduler filter and score steps for taints, node affinity and topology spread -->
-<!-- TODO(build): mermaid `flowchart` — Replicas placed across two zones with maxSkew 1 -->
-
-<!-- playground provides: Three-node kind cluster (one control plane, two workers; note the extra memory cost). Workers labelled topology.kubernetes.io/zone=zone-a and zone-b, and one worker labelled `disktype=ssd`. The zone-b worker carries the taint `dedicated=outpost:NoSchedule`. Namespace `starfleet` with `scout` (3 replicas, no placement rules, so the reader sees uneven placement) and `shuttle`. Namespace `outpost` with `probe` without a toleration. No PriorityClasses. -->
-
-<!-- module section-010/module-02 (Module 2) — stub written by /astrona-course-domain-scaffold, prose written by /astrona-course-domain-build. -->
+<!-- astrona:playground -->
