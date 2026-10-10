@@ -48,13 +48,13 @@ items:
 - key: section-020/module-02/playground
   kind: playground
   what: 'playground for module 2: Isolate Traffic With NetworkPolicy'
-  status: pending
-  note: ''
+  status: done
+  note: kindnet enforces NetworkPolicy (checked ingress, egress, AND/OR, DNS); booted 2026-10-10
 - key: section-020/module-02/course
   kind: course
   what: 'chapter for module 2: Isolate Traffic With NetworkPolicy'
-  status: pending
-  note: ''
+  status: done
+  note: landing + 3 parts + summary; real output
 - key: section-020/module-03/playground
   kind: playground
   what: 'playground for module 3: Provision Storage With StorageClasses'

@@ -1,41 +1,32 @@
 # Provision Storage With StorageClasses
 
-<!-- astrona:playground -->
-> [!NOTE]
-> This module has a playground — a throwaway environment to run the commands in.
-> ```bash
-> astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-03/playground
-> ```
+A container's own file system disappears when the container is replaced. A database, a queue or a file upload service needs storage that lives longer than any one pod. Kubernetes gives pods that storage through a chain of three objects, and on most clusters nobody creates the actual volumes by hand any more.
 
-<!-- TODO(build): opening framing — what this module settles, and the contrast that sharpens its boundary. -->
+A **PersistentVolumeClaim** (PVC) is a request for storage by size and access mode, written by the application team. A **PersistentVolume** (PV) is one piece of real storage in the cluster. A **StorageClass** names a provisioner, a program that creates a PersistentVolume on demand when a claim asks for that class. This is called dynamic provisioning: the claim comes first, and the volume is created to match it.
+
+Keep one sentence in mind for this module: **the claim belongs to the application, the volume belongs to the cluster, and the StorageClass decides how a volume is created, when it is bound and what happens to it when the claim is gone.** The fields `provisioner`, `volumeBindingMode` and `reclaimPolicy` answer those three questions.
+
+The module has three parts. **StorageClasses And Dynamic Provisioning** reads the StorageClasses in the playground, creates a claim that stays `Pending`, and watches a volume appear when a pod uses it. **Access Modes And Reclaim Policies** proves that data survives a pod restart, shows a claim that the provisioner cannot serve, and deletes claims under the `Delete` and `Retain` policies. **Default Classes And StatefulSets** changes the default StorageClass and gives each replica of a StatefulSet its own claim.
 
 ## Learning objectives
 
-- Read a StorageClass's provisioner, reclaimPolicy, volumeBindingMode and allowVolumeExpansion fields
-- Create a PersistentVolumeClaim and explain why it stays Pending under WaitForFirstConsumer until a pod uses it
-- Mount a claim in a pod and prove that data survives a pod restart
-- Choose an access mode (ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod) for a workload
-- Predict what happens to the volume when a claim is deleted under Delete and Retain reclaim policies
-- Set the default StorageClass with the is-default-class annotation
+After this module you can:
+
+- Read a StorageClass's `provisioner`, `reclaimPolicy`, `volumeBindingMode` and `allowVolumeExpansion` fields.
+- Create a PersistentVolumeClaim and explain why it stays `Pending` under `WaitForFirstConsumer` until a pod uses it.
+- Mount a claim in a pod and prove that data survives a pod restart.
+- Choose an access mode (`ReadWriteOnce`, `ReadOnlyMany`, `ReadWriteMany`, `ReadWriteOncePod`) for a workload.
+- Predict what happens to the volume when a claim is deleted under the `Delete` and `Retain` reclaim policies.
+- Set the default StorageClass with the `storageclass.kubernetes.io/is-default-class` annotation.
 
 ## Before you start
 
-<!-- TODO(build): assumed knowledge, and what the playground already provides. -->
+You need Kubernetes basics: pods, Deployments, namespaces and the commands `kubectl get`, `kubectl apply`, `kubectl describe`, `kubectl delete` and `kubectl exec`. You should know that a pod lists its volumes in `spec.volumes` and each container mounts them with `volumeMounts`.
 
-## Outline
+Your playground is a single-node `kind` cluster running Kubernetes 1.35. It has two StorageClasses. `standard` is the default class that `kind` installs; its provisioner, `rancher.io/local-path`, creates each volume as a directory on the node. `standard-retain` uses the same provisioner with the reclaim policy `Retain`. The namespace `starfleet` runs only `shuttle`, a client pod with `curl`, and has no claims yet. The node already holds the `busybox` and `go-httpbin` images that the parts use, so new pods start without a download.
 
-<!-- TODO(build): each beat below becomes a section of this module (or a deep-dive part via /astrona-course-deep-dive). Delete this Outline section once written. -->
+Every command in the parts runs against the playground cluster, and `kubectl` already points at it.
 
-- Volumes, PersistentVolumes and PersistentVolumeClaims, and who creates each
-- StorageClasses and dynamic provisioning, with kind's local-path provisioner as the example
-- Binding modes, access modes and reclaim policies
-- StatefulSet volumeClaimTemplates for one claim per replica
+Launch your playground now, and keep it running next to you while you read the parts:
 
-## Diagrams planned
-
-<!-- TODO(build): mermaid `sequence` — PVC created, pod scheduled, provisioner creates PV, PV binds to PVC, kubelet mounts it -->
-<!-- TODO(build): mermaid `state` — PVC and PV lifecycle (Pending, Bound, Released) under each reclaim policy -->
-
-<!-- playground provides: Single-node kind cluster with kind's default StorageClass `standard` (rancher.io/local-path, WaitForFirstConsumer). A second StorageClass `standard-retain` with reclaimPolicy Retain. Namespace `starfleet` with `shuttle` and no PersistentVolumeClaims. A `probe` StatefulSet manifest with volumeClaimTemplates is ready to apply. -->
-
-<!-- module section-020/module-03 (Module 3) — stub written by /astrona-course-domain-scaffold, prose written by /astrona-course-domain-build. -->
+<!-- astrona:playground -->

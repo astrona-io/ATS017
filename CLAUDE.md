@@ -358,8 +358,12 @@ page states them as fact, and remove the mark when checked.
   because 8080 is often taken on the host.
 - **kindnet enforces NetworkPolicy.** Since kind v0.24.0, kind's default CNI
   enforces NetworkPolicy through `kube-network-policies` (checked in the
-  v0.24.0 release notes). No Calico or Cilium is needed. *(verify egress and
-  `namespaceSelector` behaviour on kind v0.33.0 before writing output.)*
+  v0.24.0 release notes). No Calico or Cilium is needed. Checked on
+  `kindest/node:v1.35.8`: ingress and egress default deny, `podSelector`,
+  `namespaceSelector` (AND and OR forms), named ports and the `kube-dns` port
+  53 egress rule all behave as documented. Blocked packets are dropped
+  (`curl` exit 28); policy ports are pod ports, a Service port (`80`) does not
+  match.
 - **Default StorageClass.** kind ships a default StorageClass named
   `standard`, provisioner `rancher.io/local-path`, with
   `volumeBindingMode: WaitForFirstConsumer`, so a PVC stays `Pending` until a

@@ -138,6 +138,21 @@ modules:
       - type: reading
         title: Summary
         path: sections/section-020/module-01/course-04-summary.md
+      - type: reading
+        title: "Isolate Traffic With NetworkPolicy"
+        path: sections/section-020/module-02/course.md
+      - type: reading
+        title: "Default Deny And How Policies Select Pods"
+        path: sections/section-020/module-02/course-01-default-deny-and-how-policies-select-pods.md
+      - type: reading
+        title: "Allowing Flows With Pod And Namespace Selectors"
+        path: sections/section-020/module-02/course-02-allowing-flows-with-pod-and-namespace-selectors.md
+      - type: reading
+        title: "Egress Rules And DNS"
+        path: sections/section-020/module-02/course-03-egress-rules-and-dns.md
+      - type: reading
+        title: Summary
+        path: sections/section-020/module-02/course-04-summary.md
 
   - id: module-030
     title: "Right-Sizing And Autoscaling"
