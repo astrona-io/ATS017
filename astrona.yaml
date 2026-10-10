@@ -95,10 +95,6 @@ modules:
         title: Summary
         path: sections/section-010/module-01/course-05-summary.md
 
-      - type: reading
-        title: "Place Workloads With Affinity, Taints And Topology Spread"
-        path: sections/section-010/module-02/course.md
-
   - id: module-020
     title: "Networking And Storage"
     description: >
@@ -112,18 +108,6 @@ modules:
       - type: reading
         title: Section Overview
         path: sections/section-020/README.md
-
-      - type: reading
-        title: "Route Traffic With The Gateway API"
-        path: sections/section-020/module-01/course.md
-
-      - type: reading
-        title: "Isolate Traffic With NetworkPolicy"
-        path: sections/section-020/module-02/course.md
-
-      - type: reading
-        title: "Provision Storage With StorageClasses"
-        path: sections/section-020/module-03/course.md
 
   - id: module-030
     title: "Right-Sizing And Autoscaling"
@@ -140,14 +124,6 @@ modules:
         title: Section Overview
         path: sections/section-030/README.md
 
-      - type: reading
-        title: "Scale Workloads With The HorizontalPodAutoscaler"
-        path: sections/section-030/module-01/course.md
-
-      - type: reading
-        title: "Right-Size Workloads From Measured Usage"
-        path: sections/section-030/module-02/course.md
-
   - id: module-040
     title: "Cost Visibility With OpenCost"
     description: >
@@ -160,14 +136,6 @@ modules:
       - type: reading
         title: Section Overview
         path: sections/section-040/README.md
-
-      - type: reading
-        title: "Read Cost Allocation With OpenCost"
-        path: sections/section-040/module-01/course.md
-
-      - type: reading
-        title: "Attribute Cost By Label And Find Idle Spend"
-        path: sections/section-040/module-02/course.md
 
   - id: module-050
     title: "Multi-Tenancy Resources"
@@ -182,10 +150,3 @@ modules:
         title: Section Overview
         path: sections/section-050/README.md
 
-      - type: reading
-        title: "Bound Tenants With ResourceQuota And LimitRange"
-        path: sections/section-050/module-01/course.md
-
-      - type: reading
-        title: "Share Capacity With PriorityClasses And Quota Scopes"
-        path: sections/section-050/module-02/course.md

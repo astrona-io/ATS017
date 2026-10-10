@@ -45,7 +45,7 @@ spec:
               app: probe
       containers:
         - name: probe
-          image: mccutchen/go-httpbin:v2.25.0
+          image: mccutchen/go-httpbin:2.25.0
           resources:
             requests:
               cpu: ${probe_request}m

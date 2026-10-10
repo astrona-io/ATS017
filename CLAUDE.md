@@ -316,7 +316,7 @@ they are.
 | `starfleet` (namespace) | | The main team's namespace |
 | `outpost` (namespace) | | A second tenant's namespace, used for isolation, quota and cost comparisons |
 | `scout` (Deployment and Service) | `ghcr.io/stefanprodan/podinfo:6.15.0` | HTTP API on port `9898` with `/metrics`. It has no load endpoints; the start-up flags `--stress-cpu=<cores>` and `--stress-memory=<MB>` load it on purpose (checked on 6.15.0), used for throttling, `OOMKilled`, the HPA and right-sizing |
-| `probe` (Deployment and Service) | `mccutchen/go-httpbin:v2.25.0` | HTTP echo server on port `8080`, used as a second backend and as the target of NetworkPolicy tests |
+| `probe` (Deployment and Service) | `mccutchen/go-httpbin:2.25.0` | HTTP echo server on port `8080`, used as a second backend and as the target of NetworkPolicy tests |
 | `shuttle` (Deployment) | `curlimages/curl` | Client pod; every test request is sent from here with `kubectl exec deploy/shuttle -- curl ...` |
 | `bridge` (Deployment and Service) | `nginx` (pin at build) | Front end; only in modules that need one (Gateway API) |
 

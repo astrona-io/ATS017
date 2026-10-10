@@ -15,7 +15,7 @@ runtime:
     image: kindest/node:v1.35.8
     preloadImages:
       - curlimages/curl:8.22.0
-      - mccutchen/go-httpbin:v2.25.0
+      - mccutchen/go-httpbin:2.25.0
       - busybox:1.37
 
 bootstrap:

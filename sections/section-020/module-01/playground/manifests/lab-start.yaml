@@ -77,7 +77,7 @@ spec:
     spec:
       containers:
         - name: probe
-          image: mccutchen/go-httpbin:v2.25.0
+          image: mccutchen/go-httpbin:2.25.0
           ports:
             - name: http
               containerPort: 8080
@@ -148,7 +148,7 @@ spec:
     spec:
       containers:
         - name: probe
-          image: mccutchen/go-httpbin:v2.25.0
+          image: mccutchen/go-httpbin:2.25.0
           ports:
             - name: http
               containerPort: 8080

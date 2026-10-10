@@ -19,7 +19,7 @@ runtime:
     preloadImages:
       - curlimages/curl:8.22.0
       - ghcr.io/stefanprodan/podinfo:6.15.0
-      - mccutchen/go-httpbin:v2.25.0
+      - mccutchen/go-httpbin:2.25.0
 
 # Node labels and the taint first, then the workloads, so `scout` lands with
 # no placement rules on whatever nodes the scheduler picks.
