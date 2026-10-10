@@ -123,6 +123,21 @@ modules:
       - type: reading
         title: Section Overview
         path: sections/section-020/README.md
+      - type: reading
+        title: "Route Traffic With The Gateway API"
+        path: sections/section-020/module-01/course.md
+      - type: reading
+        title: "Gateway Classes, Gateways And Listeners"
+        path: sections/section-020/module-01/course-01-gateway-classes-gateways-and-listeners.md
+      - type: reading
+        title: "HTTPRoute Matches, Backends And Weights"
+        path: sections/section-020/module-01/course-02-httproute-matches-backends-and-weights.md
+      - type: reading
+        title: "Route Status And Cross-Namespace Routing"
+        path: sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+      - type: reading
+        title: Summary
+        path: sections/section-020/module-01/course-04-summary.md
 
   - id: module-030
     title: "Right-Sizing And Autoscaling"

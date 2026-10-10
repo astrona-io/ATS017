@@ -261,13 +261,13 @@ section is only true for this one.
   | --- | --- | --- |
   | Kubernetes (`kindest/node`) | v1.35.8 | every section |
   | metrics-server | v0.9.0 | 010, 030, 040 |
-  | Gateway API CRDs (standard channel) | v1.6.3 | 020 |
+  | Gateway API CRDs (installed by the astrona addon, experimental channel) | v1.6.1 | 020 |
   | Gateway API controller (astrona `gatewayAPI: envoy` addon, plumbing) | set by astrona | 020 |
   | OpenCost | 1.121.3 | 040 |
   | Prometheus (small chart; usage queries in 030, plumbing for OpenCost in 040) | pin at build | 030, 040 |
   | Helm | 4.3.0 | 020, 030, 040 (install only) |
   | podinfo | 6.15.0 | every section |
-  | go-httpbin | v2.25.0 | every section |
+  | go-httpbin | 2.25.0 (image tag has no `v`) | every section |
 
   Do not teach fields, flags or output from other versions without saying so.
 - **The main sources:** the Kubernetes documentation on
@@ -342,15 +342,20 @@ page states them as fact, and remove the mark when checked.
   plane, two workers) with `topology.kubernetes.io/zone` labels set in the
   kind configuration. Each extra node costs memory on the maintainer's
   machine; use one node when the subject does not need more.
-- **No load balancer on `kind`.** A `LoadBalancer` Service or a `Gateway`'s
-  Service keeps its external address `<pending>`. Use `kubectl port-forward`
-  to the Gateway's Service when a page needs to reach it from the host, or
-  send requests from `shuttle` inside the cluster.
+- **No load balancer on `kind`.** A `LoadBalancer` Service keeps its
+  external address `<pending>`. The astrona `gatewayAPI: envoy` addon
+  configures Envoy Gateway to create a `ClusterIP` Service per Gateway, so a
+  Gateway shows a cluster-internal address in `status.addresses` and
+  `PROGRAMMED True` (checked). Send requests from `shuttle` to that address.
 - **Gateway API needs a controller.** The CRDs alone do nothing. Playgrounds
   use the astrona `gatewayAPI: envoy` addon as plumbing. Pages teach the
   Gateway API objects and read the `GatewayClass` name from the cluster
   (`kubectl get gatewayclass`); they name the controller in one sentence at
-  most *(verify the class name and CRD version the addon installs)*.
+  most. The addon installs the GatewayClass `eg` (Envoy Gateway) and the
+  Gateway API CRDs **v1.6.1, experimental channel** (checked; not v1.6.3
+  standard). ReferenceGrant is served as `v1` and `v1beta1`. The addon binds
+  host ports 8080/8443 by default; set `addons.gatewayPorts` (18080/18443)
+  because 8080 is often taken on the host.
 - **kindnet enforces NetworkPolicy.** Since kind v0.24.0, kind's default CNI
   enforces NetworkPolicy through `kube-network-policies` (checked in the
   v0.24.0 release notes). No Calico or Cilium is needed. *(verify egress and

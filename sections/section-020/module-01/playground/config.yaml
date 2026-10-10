@@ -15,6 +15,11 @@ runtime:
     image: kindest/node:v1.35.8
     addons:
       gatewayAPI: envoy
+      # Host ports for the gateway's NodePorts; the defaults (8080 and 8443)
+      # are often taken on a learner's machine.
+      gatewayPorts:
+        http: 18080
+        https: 18443
     preloadImages:
       - curlimages/curl:8.22.0
       - ghcr.io/stefanprodan/podinfo:6.15.0

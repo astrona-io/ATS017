@@ -37,13 +37,14 @@ items:
 - key: section-020/module-01/playground
   kind: playground
   what: 'playground for module 1: Route Traffic With The Gateway API'
-  status: pending
-  note: ''
+  status: done
+  note: gatewayAPI envoy addon (class eg, CRDs v1.6.1 experimental), gatewayPorts 18080/18443; booted
+    2026-10-10
 - key: section-020/module-01/course
   kind: course
   what: 'chapter for module 1: Route Traffic With The Gateway API'
-  status: pending
-  note: ''
+  status: done
+  note: landing + 3 parts + summary; real output; Gateway ClusterIP address from status.addresses
 - key: section-020/module-02/playground
   kind: playground
   what: 'playground for module 2: Isolate Traffic With NetworkPolicy'

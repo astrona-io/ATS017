@@ -1,42 +1,40 @@
 # Route Traffic With The Gateway API
 
-<!-- astrona:playground -->
-> [!NOTE]
-> This module has a playground — a throwaway environment to run the commands in.
-> ```bash
-> astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-01/playground
-> ```
+A Service gives a group of pods one stable address inside the cluster. It does not decide which pod gets a request by its path or header, and it does not let several teams share one entry point safely. For that, Kubernetes has the **Gateway API**: a set of Kubernetes objects that describe how HTTP traffic enters the cluster and which Service each request reaches.
 
-<!-- TODO(build): opening framing — what this module settles, and the contrast that sharpens its boundary. -->
+The Gateway API splits the job into three objects, and each one belongs to a different role. A **GatewayClass** names the controller that does the work, and the cluster operator installs it. A **Gateway** opens a listener on a port, and the platform team owns it. An **HTTPRoute** holds the routing rules for one application, and the application team writes it. A request goes through all three before it reaches a pod.
+
+Keep one sentence in mind for this module: **an HTTPRoute does nothing until a Gateway accepts it, and its status tells you whether it did.** Most routing problems on the exam are not wrong rules but routes that never attached, or that point at a Service they may not use.
+
+The module has three parts. **Gateway Classes, Gateways And Listeners** reads the GatewayClass in the playground, creates a Gateway and reads its status and address. **HTTPRoute Matches, Backends And Weights** sends requests to different Services by path and by header, and splits traffic between two Services by weight. **Route Status And Cross-Namespace Routing** breaks a route on purpose, reads its conditions, and lets routes and backends in another namespace in with `allowedRoutes` and a ReferenceGrant.
 
 ## Learning objectives
 
-- Name the roles of GatewayClass, Gateway and HTTPRoute and which team owns each
-- Create a Gateway listener and attach an HTTPRoute to it with parentRefs
-- Route requests by path and by header to two backend Services
-- Split traffic between two backends with backendRefs weights
-- Diagnose a route that does not attach from its status.parents conditions (Accepted, ResolvedRefs)
-- Allow a route from another namespace with allowedRoutes and a ReferenceGrant where needed
+After this module you can:
+
+- Name the roles of GatewayClass, Gateway and HTTPRoute and which team owns each.
+- Create a Gateway listener and attach an HTTPRoute to it with `parentRefs`.
+- Route requests by path and by header to two backend Services.
+- Split traffic between two backends with `backendRefs` weights.
+- Diagnose a route that does not attach from its `status.parents` conditions (`Accepted`, `ResolvedRefs`).
+- Allow a route from another namespace with `allowedRoutes`, and a backend in another namespace with a ReferenceGrant.
 
 ## Before you start
 
-<!-- TODO(build): assumed knowledge, and what the playground already provides. -->
+You need Kubernetes basics: pods, Deployments, Services, labels and namespaces, and the commands `kubectl get`, `kubectl apply`, `kubectl exec` and `kubectl get -o jsonpath`. You should know that a Service has a cluster-internal IP address and forwards requests to the pods its selector matches.
 
-## Outline
+Your playground is a single-node `kind` cluster running Kubernetes 1.35. The Gateway API objects and a controller that implements them are already installed, and one GatewayClass is ready. There is no Gateway and no HTTPRoute yet. The playground has these namespaces and workloads:
 
-<!-- TODO(build): each beat below becomes a section of this module (or a deep-dive part via /astrona-course-deep-dive). Delete this Outline section once written. -->
+| Namespace | Workload | What it is |
+| --- | --- | --- |
+| `starfleet` | `bridge` | An NGINX web server that answers `bridge front end` |
+| `starfleet` | `scout` | `podinfo`, a small web application; `/api/info` returns JSON with its version |
+| `starfleet` | `probe` | `go-httpbin`, an HTTP echo server; `/headers` and `/get` return the request as JSON |
+| `starfleet` | `shuttle` | A client pod with `curl`; every test request is sent from here |
+| `outpost` | `probe` | A second `go-httpbin` that belongs to another team |
 
-- Why the Gateway API replaces Ingress, and the role-oriented resource model
-- GatewayClass and the controller (Envoy Gateway) that implements it
-- Gateway listeners and HTTPRoute matches, filters and backendRefs
-- Reading route and gateway status conditions to find attachment errors
-- Cross-namespace routing with allowedRoutes and ReferenceGrant
+Each of `bridge`, `scout` and `probe` has a Service on port `80`. A `kind` cluster has no cloud load balancer, so every request in this module is sent from the `shuttle` pod to the Gateway's address inside the cluster. Every command in the parts runs against the playground cluster, and `kubectl` already points at it.
 
-## Diagrams planned
+Launch your playground now, and keep it running next to you while you read the parts:
 
-<!-- TODO(build): mermaid `flowchart` — GatewayClass to Gateway to HTTPRoute to Services, with owning roles -->
-<!-- TODO(build): mermaid `sequence` — Request from shuttle through the Envoy Gateway proxy to the matched backend -->
-
-<!-- playground provides: Single-node kind cluster with Gateway API standard CRDs and Envoy Gateway installed (GatewayClass `eg`). Namespace `starfleet` with `bridge` (nginx), `scout` and `probe` Services and `shuttle`. Namespace `outpost` with its own `probe`. No Gateway or HTTPRoute yet. Requests are sent from `shuttle` to the Gateway's in-cluster Service address, or through kubectl port-forward, because kind has no load balancer. -->
-
-<!-- module section-020/module-01 (Module 1) — stub written by /astrona-course-domain-scaffold, prose written by /astrona-course-domain-build. -->
+<!-- astrona:playground -->
