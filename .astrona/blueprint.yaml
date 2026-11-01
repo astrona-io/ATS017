@@ -418,6 +418,28 @@ sections:
           allocatable CPU, so a new pod cannot fit. A `scout-critical`
           Deployment manifest is ready to apply. No PriorityClasses except the
           built-in system classes, and no ResourceQuota.
+      - id: module-03
+        title: Enforce Tenant Rules With Kyverno
+        objectives:
+          - Explain what an admission policy adds to ResourceQuota and LimitRange
+          - Write a Kyverno ClusterPolicy that rejects pods without CPU and memory requests and limits, and read the rejection message
+          - Switch a policy between Enforce and Audit with validationFailureAction and read the PolicyReport
+          - Write a Kyverno generate rule that creates a ResourceQuota and a LimitRange in every new namespace with a tenant label
+        outline:
+          - Where Kyverno sits in admission and what a ClusterPolicy is
+          - Validate rules, Enforce against Audit, and policy reports
+          - Generate rules that give each new tenant namespace its quota and defaults
+        diagrams:
+          - type: sequence
+            shows: Pod create reaches the API server, the Kyverno webhook validates it, then quota admission accepts or rejects it
+        playground_env: >
+          Single-node kind cluster with Kyverno installed by Helm (pinned at
+          build; teach only ClusterPolicy validate and generate rules and
+          PolicyReport). Namespaces `starfleet` and `outpost` with `scout`
+          and `shuttle`. No policies yet.
+        notes: >
+          Kyverno is on the official CNPE tool list and fits the competency
+          Optimizing Multi-Tenancy Resource Usage. Teach only these two jobs.
     capstone:
       title: Multi-Tenancy Resources Capstone
       objective: >

@@ -1,0 +1,220 @@
+# Knowledge check for section 030, module 01. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-030-01
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-030/module-01
+  title: Scale Workloads With The HorizontalPodAutoscaler
+questions:
+  - id: ats017-030-01-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Name the component that serves CPU usage to the HPA and to kubectl top.
+    source_readings:
+      - sections/section-030/module-01/course-01-the-metrics-api-and-kubectl-top.md
+    prompt: >-
+      A pod needs CPU usage to be scaled on CPU. Which component collects the usage from the kubelets and serves it to `kubectl top` and to the HPA controller?
+    options:
+      - id: a
+        text: >-
+          metrics-server, through the Metrics API (`metrics.k8s.io`)
+        explanation: >-
+          Correct. metrics-server asks each kubelet for usage every 15 seconds and serves the latest values through the Metrics API, which the API server forwards to it.
+      - id: b
+        text: >-
+          The scheduler, which already knows the CPU of every pod
+        explanation: >-
+          The scheduler reads requests to place pods. It does not measure or serve usage.
+      - id: c
+        text: >-
+          The HPA controller, which reads usage directly from each kubelet
+        explanation: >-
+          The HPA controller reads usage from the Metrics API through the API server. It does not contact kubelets.
+      - id: d
+        text: >-
+          The kube-proxy on each node, which counts the requests per pod
+        explanation: >-
+          kube-proxy routes Service traffic. It does not report CPU usage.
+    correct_option: a
+    explanation: >-
+      The kubelet measures the usage, metrics-server collects it every 15 seconds, and the Metrics API serves the latest value. `kubectl top` and the HPA controller are both clients of that API. If `kubectl get apiservice v1beta1.metrics.k8s.io` does not show `AVAILABLE True`, both fail.
+
+  - id: ats017-030-01-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Calculate the desired replica count with the HPA formula.
+    source_readings:
+      - sections/section-030/module-01/course-02-writing-an-hpa-and-its-replica-formula.md
+    prompt: >-
+      An HPA targets `50` percent average CPU utilisation. It has `4` replicas, and their average utilisation is `75` percent. `minReplicas` is `2` and `maxReplicas` is `10`. How many replicas does the HPA ask for?
+    options:
+      - id: a
+        text: >-
+          4
+        explanation: >-
+          The utilisation is above the target by far more than the 10 percent tolerance, so the count changes.
+      - id: b
+        text: >-
+          3
+        explanation: >-
+          The result would be lower than the current count only if the utilisation were below the target.
+      - id: c
+        text: >-
+          6
+        explanation: >-
+          Correct. The formula is ceil(4 x 75 / 50) = ceil(6.0) = 6, and 6 is inside the range 2 to 10.
+      - id: d
+        text: >-
+          8
+        explanation: >-
+          That would need an average utilisation of `100` percent. The formula gives 6.
+    correct_option: c
+    explanation: >-
+      The HPA computes desiredReplicas = ceil(currentReplicas x currentMetricValue / desiredMetricValue). Here that is ceil(4 x 75 / 50) = 6. The HPA then limits the result to `minReplicas` and `maxReplicas`, and to the rules in `behavior`.
+
+  - id: ats017-030-01-q03
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Explain why utilisation needs a CPU request.
+    source_readings:
+      - sections/section-030/module-01/course-02-writing-an-hpa-and-its-replica-formula.md
+      - sections/section-030/module-01/course-01-the-metrics-api-and-kubectl-top.md
+    prompt: >-
+      The HPA for a Deployment shows `cpu: <unknown>/50%`. The pods run and `kubectl top pods` shows their CPU usage. What is the most likely cause?
+    options:
+      - id: a
+        text: >-
+          The containers have no CPU limit
+        explanation: >-
+          Limits play no part in the utilisation calculation. The HPA divides by the request.
+      - id: b
+        text: >-
+          The containers have no CPU request, so the HPA has nothing to divide the usage by
+        explanation: >-
+          Correct. A `Utilization` target is usage as a percentage of the request. The condition `ScalingActive` is `False` with the reason `FailedGetResourceMetric` and the message `missing request for cpu`.
+      - id: c
+        text: >-
+          The Deployment has only one replica
+        explanation: >-
+          The HPA works with one replica. The replica count does not hide the target.
+      - id: d
+        text: >-
+          The HPA must be created in `kube-system`
+        explanation: >-
+          An HPA lives in the namespace of the workload it scales.
+    correct_option: b
+    explanation: >-
+      Utilisation is usage divided by request. `kubectl top` shows usage only, so it works without requests. Add a CPU request to every container of the pod, and the HPA shows a number after the new pods have their first metrics sample. `kubectl describe hpa` shows the condition and the event that name the missing request.
+
+  - id: ats017-030-01-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Read an HPA that is at its maximum.
+    source_readings:
+      - sections/section-030/module-01/course-02-writing-an-hpa-and-its-replica-formula.md
+    prompt: >-
+      During a load test, `kubectl describe hpa` shows `ScalingLimited True` with the reason `TooManyReplicas`, and the target is `213%/50%` with `5 current / 5 desired`. What does this tell you?
+    options:
+      - id: a
+        text: >-
+          metrics-server is down, so the HPA keeps the last count
+        explanation: >-
+          If metrics-server were down, the target would show `<unknown>` and `ScalingActive` would be `False`.
+      - id: b
+        text: >-
+          The pods have no CPU request
+        explanation: >-
+          Without a request the target would be `<unknown>`. Here it shows `213%`.
+      - id: c
+        text: >-
+          The HPA waits for the scale-down stabilization window
+        explanation: >-
+          The window only holds the count back when the formula asks for fewer replicas. Here the formula asks for more.
+      - id: d
+        text: >-
+          The formula asks for more than `maxReplicas`, so the HPA stays at the maximum
+        explanation: >-
+          Correct. `TooManyReplicas` means the desired count from the formula is above `maxReplicas`. To get more replicas, raise `maxReplicas`.
+    correct_option: d
+    explanation: >-
+      The reason `TooManyReplicas` on the `ScalingLimited` condition says the desired count is above `maxReplicas`. The HPA is working as configured. If the workload needs more capacity, raise `maxReplicas`, or lower the request so that fewer pods carry the load.
+
+  - id: ats017-030-01-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Choose the field that slows down scale-down.
+    source_readings:
+      - sections/section-030/module-01/course-03-unknown-targets-and-scaling-behavior.md
+    prompt: >-
+      A Deployment loses most of its replicas a few minutes after a short load spike ends, and the next spike finds it too small. You want the HPA to keep replicas longer and remove them slowly. Which change in `autoscaling/v2` does this?
+    options:
+      - id: a
+        text: >-
+          Set `behavior.scaleDown.stabilizationWindowSeconds` and add a `policies` entry such as `type: Pods`, `value: 1`, `periodSeconds: 30`
+        explanation: >-
+          Correct. The window makes the HPA use the highest recommendation of that period, and the policy limits how many pods it removes in one period.
+      - id: b
+        text: >-
+          Set `behavior.scaleUp.stabilizationWindowSeconds` to a high value
+        explanation: >-
+          That slows down scale-up, the other direction.
+      - id: c
+        text: >-
+          Raise `minReplicas` to the maximum
+        explanation: >-
+          That stops autoscaling instead of slowing the scale-down.
+      - id: d
+        text: >-
+          Set `metrics[0].resource.target.averageUtilization` to `0`
+        explanation: >-
+          The target must be above zero. This would not slow anything down.
+    correct_option: a
+    explanation: >-
+      The default scale-down window is 300 seconds with no policy limit. `behavior.scaleDown.stabilizationWindowSeconds` changes the window. `behavior.scaleDown.policies` limits the number or percentage of pods removed per `periodSeconds`. `selectPolicy: Disabled` would turn scale-down off, which is a different goal.
+
+  - id: ats017-030-01-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Find why the HPA does not scale although the metrics API is down.
+    source_readings:
+      - sections/section-030/module-01/course-03-unknown-targets-and-scaling-behavior.md
+      - sections/section-030/module-01/course-01-the-metrics-api-and-kubectl-top.md
+    prompt: >-
+      An HPA shows `cpu: <unknown>/50%`. The pods have a CPU request, and `kubectl get apiservice v1beta1.metrics.k8s.io` shows `AVAILABLE False`. Which step fixes the HPA?
+    options:
+      - id: a
+        text: >-
+          Add a memory limit to the pods
+        explanation: >-
+          A memory limit does not change how the HPA reads CPU.
+      - id: b
+        text: >-
+          Delete and recreate the HPA
+        explanation: >-
+          A new HPA reads from the same unavailable API and shows the same `<unknown>`.
+      - id: c
+        text: >-
+          Restore metrics-server so that the APIService is available, then wait for the first samples
+        explanation: >-
+          Correct. The HPA reads usage from the Metrics API. When metrics-server is not running, the API is unavailable and every HPA shows `<unknown>`.
+      - id: d
+        text: >-
+          Lower `averageUtilization` to `10`
+        explanation: >-
+          The target value does not matter while the HPA cannot read any usage.
+    correct_option: c
+    explanation: >-
+      The HPA controller needs the Metrics API. When `AVAILABLE` is `False`, `kubectl top` fails too. The conditions of the HPA say that it could not fetch metrics from the resource metrics API. Check the metrics-server Deployment and its pod first.

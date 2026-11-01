@@ -1,41 +1,37 @@
 # Scale Workloads With The HorizontalPodAutoscaler
 
-<!-- astrona:playground -->
-> [!NOTE]
-> This module has a playground — a throwaway environment to run the commands in.
-> ```bash
-> astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-01/playground
-> ```
+A Deployment with a fixed replica count is wrong most of the day. At night it wastes the CPU and memory its replicas request; at the busiest hour it has too few replicas and requests slow down. Changing the count by hand does not scale with the number of workloads on a platform.
 
-<!-- TODO(build): opening framing — what this module settles, and the contrast that sharpens its boundary. -->
+A **HorizontalPodAutoscaler** (HPA) is a Kubernetes object, and a controller in the control plane, that changes a workload's replica count to keep a metric near a target. The most common metric is CPU utilisation: the CPU a pod uses, as a percentage of the CPU it requests. The HPA reads that usage from the Metrics API, which metrics-server provides.
+
+Keep one sentence in mind for this module: **the HPA scales on usage divided by requests, so a pod without a CPU request cannot be scaled on CPU at all.** Requests are not only for the scheduler; they are also the yardstick the autoscaler measures against.
+
+The module has three parts. **The Metrics API And kubectl top** reads live CPU and memory usage and shows where it comes from. **Writing An HPA And Its Replica Formula** creates an `autoscaling/v2` HPA, generates load from inside the cluster, and checks each scaling step against the formula the controller uses. **Unknown Targets And Scaling Behavior** diagnoses an HPA that shows `<unknown>`, and slows down scale-down with a stabilization window and a policy.
 
 ## Learning objectives
 
-- Create an autoscaling/v2 HPA with a CPU utilisation target and minReplicas and maxReplicas
-- Calculate the desired replica count from current and target utilisation with the HPA formula
-- Generate load from shuttle and watch the HPA scale up and back down with kubectl get hpa --watch
-- Diagnose an HPA that shows unknown targets because the pods have no CPU requests or metrics-server is missing
-- Slow down scale-down with behavior.scaleDown stabilizationWindowSeconds and policies
+After this module you can:
+
+- Create an `autoscaling/v2` HPA with a CPU utilisation target and `minReplicas` and `maxReplicas`.
+- Calculate the desired replica count from current and target utilisation with the HPA formula.
+- Generate load from inside the cluster and watch the HPA scale up and back down with `kubectl get hpa --watch`.
+- Diagnose an HPA that shows `<unknown>` targets because the pods have no CPU requests or the Metrics API is missing.
+- Slow down scale-down with `behavior.scaleDown.stabilizationWindowSeconds` and policies.
 
 ## Before you start
 
-<!-- TODO(build): assumed knowledge, and what the playground already provides. -->
+You need Kubernetes basics: pods, Deployments, Services, namespaces, and the commands `kubectl get`, `kubectl apply`, `kubectl describe` and `kubectl scale`. You should know that a container's CPU request is the amount of CPU the scheduler reserves for it, written in millicores (`100m` is one tenth of a CPU core).
 
-## Outline
+Your playground is a single-node `kind` cluster running Kubernetes 1.35 with metrics-server installed, so `kubectl top` and the HPA have data. The namespace `starfleet` has these workloads, and no HPA yet:
 
-<!-- TODO(build): each beat below becomes a section of this module (or a deep-dive part via /astrona-course-deep-dive). Delete this Outline section once written. -->
+| Workload | What it is |
+| --- | --- |
+| `scout` | `podinfo`, a small web application, with one replica and a CPU request of `100m`, behind the Service `scout` |
+| `scout-norequests` | The same application with no resources set at all, behind the Service `scout-norequests` |
+| `shuttle` | A client pod with `curl` |
 
-- The Metrics API, metrics-server and kubectl top
-- The HPA control loop and its replica formula
-- Writing an autoscaling/v2 HPA with resource metrics
-- Reading HPA status, conditions and events, and fixing unknown targets
-- Scaling behavior and stabilization windows
+The first `kubectl top` values appear about a minute after the cluster starts. Every command in the parts runs against the playground cluster, and `kubectl` already points at it.
 
-## Diagrams planned
+Launch your playground now, and keep it running next to you while you read the parts:
 
-<!-- TODO(build): mermaid `sequence` — metrics-server collects from kubelets, HPA controller reads Metrics API, updates Deployment replicas -->
-<!-- TODO(build): mermaid `flowchart` — HPA decision from current utilisation, target and behavior limits to the new replica count -->
-
-<!-- playground provides: Single-node kind cluster with metrics-server (--kubelet-insecure-tls). Namespace `starfleet` with `scout` (1 replica, CPU request 100m) and `scout-norequests` (no resources set, the deliberate variation that gives an HPA unknown targets), plus `shuttle` with a load loop script that calls podinfo's CPU endpoint. No HPA yet. -->
-
-<!-- module section-030/module-01 (Module 1) — stub written by /astrona-course-domain-scaffold, prose written by /astrona-course-domain-build. -->
+<!-- astrona:playground -->

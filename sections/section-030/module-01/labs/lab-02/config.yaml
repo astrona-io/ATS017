@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Slow Down Scale-Down (ats-017-lab-030-01-02)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster
+# with metrics-server from the astrona addon.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-030-01-02
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      metricsServer: true
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Creates the starfleet namespace, the scout Deployment, its HPA without a behavior section and the shuttle client
+      type: file
+      source: bootstrap/seed-workloads.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-scale-down-behavior
+      description: Checks the HPA has a scaleDown stabilization window of 120 to 600 seconds and a policy that removes at most one pod, still scales scout on CPU, and keeps its replicas for 45 seconds after the load stops
+      type: file
+      source: validation/validate-scale-down-behavior.sh
+
+teardown:
+  keepCluster: false

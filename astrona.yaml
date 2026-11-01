@@ -331,6 +331,64 @@ modules:
         title: Section Overview
         path: sections/section-030/README.md
 
+      - type: reading
+        title: "Scale Workloads With The HorizontalPodAutoscaler"
+        path: sections/section-030/module-01/course.md
+      - type: reading
+        title: "The Metrics API And kubectl top"
+        path: sections/section-030/module-01/course-01-the-metrics-api-and-kubectl-top.md
+      - type: reading
+        title: "Writing An HPA And Its Replica Formula"
+        path: sections/section-030/module-01/course-02-writing-an-hpa-and-its-replica-formula.md
+      - type: reading
+        title: Question
+        path: sections/section-030/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Fix The Unknown HPA Target Lab"
+        path: sections/section-030/module-01/labs/lab-01
+        difficulty: beginner
+        estimated_duration: 20m
+        topic: autoscaling
+        task_kind: troubleshooting
+        tags: [hpa, metrics-server, usage-vs-requests, requests-limits]
+        learning_goals:
+          - Find why an HPA shows an unknown CPU target from its conditions and events
+          - Add the CPU request that the utilisation target divides by
+          - Prove the fix with a resolved target and a replica added under load from the shuttle pod
+        resources:
+          - name: "Horizontal Pod Autoscaling"
+            url: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+          - name: "HorizontalPodAutoscaler Walkthrough"
+            url: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/
+      - type: reading
+        title: "Unknown Targets And Scaling Behavior"
+        path: sections/section-030/module-01/course-03-unknown-targets-and-scaling-behavior.md
+      - type: reading
+        title: Question
+        path: sections/section-030/module-01/labs/lab-02/question.md
+      - type: lab
+        title: "Slow Down Scale-Down Lab"
+        path: sections/section-030/module-01/labs/lab-02
+        difficulty: intermediate
+        estimated_duration: 20m
+        topic: autoscaling
+        task_kind: build
+        tags: [hpa, scaling-behavior, metrics-server, right-sizing]
+        learning_goals:
+          - Write behavior.scaleDown with a stabilization window and a policy in an autoscaling/v2 HPA
+          - Keep the metric, bounds and scale-up unchanged while changing only the scale-down
+          - Prove with a load test that the replicas stay after the load stops
+        resources:
+          - name: "Horizontal Pod Autoscaling"
+            url: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+      - type: reading
+        title: Summary
+        path: sections/section-030/module-01/course-04-summary.md
+      - type: quiz
+        title: "Knowledge Check: Scale Workloads With The HorizontalPodAutoscaler"
+        path: sections/section-030/module-01/quiz.yaml
+        question_count: 6
+
   - id: module-040
     title: "Cost Visibility With OpenCost"
     description: >
