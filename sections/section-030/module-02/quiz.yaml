@@ -1,0 +1,185 @@
+# Knowledge check for section 030, module 02. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-030-02
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-030/module-02
+  title: Right-Size Workloads From Measured Usage
+questions:
+  - id: ats017-030-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Choose the command that changes a running pod's resources.
+    source_readings:
+      - sections/section-030/module-02/course-03-resizing-a-running-pod-in-place.md
+    prompt: >-
+      Kubernetes 1.35 lets you change the CPU request of a running pod without recreating it. Which command does that?
+    options:
+      - id: a
+        text: >-
+          `kubectl patch pod <pod> --subresource resize --patch '{...}'`
+        explanation: >-
+          Correct. The `resize` subresource of the pod accepts changes to `spec.containers[*].resources`. The kubelet applies them to the running container.
+      - id: b
+        text: >-
+          `kubectl patch pod <pod> --patch '{...}'`
+        explanation: >-
+          A plain patch of a pod is rejected with `Forbidden`, because pod resources are not editable through the normal path.
+      - id: c
+        text: >-
+          `kubectl set resources deployment/<name> ...`
+        explanation: >-
+          This edits the Deployment template and starts a rollout. The pod is replaced and gets a new UID.
+      - id: d
+        text: >-
+          `kubectl scale deployment/<name> --replicas=2`
+        explanation: >-
+          This changes the number of pods. It does not change the resources of a running pod.
+    correct_option: a
+    explanation: >-
+      Only the `resize` subresource changes the resources of a running pod. `kubectl set resources` changes the template and replaces the pod. A plain patch is rejected.
+
+  - id: ats017-030-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Read the proof of a finished resize.
+    source_readings:
+      - sections/section-030/module-02/course-03-resizing-a-running-pod-in-place.md
+    prompt: >-
+      You resize a running pod. Which field shows the resources that the container runs with now?
+    options:
+      - id: a
+        text: >-
+          `spec.containers[0].resources`
+        explanation: >-
+          This holds what you asked for. It changes as soon as the API server accepts the resize, before the kubelet applies it.
+      - id: b
+        text: >-
+          `status.containerStatuses[0].resources`
+        explanation: >-
+          Correct. The kubelet writes the resources of the running container here after the resize. Together with `allocatedResources` and the absence of a resize condition, it proves the resize finished.
+      - id: c
+        text: >-
+          `spec.template.spec.containers[0].resources` of the Deployment
+        explanation: >-
+          The template is not changed by a pod resize.
+      - id: d
+        text: >-
+          `metadata.annotations` of the pod
+        explanation: >-
+          Annotations do not record the resources of the container.
+    correct_option: b
+    explanation: >-
+      The `spec` is the request, and the `status` is the result. A finished resize shows the new values in `status.containerStatuses[*].resources`, and the pod has no `PodResizePending` or `PodResizeInProgress` condition.
+
+  - id: ats017-030-02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Use resizePolicy to control restarts.
+    source_readings:
+      - sections/section-030/module-02/course-04-resize-policy-and-resizes-that-do-not-finish.md
+    prompt: >-
+      A container has `resizePolicy` with `cpu: NotRequired` and `memory: RestartContainer`. You resize the memory of the running pod. What happens?
+    options:
+      - id: a
+        text: >-
+          The kubelet restarts the container in the same pod, so the UID stays and `restartCount` goes up by one
+        explanation: >-
+          Correct. `RestartContainer` makes the kubelet restart the container to apply the memory change. The pod is the same pod.
+      - id: b
+        text: >-
+          The kubelet deletes the pod and the Deployment creates a new one with a new UID
+        explanation: >-
+          A resize never replaces the pod. Only a template change does.
+      - id: c
+        text: >-
+          The API server rejects the resize, because memory cannot be resized
+        explanation: >-
+          Memory can be resized. The policy decides whether a restart is needed.
+      - id: d
+        text: >-
+          Nothing restarts, because the policy applies to the CPU only
+        explanation: >-
+          Each resource has its own policy. The memory policy is `RestartContainer`.
+    correct_option: a
+    explanation: >-
+      `resizePolicy` is set for each resource. `NotRequired` changes the running container in place. `RestartContainer` restarts the container inside the same pod.
+
+  - id: ats017-030-02-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Diagnose a resize that does not finish.
+    source_readings:
+      - sections/section-030/module-02/course-04-resize-policy-and-resizes-that-do-not-finish.md
+    prompt: >-
+      After a resize, the pod has the condition `PodResizePending` with the reason `Infeasible`. What does this mean?
+    options:
+      - id: a
+        text: >-
+          The node does not have enough capacity for the new request, and the container keeps running with its old values
+        explanation: >-
+          Correct. The kubelet checked the node, found no room, and left the container unchanged. A new resize with a smaller request clears the condition.
+      - id: b
+        text: >-
+          The container restarted and is waiting for its readiness probe
+        explanation: >-
+          A restart does not set this condition.
+      - id: c
+        text: >-
+          The memory limit is below the current usage
+        explanation: >-
+          That case leaves `PodResizeInProgress` and a `ResizeError` event.
+      - id: d
+        text: >-
+          The HPA blocked the resize
+        explanation: >-
+          The HPA does not take part in a pod resize.
+    correct_option: a
+    explanation: >-
+      `PodResizePending` with `Infeasible` means the node cannot fit the request. The container is not harmed. Read the message on the condition and the `ResizeInfeasible` event, then resize to a value that fits.
+
+  - id: ats017-030-02-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Make a resize permanent.
+    source_readings:
+      - sections/section-030/module-02/course-05-making-the-change-permanent-and-hpa.md
+      - sections/section-030/module-02/course-02-choosing-requests-and-limits-from-usage.md
+    prompt: >-
+      You resized one pod of a Deployment in place to a CPU request of `10m`. The node is later drained and the pod is recreated. What CPU request does the new pod have, and what fixes it?
+    options:
+      - id: a
+        text: >-
+          The old request from the Deployment template. Edit the template, for example with `kubectl set resources`
+        explanation: >-
+          Correct. The Deployment controller builds every pod from `spec.template`. An in-place resize changes only the one pod.
+      - id: b
+        text: >-
+          `10m`, because the pod object remembers the resize
+        explanation: >-
+          The new pod is a new object. It does not copy the status of the old pod.
+      - id: c
+        text: >-
+          No request, because the pod is `BestEffort` after a drain
+        explanation: >-
+          A drain does not remove requests. The new pod uses the template.
+      - id: d
+        text: >-
+          `10m`, but only if the HPA has the same target
+        explanation: >-
+          The HPA does not store resources for pods.
+    correct_option: a
+    explanation: >-
+      An in-place resize is a change to one live pod. The template stays the same, so every new pod starts from the old values. Write the final numbers into the template, so they survive.

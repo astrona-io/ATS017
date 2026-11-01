@@ -33,13 +33,13 @@ The reader matches capacity to load: the HPA adds and removes replicas as utilis
 
 ### 2. Right-Size Workloads From Measured Usage
 *   **Module Reader:** **[Module 2: Right-Size Workloads From Measured Usage](./module-02/course.md)**
-*   **Hands-on Playground:** `sections/section-030/module-02/playground` — Single-node kind cluster with metrics-server (astrona addon) and a small Prometheus that scrapes the kubelet's cAdvisor metrics (plumbing for the queries, not a monitoring course). Namespace `starfleet` with `scout-overprovisioned` (CPU and memory requests far above usage) and `scout-underprovisioned` (memory request below usage, Burstable), each under steady load from `shuttle` so usage data exists within a few minutes. No HPA. In-place pod resize is available in Kubernetes 1.35 (verify state and kubectl syntax).
+*   **Hands-on Playground:** `sections/section-030/module-02/playground` — Single-node kind cluster with metrics-server (astrona addon) and a small Prometheus that scrapes the kubelet's cAdvisor metrics (plumbing for the queries, not a monitoring course). Namespace `starfleet` with `scout-overprovisioned` (CPU and memory requests far above usage) and `scout-underprovisioned` (memory request below usage, Burstable), each under steady load from `shuttle` so usage data exists within a few minutes. No HPA. In-place pod resize is on by default in Kubernetes 1.35.
     ```bash
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-02/playground
     ```
 
 ### Section Capstone Challenge
-*   **Comprehensive Challenge:** Right-Sizing And Autoscaling Capstone — `sections/section-030/capstone/labs/lab-01` *(created in the build phase)*
+*   **Comprehensive Challenge:** Right-Sizing And Autoscaling Capstone — `sections/section-030/capstone/labs/lab-01`
     ```bash
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-01
     astrona submit -c .
@@ -50,4 +50,4 @@ The reader matches capacity to load: the HPA adds and removes replicas as utilis
 
 ## Ready for Assessment?
 
-*   **[Take the Section 030 Knowledge Check](./quiz.md)**
+Each module ends with a knowledge check.

@@ -122,14 +122,16 @@ spec:
       containers:
         - name: shuttle
           image: curlimages/curl:8.22.0
-          # Steady background load: one request to each scout every second.
+          # Steady background load: five POST /token requests to each scout every second.
           command:
             - sh
             - -c
             - |
               while true; do
-                curl -s -o /dev/null http://scout-overprovisioned
-                curl -s -o /dev/null http://scout-underprovisioned
+                for _ in 1 2 3 4 5; do
+                  curl -s -o /dev/null -X POST http://scout-overprovisioned/token
+                  curl -s -o /dev/null -X POST http://scout-underprovisioned/token
+                done
                 sleep 1
               done
           resources:

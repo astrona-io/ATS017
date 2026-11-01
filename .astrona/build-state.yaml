@@ -80,33 +80,33 @@ items:
 - key: section-030/module-01/playground
   kind: playground
   what: 'playground for module 1: Scale Workloads With The HorizontalPodAutoscaler'
-  status: pending
-  note: ''
+  status: done
+  note: 'astrona test passed (module 1 labs)'
 - key: section-030/module-01/course
   kind: course
   what: 'chapter for module 1: Scale Workloads With The HorizontalPodAutoscaler'
-  status: pending
-  note: ''
+  status: done
+  note: 'landing, parts, summary and quiz in astrona.yaml'
 - key: section-030/module-02/playground
   kind: playground
-  what: 'playground for module 2: Right-Size Workloads With VPA Recommendations'
-  status: pending
-  note: ''
+  what: 'playground for module 2: Right-Size Workloads From Measured Usage'
+  status: done
+  note: 'Helm-installed Prometheus 29.40.3; booted and verified on Kubernetes 1.35.8 2026-11-01'
 - key: section-030/module-02/course
   kind: course
-  what: 'chapter for module 2: Right-Size Workloads With VPA Recommendations'
-  status: pending
-  note: ''
+  what: 'chapter for module 2: Right-Size Workloads From Measured Usage'
+  status: done
+  note: 'landing, five parts and summary; in-place resize is on by default in 1.35; outputs from a real run'
 - key: section-030/quiz
   kind: quiz
   what: 'knowledge check for section-030: Right-Sizing And Autoscaling'
-  status: pending
-  note: ''
+  status: done
+  note: 'per-module quiz.yaml (6+5 questions) in astrona.yaml'
 - key: section-030/capstone
   kind: capstone
   what: 'capstone lab: Right-Sizing And Autoscaling Capstone'
-  status: pending
-  note: ''
+  status: done
+  note: 'astrona test passed'
 - key: section-040/module-01/playground
   kind: playground
   what: 'playground for module 1: Read Cost Allocation With OpenCost'

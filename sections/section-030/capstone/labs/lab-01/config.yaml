@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Right-Sizing And Autoscaling Capstone (ats-017-capstone-030)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster
+# with metrics-server from the astrona addon.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-capstone-030
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      metricsServer: true
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Creates the starfleet namespace, the over-provisioned scout Deployment with its Service (no HPA) and the shuttle client
+      type: file
+      source: bootstrap/seed-workloads.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-capstone
+      description: Checks scout requests fit its usage, an autoscaling/v2 HPA with a scale-down stabilization window scales it up under load from shuttle, and the replicas return to the minimum after the window
+      type: file
+      source: validation/validate-capstone.sh
+
+teardown:
+  keepCluster: false

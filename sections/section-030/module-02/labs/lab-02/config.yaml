@@ -1,0 +1,45 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Resize A Running Pod In Place (ats-017-lab-030-02-02)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster
+# with metrics-server from the astrona addon.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-030-02-02
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      metricsServer: true
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Creates the starfleet namespace, the scout Deployment with a CPU request of 100m and a CPU limit of 200m, and the shuttle client, and records the scout pod UID
+      type: file
+      source: bootstrap/seed-workloads.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-in-place-resize
+      description: Checks the same scout pod (same UID, no restart) now runs with a CPU request of 500m and a CPU limit of 1, with the memory settings unchanged
+      type: file
+      source: validation/validate-in-place-resize.sh
+
+teardown:
+  keepCluster: false

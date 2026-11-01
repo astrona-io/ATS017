@@ -2,7 +2,7 @@
 #
 # Right-Size Workloads From Measured Usage (PLAYGROUND).
 # metrics-server comes from the astrona addon; a small Prometheus scrapes the
-# kubelet's cAdvisor metrics so usage can be queried over time. Both are
+# kubelet cAdvisor metrics so usage can be queried over time. Both are
 # plumbing. No HPA, no VPA.
 apiVersion: astrona.io/v1
 metadata:
@@ -19,25 +19,13 @@ runtime:
     preloadImages:
       - curlimages/curl:8.22.0
       - ghcr.io/stefanprodan/podinfo:6.15.0
-      - quay.io/prometheus/prometheus:v3.15.0
 
 bootstrap:
-  manifests:
-    - name: prometheus
+  init:
+    - name: prepare
+      description: Creates the starfleet workloads and installs a small Prometheus with Helm
       type: file
-      source: manifests/prometheus.yaml
-    - name: lab-start
-      type: file
-      source: manifests/lab-start.yaml
-  waitFor:
-    - resource: deploy/prometheus
-      namespace: monitoring
-    - resource: deploy/scout-overprovisioned
-      namespace: starfleet
-    - resource: deploy/scout-underprovisioned
-      namespace: starfleet
-    - resource: deploy/shuttle
-      namespace: starfleet
+      source: bootstrap/prepare.sh
 
 teardown:
   keepCluster: false
