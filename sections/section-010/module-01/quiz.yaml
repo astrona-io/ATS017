@@ -1,0 +1,219 @@
+# Knowledge check for section 010, module 01. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-010-01
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-010/module-01
+  title: Set Requests, Limits And QoS Classes
+questions:
+  - id: ats017-010-01-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Name which component reads requests and which component enforces limits.
+    source_readings:
+      - sections/section-010/module-01/course-01-requests-limits-and-who-reads-them.md
+    prompt: >-
+      A pod sets `requests` and `limits` for CPU and memory. Which statement about the components that use these fields is correct?
+    options:
+      - id: a
+        text: >-
+          The scheduler adds up the requests to choose a node, and the kernel enforces the limits through a cgroup
+        explanation: >-
+          Correct. The scheduler uses requests once, before the pod runs. The kubelet writes the limits into a cgroup, and the kernel enforces them.
+      - id: b
+        text: >-
+          The scheduler compares the limits with the real usage of each node
+        explanation: >-
+          The scheduler does not look at limits or at real usage when it places a pod. It only adds up requests.
+      - id: c
+        text: >-
+          The kubelet enforces the requests, and the scheduler enforces the limits
+        explanation: >-
+          The roles are the other way round. The scheduler reads requests, and the kernel enforces limits.
+      - id: d
+        text: >-
+          The API server enforces the limits while the container runs
+        explanation: >-
+          The API server only stores and validates the object. The kernel enforces the limits.
+    correct_option: a
+    explanation: >-
+      The scheduler keeps only the nodes whose free, unreserved capacity covers the sum of the requests. The kubelet passes the limits to the container runtime, which writes them into a Linux cgroup, and the kernel enforces them with no Kubernetes component in the loop.
+
+  - id: ats017-010-01-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Write correct CPU and memory quantities and know how requests relate to limits.
+    source_readings:
+      - sections/section-010/module-01/course-01-requests-limits-and-who-reads-them.md
+    prompt: >-
+      You write `memory: 128m` in a container's `resources.limits`. What does the value mean?
+    options:
+      - id: a
+        text: >-
+          128 mebibytes, the same as `128Mi`
+        explanation: >-
+          Mebibytes are written `Mi`. A lower-case `m` is a different unit.
+      - id: b
+        text: >-
+          128 megabytes, the same as `128M`
+        explanation: >-
+          Decimal megabytes are written with a capital `M`. A lower-case `m` is a different unit.
+      - id: c
+        text: >-
+          A thousandth of 128 bytes, which the API server accepts
+        explanation: >-
+          Correct. A lower-case `m` on memory means a thousandth of a byte. The API server accepts it, and it is almost never what you meant.
+      - id: d
+        text: >-
+          The API server rejects the pod because `m` is only valid for CPU
+        explanation: >-
+          The API server accepts the value, so the mistake is silent.
+    correct_option: c
+    explanation: >-
+      Memory uses bytes with `Mi` and `Gi` (binary) or `M` and `G` (decimal). A lower-case `m` means a thousandth, so `128m` is a thousandth of 128 bytes. Write `128Mi`.
+
+  - id: ats017-010-01-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Recognise CPU throttling and tell it apart from a memory kill.
+    source_readings:
+      - sections/section-010/module-01/course-02-what-happens-at-the-limit.md
+    prompt: >-
+      A container wants a full core and has a CPU limit of `200m`. `kubectl top pods` shows its usage flat at `200m`. The pod is `Running` with no restarts and no events, but the application is slow. What is happening, and where do you find proof?
+    options:
+      - id: a
+        text: >-
+          The kernel throttles the container; `nr_throttled` in the cgroup `cpu.stat` file keeps rising
+        explanation: >-
+          Correct. CPU is compressible. The kernel stops the container for the rest of each 100 millisecond period, and `nr_throttled` counts those periods.
+      - id: b
+        text: >-
+          The kernel kills the container; `Last State` shows `OOMKilled`
+        explanation: >-
+          An `OOMKilled` container restarts. This pod has no restarts, and CPU over the limit does not kill a container.
+      - id: c
+        text: >-
+          The kubelet evicts the pod; its status shows `Evicted`
+        explanation: >-
+          Eviction ends the pod and happens under node pressure. This pod is still `Running`.
+      - id: d
+        text: >-
+          The scheduler could not place the pod; a `FailedScheduling` event explains why
+        explanation: >-
+          The pod is running on a node, so the scheduler already placed it.
+    correct_option: a
+    explanation: >-
+      Usage that stays flat at the limit, with no restart and no error, is the signature of CPU throttling. The counters `nr_periods`, `nr_throttled` and `throttled_usec` in `cpu.stat` prove it. The usual fix is to raise or remove the CPU limit.
+
+  - id: ats017-010-01-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Find the reason for a memory kill in the container status.
+    source_readings:
+      - sections/section-010/module-01/course-02-what-happens-at-the-limit.md
+    prompt: >-
+      A pod shows a growing `RESTARTS` count and the `STATUS` changes between `Running`, `OOMKilled` and `CrashLoopBackOff`. Where do you read the reason for the last restart, and which fix is right?
+    options:
+      - id: a
+        text: >-
+          In `State`, which always shows the reason; delete the pod to fix it
+        explanation: >-
+          After a restart `State` says `Running`. A new pod has the same limit and is killed again.
+      - id: b
+        text: >-
+          In `Last State`, which shows `Terminated` with `Reason: OOMKilled` and `Exit Code: 137`; raise the memory limit or reduce the application's memory use
+        explanation: >-
+          Correct. Exit code 137 is 128 plus 9, the number of `SIGKILL`. The limit or the application must change.
+      - id: c
+        text: >-
+          In `cpu.stat`, which shows `nr_throttled`; raise the CPU limit
+        explanation: >-
+          `cpu.stat` counts CPU throttling. A memory kill leaves no throttling counter.
+      - id: d
+        text: >-
+          In the `FailedScheduling` event; add a node
+        explanation: >-
+          The pod was scheduled and runs. `FailedScheduling` belongs to a `Pending` pod.
+    correct_option: b
+    explanation: >-
+      Memory is incompressible, so the kernel's out-of-memory killer ends the process when it reaches the limit. The kubelet restarts the container. The reason is in `Last State` (`status.containerStatuses[].lastState`), not in the current `State`. Changing the limit or the application is the fix.
+
+  - id: ats017-010-01-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Predict the QoS class of a pod from its resources.
+    source_readings:
+      - sections/section-010/module-01/course-03-qos-classes-and-eviction.md
+    prompt: >-
+      A pod has one container. The container sets only `limits` of `cpu: 100m` and `memory: 64Mi`, and no `requests`. What is the QoS class in `status.qosClass`?
+    options:
+      - id: a
+        text: >-
+          `BestEffort`, because no `requests` are written
+        explanation: >-
+          Kubernetes copies the limits into the requests when only limits are set, so the pod has resources.
+      - id: b
+        text: >-
+          `Burstable`, because the requests are missing
+        explanation: >-
+          The requests are not missing in the stored object. They are copied from the limits.
+      - id: c
+        text: >-
+          `Guaranteed`, because the requests are copied from the limits and CPU and memory limits equal requests
+        explanation: >-
+          Correct. The stored pod has requests equal to the limits for both CPU and memory.
+      - id: d
+        text: >-
+          You cannot tell; you set `qosClass` in the pod spec
+        explanation: >-
+          The class is a status field. Kubernetes computes it, and you cannot set it.
+    correct_option: c
+    explanation: >-
+      A container with only `limits` gets the same values copied into `requests`. With CPU and memory limits equal to requests in every container, the class is `Guaranteed`. Always read the stored object, not your file, when you predict a class.
+
+  - id: ats017-010-01-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Explain a Pending pod from its FailedScheduling event and from node allocatable.
+    source_readings:
+      - sections/section-010/module-01/course-04-node-capacity-and-pending-pods.md
+      - sections/section-010/module-01/course-03-qos-classes-and-eviction.md
+    prompt: >-
+      A Deployment asks for `memory: 64Gi` per pod. The pod stays `Pending`, the Deployment shows `0/1` ready, and the node uses very little memory. Which statement is correct?
+    options:
+      - id: a
+        text: >-
+          The scheduler compares the request with the node's allocatable memory; the `FailedScheduling` event on the pod says `Insufficient memory`
+        explanation: >-
+          Correct. The scheduler works with requests and allocatable, not with real usage. The reason is an event on the pod.
+      - id: b
+        text: >-
+          The scheduler compares the request with the real memory usage from `kubectl top node`, which is low, so the Deployment events explain the problem
+        explanation: >-
+          The scheduler ignores real usage, and the Deployment shows no reason. The reason is on the pod.
+      - id: c
+        text: >-
+          The pod needs a memory limit before it can be scheduled
+        explanation: >-
+          Limits play no part in the scheduling decision.
+      - id: d
+        text: >-
+          The kubelet evicted the pod because the node ran low on memory
+        explanation: >-
+          Eviction ends pods that already run. This pod was never placed on a node.
+    correct_option: a
+    explanation: >-
+      The scheduler keeps only nodes whose unreserved allocatable capacity covers the request. No node can hold `64Gi`, so the pod stays `Pending` and the event reads like `0/1 nodes are available: 1 Insufficient memory`. Lower the request or add a large enough node.

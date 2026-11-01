@@ -27,13 +27,13 @@ items:
 - key: section-010/quiz
   kind: quiz
   what: 'knowledge check for section-010: Compute Placement And Sizing'
-  status: pending
-  note: ''
+  status: done
+  note: 'per-module quiz.yaml; module labs 010-01-01 and 010-02-01 passed astrona test'
 - key: section-010/capstone
   kind: capstone
   what: 'capstone lab: Compute Placement And Sizing Capstone'
-  status: pending
-  note: ''
+  status: done
+  note: 'astrona test passed; spread needs scale 0 then 4 after rollout'
 - key: section-020/module-01/playground
   kind: playground
   what: 'playground for module 1: Route Traffic With The Gateway API'
@@ -58,23 +58,25 @@ items:
 - key: section-020/module-03/playground
   kind: playground
   what: 'playground for module 3: Provision Storage With StorageClasses'
-  status: pending
-  note: ''
+  status: done
+  note: Booted Kubernetes 1.35.8; verified delayed binding, local persistence, RWO/RWOP, rejected RWX,
+    Delete/Retain, defaults and StatefulSet claims; all validators passed 2026-10-12
 - key: section-020/module-03/course
   kind: course
   what: 'chapter for module 3: Provision Storage With StorageClasses'
-  status: pending
-  note: ''
+  status: done
+  note: Landing, four parts and summary; all shown commands run and output lines checked against saved
+    transcripts; corrected local ReadWriteOncePod support; all validators passed 2026-10-12
 - key: section-020/quiz
   kind: quiz
   what: 'knowledge check for section-020: Networking And Storage'
-  status: pending
-  note: ''
+  status: done
+  note: 'per-module quiz.yaml (6+5+5 questions) in astrona.yaml'
 - key: section-020/capstone
   kind: capstone
   what: 'capstone lab: Networking And Storage Capstone'
-  status: pending
-  note: ''
+  status: done
+  note: 'astrona test passed'
 - key: section-030/module-01/playground
   kind: playground
   what: 'playground for module 1: Scale Workloads With The HorizontalPodAutoscaler'

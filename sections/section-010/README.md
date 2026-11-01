@@ -41,7 +41,7 @@ The reader gives one workload the CPU and memory it needs and puts its pods on t
     ```
 
 ### Section Capstone Challenge
-*   **Comprehensive Challenge:** Compute Placement And Sizing Capstone — `sections/section-010/capstone/labs/lab-01` *(created in the build phase)*
+*   **Comprehensive Challenge:** Compute Placement And Sizing Capstone — `sections/section-010/capstone/labs/lab-01`
     ```bash
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-010/capstone/labs/lab-01
     astrona submit -c .
@@ -52,4 +52,4 @@ The reader gives one workload the CPU and memory it needs and puts its pods on t
 
 ## Ready for Assessment?
 
-*   **[Take the Section 010 Knowledge Check](./quiz.md)**
+Each module ends with a knowledge check.

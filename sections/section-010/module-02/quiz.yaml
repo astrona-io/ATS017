@@ -1,0 +1,185 @@
+# Knowledge check for section 010, module 02. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-010-02
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-010/module-02
+  title: Place Workloads With Affinity, Taints And Topology Spread
+questions:
+  - id: ats017-010-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Use node labels with required and preferred node affinity and know which one filters.
+    source_readings:
+      - sections/section-010/module-02/course-01-node-labels-and-node-affinity.md
+    prompt: >-
+      A pod has `preferredDuringSchedulingIgnoredDuringExecution` node affinity for `topology.kubernetes.io/zone` in `zone-b`. The only zone-b node has a taint that the pod does not tolerate. Where does the pod run?
+    options:
+      - id: a
+        text: >-
+          It stays `Pending`, because a preference works like a requirement
+        explanation: >-
+          A preference never filters. Only the required form removes nodes.
+      - id: b
+        text: >-
+          On the zone-b node, because the weight overrides the taint
+        explanation: >-
+          The taint removes the node in the filter step. A weight only adds score points to nodes that passed every filter.
+      - id: c
+        text: >-
+          On a node in zone a, because the taint removed the zone-b node in the filter step and the preference had nothing to score
+        explanation: >-
+          Correct. A preference can only choose among nodes that passed every filter.
+      - id: d
+        text: >-
+          The scheduler removes the taint from the node
+        explanation: >-
+          The scheduler never changes a node's taints.
+    correct_option: c
+    explanation: >-
+      The scheduler filters first (room, taints, required affinity, topology spread) and then scores the nodes that are left. Preferred node affinity adds points in the score step only.
+
+  - id: ats017-010-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Read a FailedScheduling message for required node affinity and a taint.
+    source_readings:
+      - sections/section-010/module-02/course-01-node-labels-and-node-affinity.md
+      - sections/section-010/module-02/course-02-taints-and-tolerations.md
+    prompt: >-
+      A pod requires zone-b with `requiredDuringSchedulingIgnoredDuringExecution` node affinity. Its event reads `0/3 nodes are available: 1 node(s) didn't match Pod's node affinity/selector, 2 node(s) had untolerated taint(s)`. What does the message tell you?
+    options:
+      - id: a
+        text: >-
+          The zone-a worker failed the affinity rule, and the control plane and the zone-b worker have taints the pod does not tolerate
+        explanation: >-
+          Correct. The message counts one reason per node. The only node in zone b refuses the pod because of its taint.
+      - id: b
+        text: >-
+          Two nodes are out of memory and one node has the wrong label
+        explanation: >-
+          Out of memory would read `Insufficient memory`.
+      - id: c
+        text: >-
+          The pod needs a larger `weight` on its affinity rule
+        explanation: >-
+          Weight belongs to preferred affinity. This rule is required.
+      - id: d
+        text: >-
+          The scheduler will retry until the nodes' labels change
+        explanation: >-
+          The message names taints and a rule that does not match. It does not describe a temporary state.
+    correct_option: a
+    explanation: >-
+      `didn't match Pod's node affinity/selector` is the zone-a worker. `untolerated taint(s)` are the control plane and the zone-b worker. The fix is a toleration for the zone-b taint.
+
+  - id: ats017-010-02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Explain that a toleration permits but does not attract, and dedicate a node with a toleration plus node affinity.
+    source_readings:
+      - sections/section-010/module-02/course-02-taints-and-tolerations.md
+    prompt: >-
+      A node has the taint `dedicated=outpost:NoSchedule`. You add a matching toleration to the `probe` Deployment in `outpost`, with three replicas. The replicas run on both workers. How do you keep them only on the tainted node?
+    options:
+      - id: a
+        text: >-
+          Change the toleration to `operator: Exists` with no key
+        explanation: >-
+          That tolerates every taint and still does not attract pods.
+      - id: b
+        text: >-
+          Add required node affinity for a label of the tainted node, next to the toleration
+        explanation: >-
+          Correct. The taint keeps other pods off the node, and the required affinity makes the other worker fail the filter.
+      - id: c
+        text: >-
+          Change the taint effect to `PreferNoSchedule`
+        explanation: >-
+          That makes the taint weaker. It does not pull the `probe` pods to the node.
+      - id: d
+        text: >-
+          Remove the toleration, because the taint already attracts the tenant
+        explanation: >-
+          A taint repels pods without a toleration. Without the toleration the pods could not run on the node at all.
+    correct_option: b
+    explanation: >-
+      A toleration permits and never attracts. It only removes a filter, so the scheduler spreads the replicas over every allowed node. Taint plus toleration plus required node affinity dedicates the node to one tenant.
+
+  - id: ats017-010-02-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Use pod anti-affinity with topologyKey kubernetes.io/hostname and predict its effect on a scaled workload.
+    source_readings:
+      - sections/section-010/module-02/course-03-spreading-replicas.md
+    prompt: >-
+      A Deployment has 3 replicas and required pod anti-affinity against its own label, with `topologyKey: kubernetes.io/hostname`. Only two nodes can run the pods. What happens?
+    options:
+      - id: a
+        text: >-
+          All three replicas run, two on the same node
+        explanation: >-
+          A required rule is strict. It allows at most one matching pod per node.
+      - id: b
+        text: >-
+          Two replicas run, one per node, and the third stays `Pending` with `didn't match pod anti-affinity rules`
+        explanation: >-
+          Correct. Each node is its own domain, so the rule caps the replica count at the number of nodes.
+      - id: c
+        text: >-
+          The scheduler places the third replica on the control plane, ignoring its taint
+        explanation: >-
+          The scheduler does not ignore taints. The control plane taint stays.
+      - id: d
+        text: >-
+          All three replicas stay `Pending` until a third node exists
+        explanation: >-
+          The first two replicas find a free domain and run.
+    correct_option: b
+    explanation: >-
+      With `kubernetes.io/hostname`, every node is one domain, so the rule means at most one matching pod per node. Required anti-affinity suits something like a quorum database. For most services, the preferred form or a topology spread constraint is a better fit.
+
+  - id: ats017-010-02-q05
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Explain maxSkew and whenUnsatisfiable in a topology spread constraint.
+    source_readings:
+      - sections/section-010/module-02/course-03-spreading-replicas.md
+    prompt: >-
+      A Deployment uses a topology spread constraint with `maxSkew: 1`, `topologyKey: topology.kubernetes.io/zone` and `whenUnsatisfiable: DoNotSchedule`. Zone a runs 4 matching pods, zone b runs 3, and zone b accepts no new pods. What happens to the next replica, and what would `ScheduleAnyway` change?
+    options:
+      - id: a
+        text: >-
+          It runs in zone a; `ScheduleAnyway` would make it stay `Pending`
+        explanation: >-
+          The roles are reversed. `DoNotSchedule` is the filter.
+      - id: b
+        text: >-
+          It stays `Pending`, because a fifth pod in zone a makes the skew 2; with `ScheduleAnyway` the rule only scores, so the pod would run in zone a and the skew would grow
+        explanation: >-
+          Correct. `maxSkew` is the largest allowed difference between the zone with the most matching pods and the zone with the fewest.
+      - id: c
+        text: >-
+          It stays `Pending` in both cases, because `maxSkew` is a hard limit
+        explanation: >-
+          `ScheduleAnyway` turns the rule into a score only, so the pod can still be placed.
+      - id: d
+        text: >-
+          It runs in zone b, because the rule moves pods between zones
+        explanation: >-
+          The rule filters or scores nodes for new pods. It does not move running pods, and zone b accepts no new pods here.
+    correct_option: b
+    explanation: >-
+      `DoNotSchedule` makes the constraint a filter, so a pod that would break `maxSkew` stays `Pending`. `ScheduleAnyway` makes it a score only. Choose `DoNotSchedule` when an even spread matters more than having every replica running, and `ScheduleAnyway` when every replica must run.

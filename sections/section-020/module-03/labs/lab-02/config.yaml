@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Keep The Volume After Claim Deletion (ats-017-lab-020-03-02)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster
+# with StorageClasses `standard` (Delete, default) and `standard-retain` (Retain).
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-020-03-02
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - busybox:1.37
+
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Creates the Retain StorageClass, the probe-data claim on standard with a saved file, and the probe-storage pod
+      type: file
+      source: bootstrap/seed-workloads.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-retained-volume
+      description: Checks the volume behind probe-data is Retain with the file intact, and that a claim without a class gets standard-retain
+      type: file
+      source: validation/validate-retained-volume.sh
+
+teardown:
+  keepCluster: false

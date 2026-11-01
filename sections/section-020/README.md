@@ -53,7 +53,7 @@ The reader connects workloads safely and gives them storage: traffic enters thro
     ```
 
 ### Section Capstone Challenge
-*   **Comprehensive Challenge:** Networking And Storage Capstone — `sections/section-020/capstone/labs/lab-01` *(created in the build phase)*
+*   **Comprehensive Challenge:** Networking And Storage Capstone — `sections/section-020/capstone/labs/lab-01`
     ```bash
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/capstone/labs/lab-01
     astrona submit -c .
@@ -64,4 +64,4 @@ The reader connects workloads safely and gives them storage: traffic enters thro
 
 ## Ready for Assessment?
 
-*   **[Take the Section 020 Knowledge Check](./quiz.md)**
+Each module ends with a knowledge check.

@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Stop The OOMKilled Scout (ats-017-lab-010-01-01)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-010-01-01
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Creates the starfleet namespace, the scout Deployment that is killed by its memory limit, and the shuttle client
+      type: file
+      source: bootstrap/seed-workloads.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-scout-resources
+      description: Checks scout is stable without restarts, keeps its load, is Burstable with a memory limit between 128Mi and 256Mi, and answers shuttle
+      type: file
+      source: validation/validate-scout-resources.sh
+
+teardown:
+  keepCluster: false

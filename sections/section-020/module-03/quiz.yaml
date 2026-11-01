@@ -1,0 +1,184 @@
+# Knowledge check for section 020, module 03. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-020-03
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-020/module-03
+  title: Provision Storage With StorageClasses
+questions:
+  - id: ats017-020-03-q01
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Create a PersistentVolumeClaim and explain why it stays Pending under WaitForFirstConsumer until a pod uses it.
+    source_readings:
+      - sections/section-020/module-03/course-01-storageclasses-and-dynamic-provisioning.md
+    prompt: >-
+      A team creates a PersistentVolumeClaim (PVC) with the `standard` StorageClass, whose `volumeBindingMode` is `WaitForFirstConsumer`. Ten minutes later, `kubectl get pvc` still shows `Pending` and no volume name. The `describe` events show `waiting for first consumer to be created before binding`. What should the team do?
+    options:
+      - id: a
+        text: >-
+          Delete the claim and recreate it with `ReadWriteMany`
+        explanation: >-
+          The access mode is not the cause. This class cannot provide `ReadWriteMany` anyway.
+      - id: b
+        text: >-
+          Set `allowVolumeExpansion: true` on the class
+        explanation: >-
+          That field only controls whether claims can ask for a larger volume.
+      - id: c
+        text: >-
+          Treat it as a storage failure and replace the provisioner
+        explanation: >-
+          The event is a normal wait, not a failure.
+      - id: d
+        text: >-
+          Create a pod that mounts the claim, because provisioning starts only when a pod uses it
+        explanation: >-
+          Correct. The scheduler first chooses a node for the pod, then the provisioner creates the volume there.
+    correct_option: d
+    explanation: >-
+      `WaitForFirstConsumer` delays provisioning until a pod uses the claim, so the scheduler can choose a node first. A `Pending` claim with this event is a normal wait, not a failure.
+
+  - id: ats017-020-03-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Mount a claim in a pod and prove that data survives a pod restart.
+    source_readings:
+      - sections/section-020/module-03/course-02-persistent-data-and-access-modes.md
+    prompt: >-
+      A pod mounts the claim `scout-data` at `/data`. It writes `/data/message.txt` and also `/tmp/note.txt` in the container's own file system. An engineer deletes the pod and creates it again from the same manifest. Which files can the new pod read?
+    options:
+      - id: a
+        text: >-
+          Both files, because the pod has the same name
+        explanation: >-
+          The name does not keep data. Only a volume keeps files after the pod is removed.
+      - id: b
+        text: >-
+          Neither file, because deleting a pod always deletes its data
+        explanation: >-
+          Deleting a pod does not delete its claim, so the files on the claim stay.
+      - id: c
+        text: >-
+          Only `/tmp/note.txt`, because the container's own file system is kept
+        explanation: >-
+          The container's writable layer is removed together with the pod.
+      - id: d
+        text: >-
+          Only `/data/message.txt`, because the claim and its volume outlive the pod
+        explanation: >-
+          Correct. The kubelet mounts the same volume into the new pod. The file in `/tmp` is gone.
+    correct_option: d
+    explanation: >-
+      Only files under the mount path use the claim. Deleting a pod does not delete its claim, so the kubelet mounts the same volume into the replacement pod.
+
+  - id: ats017-020-03-q03
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Choose an access mode (ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod) for a workload.
+    source_readings:
+      - sections/section-020/module-03/course-02-persistent-data-and-access-modes.md
+    prompt: >-
+      On a single-node `kind` cluster, a team mounts one `ReadWriteOnce` claim in two pods, and both start and read the same file. A second team requests `ReadWriteMany` from the `standard` class, which uses the `rancher.io/local-path` provisioner, and the claim never binds. Which statement is correct?
+    options:
+      - id: a
+        text: >-
+          `ReadWriteOnce` limits read-write mounts to one node, so two pods on that node can share it. The provisioner cannot provide `ReadWriteMany` here, so the claim fails with `ProvisioningFailed`
+        explanation: >-
+          Correct. Use `ReadWriteOncePod` when only one pod may mount the volume.
+      - id: b
+        text: >-
+          `ReadWriteOnce` limits mounts to one pod, so the second pod must have used a different volume. `ReadWriteMany` fails because the claim is too small
+        explanation: >-
+          `ReadWriteOnce` means one node, not one pod. The size has nothing to do with the access mode.
+      - id: c
+        text: >-
+          `ReadWriteMany` fails because the namespace has no default StorageClass
+        explanation: >-
+          The claim names the `standard` class, so a default class is not needed.
+      - id: d
+        text: >-
+          Both claims work, because the API server accepted both claims
+        explanation: >-
+          The API server accepts a claim for an unsupported mode. The provisioner reports the failure in the claim's events.
+    correct_option: a
+    explanation: >-
+      `ReadWriteOnce` means one node, not one pod. The API server accepts a claim for an unsupported mode, but the provisioner reports the failure in the claim's events.
+
+  - id: ats017-020-03-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Predict what happens to the volume when a claim is deleted under Delete and Retain reclaim policies.
+    source_readings:
+      - sections/section-020/module-03/course-03-delete-and-retain-reclaim-policies.md
+    prompt: >-
+      Two claims are bound to volumes. The volume of claim `scout-data` has `persistentVolumeReclaimPolicy: Delete`. The volume of claim `probe-data` has `Retain`. An engineer deletes both claims. What does the engineer see?
+    options:
+      - id: a
+        text: >-
+          Both volumes are deleted, because the claims are gone
+        explanation: >-
+          Only the `Delete` policy removes the volume.
+      - id: b
+        text: >-
+          Both volumes become `Available` for any new claim
+        explanation: >-
+          A `Retain` volume stays `Released` and keeps its reference to the old claim. A `Delete` volume is removed.
+      - id: c
+        text: >-
+          The `scout-data` volume and its storage are removed. The `probe-data` volume stays with the phase `Released` and keeps its reference to the old claim
+        explanation: >-
+          Correct. A `Released` volume does not bind to a new claim by itself.
+      - id: d
+        text: >-
+          The `scout-data` volume stays `Released`, and the `probe-data` volume is removed
+        explanation: >-
+          The two policies are swapped.
+    correct_option: c
+    explanation: >-
+      `Delete` removes the volume object and its backing storage. `Retain` leaves a `Released` volume that does not bind to a new claim of the same name. An administrator must decide what to do with the data. `Retain` is not a backup.
+
+  - id: ats017-020-03-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Set the default StorageClass with the is-default-class annotation.
+    source_readings:
+      - sections/section-020/module-03/course-04-default-classes-and-statefulset-claims.md
+    prompt: >-
+      A cluster has two classes, `standard` (default) and `standard-retain`. An administrator wants claims that omit `storageClassName` to use `standard-retain`. What should the administrator do?
+    options:
+      - id: a
+        text: >-
+          Delete the `standard` class
+        explanation: >-
+          That does not make `standard-retain` the default. It also breaks claims that name `standard`.
+      - id: b
+        text: >-
+          Set the annotation `storageclass.kubernetes.io/is-default-class` to `true` on `standard-retain` and to `false` on `standard`
+        explanation: >-
+          Correct. Only one class should normally be the default.
+      - id: c
+        text: >-
+          Set `storageClassName: ""` on every new claim
+        explanation: >-
+          An empty string asks for no class at all. It does not select `standard-retain`.
+      - id: d
+        text: >-
+          Edit the `reclaimPolicy` of `standard` to `Retain`
+        explanation: >-
+          The reclaim policy controls what happens to a volume after its claim is deleted. It does not choose the default class.
+    correct_option: b
+    explanation: >-
+      The annotation marks the default class, and only one class should normally be the default. An empty string `storageClassName: ""` asks for no class. The change does not move claims that are already bound.

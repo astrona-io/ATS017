@@ -1,0 +1,185 @@
+# Knowledge check for section 020, module 02. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-020-02
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-020/module-02
+  title: Isolate Traffic With NetworkPolicy
+questions:
+  - id: ats017-020-02-q01
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Apply a default-deny ingress and egress policy to a namespace and prove that requests now time out.
+    source_readings:
+      - sections/section-020/module-02/course-01-default-deny-and-how-policies-select-pods.md
+    prompt: >-
+      After a team applies a NetworkPolicy with `podSelector: {}` and `policyTypes: [Ingress]` and no `ingress` rules to `starfleet`, a request from `outpost` into `starfleet` hangs until `curl` exits with code 28. A request from a `starfleet` pod to a Service in `outpost`, which has no policy, still works. What explains both results?
+    options:
+      - id: a
+        text: >-
+          The network plugin drops incoming packets to all selected pods, so the request times out. The policy does not cover egress, so outgoing traffic stays open
+        explanation: >-
+          Correct. `policyTypes` lists only `Ingress`, so the pods are isolated for incoming traffic only.
+      - id: b
+        text: >-
+          The API server refuses the request, so the client sees a timeout
+        explanation: >-
+          The network plugin enforces the policy, not the API server. It drops packets without an answer.
+      - id: c
+        text: >-
+          The policy blocks all traffic in both directions, so the second result must be a cached response
+        explanation: >-
+          The policy covers only the direction in `policyTypes`. Nothing is cached.
+      - id: d
+        text: >-
+          The policy only blocks traffic from other namespaces, so the first request is blocked by its namespace
+        explanation: >-
+          The empty `podSelector` blocks incoming traffic from every source, including pods in `starfleet`.
+    correct_option: a
+    explanation: >-
+      A pod selected for ingress allows only what some policy allows. The network plugin drops other packets silently, which looks like a timeout. `policyTypes` lists only `Ingress`, so egress stays open.
+
+  - id: ats017-020-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Allow one flow between two workloads with podSelector and ports.
+    source_readings:
+      - sections/section-020/module-02/course-02-allowing-flows-with-pod-and-namespace-selectors.md
+    prompt: >-
+      The `scout` Service listens on port `80` and forwards to container port `9898`. A policy selects `app: scout`, allows ingress from `app: shuttle` pods in the same namespace, and lists `port: 80`. The `shuttle` request to `scout` still times out. What is the fix?
+    options:
+      - id: a
+        text: >-
+          Change the policy port to `9898`, because policy ports are the pod's container ports
+        explanation: >-
+          Correct. The Service changes the destination to the pod's IP address and port `9898` before the network plugin checks the policy.
+      - id: b
+        text: >-
+          Add `Egress` to `policyTypes` on the `scout` policy
+        explanation: >-
+          Egress rules control traffic that leaves a pod. The blocked flow is incoming traffic to `scout`.
+      - id: c
+        text: >-
+          Change `podSelector` in `from` to `app: scout`
+        explanation: >-
+          The `from` list names the sender. The sender is `shuttle`, so the label is already right.
+      - id: d
+        text: >-
+          Delete the policy, because a policy cannot allow a single port
+        explanation: >-
+          A policy can limit a flow to one port with `ports`. Deleting it would also remove the isolation.
+    correct_option: a
+    explanation: >-
+      NetworkPolicy ports are always the pod's ports, never the Service's ports. With `port: 9898`, only `shuttle` can reach `scout`, and only on that port.
+
+  - id: ats017-020-02-q03
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Allow traffic from another namespace with namespaceSelector, and tell apart AND versus OR selector combinations.
+    source_readings:
+      - sections/section-020/module-02/course-02-allowing-flows-with-pod-and-namespace-selectors.md
+    prompt: >-
+      The goal is to let only the `shuttle` pods in `outpost` reach `probe` in `starfleet`. A rule has two list items under `from`. The first item is a `namespaceSelector` for `kubernetes.io/metadata.name: outpost`. The second item, with its own dash, is a `podSelector` for `app: shuttle`. What does this rule allow?
+    options:
+      - id: a
+        text: >-
+          Only pods in `outpost` that also carry `app: shuttle`
+        explanation: >-
+          That is the AND form, where both selectors sit in one item. Here they are two items.
+      - id: b
+        text: >-
+          Nothing, because two items in `from` cancel each other
+        explanation: >-
+          Policies and rules only add up. Nothing cancels.
+      - id: c
+        text: >-
+          Only pods in `starfleet` that carry `app: shuttle`
+        explanation: >-
+          The first item also allows every pod in `outpost`.
+      - id: d
+        text: >-
+          Any pod in `outpost`, or any pod with `app: shuttle` in the policy's own namespace
+        explanation: >-
+          Correct. Two items in a `from` list are ORed.
+    correct_option: d
+    explanation: >-
+      Two items in a `from` list are ORed. To require both conditions, put `namespaceSelector` and `podSelector` in one item. `kubectl describe` shows two `From:` blocks for the OR form.
+
+  - id: ats017-020-02-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Restore DNS for selected pods with an egress rule to kube-dns on port 53 UDP and TCP.
+    source_readings:
+      - sections/section-020/module-02/course-03-egress-rules-and-dns.md
+    prompt: >-
+      A team adds a default-deny egress policy to a namespace. At once, `curl http://scout/version` from a pod fails with `Resolving timed out`. Which rule restores name resolution without opening more traffic than needed?
+    options:
+      - id: a
+        text: >-
+          An egress rule to the CoreDNS pods in `kube-system` (labelled `k8s-app=kube-dns`) on port 53 over both UDP and TCP
+        explanation: >-
+          Correct. The DNS query is egress traffic, and large answers switch to TCP.
+      - id: b
+        text: >-
+          An ingress rule on the client pod for port 53
+        explanation: >-
+          The client sends the DNS query. That is egress traffic, not ingress traffic.
+      - id: c
+        text: >-
+          An egress rule to every pod in the namespace on port 9898
+        explanation: >-
+          That opens the application port, but the name still cannot be resolved.
+      - id: d
+        text: >-
+          An egress rule to the CoreDNS pods on port 53 over UDP only, because DNS never uses TCP
+        explanation: >-
+          DNS switches to TCP for large answers, so allow both protocols.
+    correct_option: a
+    explanation: >-
+      The pod asks CoreDNS for the IP address, and that query is egress traffic. Large DNS answers switch to TCP, so allow port 53 on both protocols. After DNS works, the request to `scout` still needs its own egress and ingress rules.
+
+  - id: ats017-020-02-q05
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Diagnose which policy blocks a request by listing the policies that select a pod.
+    source_readings:
+      - sections/section-020/module-02/course-01-default-deny-and-how-policies-select-pods.md
+      - sections/section-020/module-02/course-03-egress-rules-and-dns.md
+    prompt: >-
+      In a namespace, `kubectl get networkpolicy` lists `default-deny-ingress` (selector `<none>`, Ingress), `scout-allow-shuttle` (selector `app=scout`, Ingress) and `shuttle-egress` (selector `app=shuttle`, Egress). A request from `shuttle` to `scout` times out. Which policies decide whether this request passes?
+    options:
+      - id: a
+        text: >-
+          Only `scout-allow-shuttle`, because it names both pods
+        explanation: >-
+          The sender's egress and the receiver's ingress each have their own policies.
+      - id: b
+        text: >-
+          `shuttle-egress` for leaving `shuttle`, and `default-deny-ingress` together with `scout-allow-shuttle` for entering `scout`
+        explanation: >-
+          Correct. Take every policy whose selector is empty or matches the pod, and split them by direction.
+      - id: c
+        text: >-
+          Only `default-deny-ingress`, because a default deny overrides every other policy
+        explanation: >-
+          There is no deny rule that overrides an allow. Policies only add up.
+      - id: d
+        text: >-
+          All three policies in order from top to bottom, and the first match wins
+        explanation: >-
+          Policies have no order. Traffic passes when some selecting policy allows it.
+    correct_option: b
+    explanation: >-
+      Take every policy whose selector is empty or matches the pod, and split them by direction. Policies add up, there is no order, and a deny does not override an allow. A flow between two isolated pods needs an egress rule on the sender and an ingress rule on the receiver.

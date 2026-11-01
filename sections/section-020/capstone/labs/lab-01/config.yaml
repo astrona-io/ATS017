@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Networking And Storage Capstone (ats-017-capstone-020)
+# Astrona hands-on capstone. kind runtime: a single-node Kubernetes 1.35 cluster
+# with the Gateway API CRDs and a controller from the astrona `gatewayAPI` addon.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-capstone-020
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      gatewayAPI: envoy
+      gatewayPorts:
+        http: 18080
+        https: 18443
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - nginx:1.31.6-alpine
+
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Creates bridge, scout and shuttle in starfleet, shuttle in outpost and the Retain StorageClass. Creates no Gateway, route, policy or claim.
+      type: file
+      source: bootstrap/seed-workloads.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-gateway-policy-storage
+      description: Sends real requests through the Gateway, proves the NetworkPolicy blocks other paths and keeps DNS, and proves scout data survives pod replacement on a Retain volume
+      type: file
+      source: validation/validate-capstone.sh
+
+teardown:
+  keepCluster: false

@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Compute Placement And Sizing Capstone (ats-017-capstone-010)
+# Astrona hands-on lab. kind runtime: one control plane and two workers
+# (zone-a with disktype=ssd, zone-b without).
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-capstone-010
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    nodes:
+      controlPlanes: 1
+      workers: 2
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Labels the workers, then creates scout (no resources, all on zone-a), probe (Pending on a wrong affinity value) and shuttle
+      type: file
+      source: bootstrap/seed-workloads.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-capstone
+      description: Checks scout is Guaranteed and spread 2+2 across the zones, probe runs on the ssd node through node affinity, and shuttle reaches both
+      type: file
+      source: validation/validate-capstone.sh
+
+teardown:
+  keepCluster: false

@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Fix The Pending Claim (ats-017-lab-020-03)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster
+# with kind's default StorageClass `standard` (rancher.io/local-path).
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-020-03
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - busybox:1.37
+
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Creates namespace starfleet with the shuttle client and a scout Deployment whose claim cannot be provisioned
+      type: file
+      source: bootstrap/seed-workloads.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-persistent-scout
+      description: Checks the claim is bound, the pod mounts it at /data and a file survives pod replacement
+      type: file
+      source: validation/validate-persistent-scout.sh
+
+teardown:
+  keepCluster: false

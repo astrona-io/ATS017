@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Run Probe On The Dedicated Node (ats-017-lab-010-02-01)
+# Astrona hands-on lab. kind runtime: one control plane and two workers.
+# The zone-b worker carries the taint dedicated=outpost:NoSchedule.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-010-02-01
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    nodes:
+      controlPlanes: 1
+      workers: 2
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Labels and taints the workers, then creates scout, shuttle and the probe Deployment that stays Pending
+      type: file
+      source: bootstrap/seed-workloads.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-probe-placement
+      description: Checks every probe pod runs on the tainted zone-b node, the taint is still there, scout stays off that node, and shuttle reaches probe
+      type: file
+      source: validation/validate-probe-placement.sh
+
+teardown:
+  keepCluster: false

@@ -86,6 +86,26 @@ modules:
         title: "What Happens At The Limit"
         path: sections/section-010/module-01/course-02-what-happens-at-the-limit.md
       - type: reading
+        title: Question
+        path: sections/section-010/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Stop The OOMKilled Scout Lab"
+        path: sections/section-010/module-01/labs/lab-01
+        difficulty: beginner
+        estimated_duration: 15m
+        topic: compute
+        task_kind: troubleshooting
+        tags: [requests-limits, qos-class, oomkilled]
+        learning_goals:
+          - Find why a container restarts from Last State and exit code 137
+          - Set a memory request and limit that fit the workload and give the pod the Burstable QoS class
+          - Prove the fix with a pod that runs without restarts and a 200 from the shuttle pod
+        resources:
+          - name: "Resource Management for Pods and Containers"
+            url: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+          - name: "Pod Quality of Service Classes"
+            url: https://kubernetes.io/docs/concepts/workloads/pods/pod-qos/
+      - type: reading
         title: "QoS Classes And Eviction"
         path: sections/section-010/module-01/course-03-qos-classes-and-eviction.md
       - type: reading
@@ -94,6 +114,10 @@ modules:
       - type: reading
         title: Summary
         path: sections/section-010/module-01/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Set Requests, Limits And QoS Classes"
+        path: sections/section-010/module-01/quiz.yaml
+        question_count: 6
       - type: reading
         title: "Place Workloads With Affinity, Taints And Topology Spread"
         path: sections/section-010/module-02/course.md
@@ -104,11 +128,57 @@ modules:
         title: "Taints And Tolerations"
         path: sections/section-010/module-02/course-02-taints-and-tolerations.md
       - type: reading
+        title: Question
+        path: sections/section-010/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Run Probe On The Dedicated Node Lab"
+        path: sections/section-010/module-02/labs/lab-01
+        difficulty: beginner
+        estimated_duration: 15m
+        topic: scheduling
+        task_kind: troubleshooting
+        tags: [taints-tolerations, node-labels, pending-pod, node-affinity]
+        learning_goals:
+          - Read an untolerated taint in a FailedScheduling event
+          - Add a toleration that matches the taint without removing it
+          - Prove with the pod NODE column that the pods run on the tainted node and other pods stay off it
+        resources:
+          - name: "Taints and Tolerations"
+            url: https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
+          - name: "Assigning Pods to Nodes"
+            url: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+      - type: reading
         title: "Spreading Replicas"
         path: sections/section-010/module-02/course-03-spreading-replicas.md
       - type: reading
         title: Summary
         path: sections/section-010/module-02/course-04-summary.md
+      - type: quiz
+        title: "Knowledge Check: Place Workloads With Affinity, Taints And Topology Spread"
+        path: sections/section-010/module-02/quiz.yaml
+        question_count: 5
+      - type: reading
+        title: Question
+        path: sections/section-010/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Compute Placement And Sizing Capstone"
+        path: sections/section-010/capstone/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: scheduling
+        task_kind: troubleshooting
+        tags: [requests-limits, qos-class, topology-spread, node-affinity, node-labels, pending-pod]
+        learning_goals:
+          - Set equal requests and limits so every pod has the Guaranteed QoS class
+          - Spread replicas evenly across zones with a topology spread constraint
+          - Fix a required node affinity that matches no node and prove the placement with the NODE column
+        resources:
+          - name: "Pod Topology Spread Constraints"
+            url: https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+          - name: "Assigning Pods to Nodes"
+            url: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+          - name: "Pod Quality of Service Classes"
+            url: https://kubernetes.io/docs/concepts/workloads/pods/pod-qos/
 
   - id: module-020
     title: "Networking And Storage"
@@ -138,6 +208,10 @@ modules:
       - type: reading
         title: Summary
         path: sections/section-020/module-01/course-04-summary.md
+      - type: quiz
+        title: "Knowledge Check: Route Traffic With The Gateway API"
+        path: sections/section-020/module-01/quiz.yaml
+        question_count: 6
       - type: reading
         title: "Isolate Traffic With NetworkPolicy"
         path: sections/section-020/module-02/course.md
@@ -153,6 +227,94 @@ modules:
       - type: reading
         title: Summary
         path: sections/section-020/module-02/course-04-summary.md
+      - type: quiz
+        title: "Knowledge Check: Isolate Traffic With NetworkPolicy"
+        path: sections/section-020/module-02/quiz.yaml
+        question_count: 5
+      - type: reading
+        title: "Provision Storage With StorageClasses"
+        path: sections/section-020/module-03/course.md
+      - type: reading
+        title: "StorageClasses And Dynamic Provisioning"
+        path: sections/section-020/module-03/course-01-storageclasses-and-dynamic-provisioning.md
+      - type: reading
+        title: "Persistent Data And Access Modes"
+        path: sections/section-020/module-03/course-02-persistent-data-and-access-modes.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-03/labs/lab-01/question.md
+      - type: lab
+        title: "Fix The Pending Claim Lab"
+        path: sections/section-020/module-03/labs/lab-01
+        difficulty: beginner
+        estimated_duration: 15m
+        topic: storage
+        task_kind: troubleshooting
+        tags: [pvc, access-modes, storageclass, dynamic-provisioning, volume-binding-mode, pending-pod]
+        learning_goals:
+          - Find why a claim never binds from its ProvisioningFailed event
+          - Replace a claim with an access mode the StorageClass can provide
+          - Prove with a deleted pod that a file on the claim survives pod replacement
+        resources:
+          - name: "Persistent Volumes"
+            url: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+          - name: "Storage Classes"
+            url: https://kubernetes.io/docs/concepts/storage/storage-classes/
+      - type: reading
+        title: "Delete And Retain Reclaim Policies"
+        path: sections/section-020/module-03/course-03-delete-and-retain-reclaim-policies.md
+      - type: reading
+        title: "Default Classes And StatefulSet Claims"
+        path: sections/section-020/module-03/course-04-default-classes-and-statefulset-claims.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-03/labs/lab-02/question.md
+      - type: lab
+        title: "Keep The Volume After Claim Deletion Lab"
+        path: sections/section-020/module-03/labs/lab-02
+        difficulty: intermediate
+        estimated_duration: 15m
+        topic: storage
+        task_kind: migration
+        tags: [reclaim-policy, storageclass, pvc, dynamic-provisioning]
+        learning_goals:
+          - Change the reclaim policy of an existing volume to Retain without touching its claim
+          - Move the default StorageClass mark from one class to another
+          - Prove the change with an intact file and a new claim that receives the new default class
+        resources:
+          - name: "Persistent Volumes: Reclaiming"
+            url: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaiming
+          - name: "Change the default StorageClass"
+            url: https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/
+      - type: reading
+        title: Summary
+        path: sections/section-020/module-03/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Provision Storage With StorageClasses"
+        path: sections/section-020/module-03/quiz.yaml
+        question_count: 5
+      - type: reading
+        title: Question
+        path: sections/section-020/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Networking And Storage Capstone"
+        path: sections/section-020/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 45m
+        topic: networking
+        task_kind: build
+        tags: [gateway-api, httproute, network-policy, default-deny, dns, storageclass, pvc, reclaim-policy]
+        learning_goals:
+          - Route requests with a Gateway and an HTTPRoute by path prefix
+          - Allow only the Gateway's proxy pods into a namespace and keep DNS working
+          - Keep a workload's data on a claim whose volume survives claim deletion
+        resources:
+          - name: "Gateway API"
+            url: https://kubernetes.io/docs/concepts/services-networking/gateway/
+          - name: "Network Policies"
+            url: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+          - name: "Persistent Volumes"
+            url: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 
   - id: module-030
     title: "Right-Sizing And Autoscaling"

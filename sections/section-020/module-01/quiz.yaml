@@ -1,0 +1,219 @@
+# Knowledge check for section 020, module 01. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-020-01
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-020/module-01
+  title: Route Traffic With The Gateway API
+questions:
+  - id: ats017-020-01-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Name the roles of GatewayClass, Gateway and HTTPRoute and which team owns each.
+    source_readings:
+      - sections/section-020/module-01/course-01-gateway-classes-gateways-and-listeners.md
+    prompt: >-
+      An application team wants to change which Service receives requests for the path `/api`. It must not edit the object that defines the listener on port 80, and it must not touch the controller setup. Which object does the team edit?
+    options:
+      - id: a
+        text: >-
+          The GatewayClass, because it holds the routing rules
+        explanation: >-
+          The GatewayClass only names the controller. The cluster operator owns it.
+      - id: b
+        text: >-
+          The HTTPRoute, because it holds the routing rules and the application team owns it
+        explanation: >-
+          Correct. The HTTPRoute holds `rules`, `matches` and `backendRefs`.
+      - id: c
+        text: >-
+          The Gateway, because it names the Services in `backendRefs`
+        explanation: >-
+          The Gateway holds the listeners, and the platform team owns it. It has no `backendRefs`.
+      - id: d
+        text: >-
+          The ReferenceGrant, because it chooses the backend Service
+        explanation: >-
+          A ReferenceGrant only allows a reference to a Service in another namespace. It does not choose a backend.
+    correct_option: b
+    explanation: >-
+      The HTTPRoute holds `rules`, `matches` and `backendRefs`, and the application team owns it. The GatewayClass names the controller (cluster operator), and the Gateway holds the listeners (platform team).
+
+  - id: ats017-020-01-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Create a Gateway listener and attach an HTTPRoute to it with parentRefs.
+    source_readings:
+      - sections/section-020/module-01/course-01-gateway-classes-gateways-and-listeners.md
+      - sections/section-020/module-01/course-02-httproute-matches-backends-and-weights.md
+    prompt: >-
+      You write an HTTPRoute. Which field names the Gateway that the route attaches to, and which field names the Services that receive the requests?
+    options:
+      - id: a
+        text: >-
+          `gatewayClassName` names the Gateway, and `hostnames` names the Services
+        explanation: >-
+          `gatewayClassName` is a field of a Gateway, not of an HTTPRoute. `hostnames` limits the route to some host names.
+      - id: b
+        text: >-
+          `rules` names the Gateway, and `matches` names the Services
+        explanation: >-
+          `rules` and `matches` hold the conditions for a request. They do not name a Gateway or a Service.
+      - id: c
+        text: >-
+          `parentRefs` names the Gateway, and `backendRefs` names the Services
+        explanation: >-
+          Correct. The route points up at the Gateway with `parentRefs` and down at the Services with `backendRefs`.
+      - id: d
+        text: >-
+          `backendRefs` names the Gateway, and `parentRefs` names the Services
+        explanation: >-
+          The two fields are the other way round.
+    correct_option: c
+    explanation: >-
+      `parentRefs` names the Gateway (and optionally the listener) that the route wants to attach to. `backendRefs` names the Services that receive matching requests.
+
+  - id: ats017-020-01-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Route requests by path and by header to two backend Services.
+    source_readings:
+      - sections/section-020/module-01/course-02-httproute-matches-backends-and-weights.md
+    prompt: >-
+      An HTTPRoute has three rules. Rule 1 matches `PathPrefix /api` and sends to `scout`. Rule 2 matches `PathPrefix /` together with the header `x-version: canary` in one match and sends to `probe`. Rule 3 has no `matches` and sends to `bridge`. A client sends `GET /headers` without the `x-version` header. Which Service answers, and why?
+    options:
+      - id: a
+        text: >-
+          `probe`, because the path prefix `/` matches every path
+        explanation: >-
+          Rule 2 needs the path and the header. Without the header, the match is false.
+      - id: b
+        text: >-
+          `scout`, because it is the first rule in the list
+        explanation: >-
+          Rule 1 only matches paths that start with `/api`. The path `/headers` does not.
+      - id: c
+        text: >-
+          `bridge`, because rule 2 needs the path and the header to be true, and rule 3 matches every request
+        explanation: >-
+          Correct. Conditions inside one match must all be true, and a rule with no `matches` matches every request.
+      - id: d
+        text: >-
+          No Service answers, because no rule matches and the proxy returns 404
+        explanation: >-
+          Rule 3 has no `matches`, so it matches this request.
+    correct_option: c
+    explanation: >-
+      Conditions inside one match are all required, so rule 2 fails without the header. Rule 3 has no `matches`, so it matches every request that reached it.
+
+  - id: ats017-020-01-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Split traffic between two backends with backendRefs weights.
+    source_readings:
+      - sections/section-020/module-01/course-02-httproute-matches-backends-and-weights.md
+    prompt: >-
+      One rule lists two backends: `scout` with `weight: 80` and `probe` with `weight: 20`. A client sends 50 requests to the route. What do you expect to see?
+    options:
+      - id: a
+        text: >-
+          Exactly 40 answers from `scout` and exactly 10 from `probe`, every time
+        explanation: >-
+          The proxy chooses a backend at random for each request. A sample is close to the weights but not exact.
+      - id: b
+        text: >-
+          Roughly 40 answers from `scout` and roughly 10 from `probe`, because each request picks a backend at random in proportion to the weights
+        explanation: >-
+          Correct. Weights are probabilities for each request, so count many requests and expect some spread.
+      - id: c
+        text: >-
+          All 50 answers from `scout`, because it has the higher weight
+        explanation: >-
+          A weight is a share of the requests, not a priority. `probe` still receives about one request in five.
+      - id: d
+        text: >-
+          The route is rejected, because the weights must add up to 100 percent in the Gateway
+        explanation: >-
+          A weight is a share relative to the other weights. The API server accepts the route.
+    correct_option: b
+    explanation: >-
+      The proxy sends each request to one backend at random, in proportion to the weights. A weight of `0` sends no traffic to a backend.
+
+  - id: ats017-020-01-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Diagnose a route that does not attach from its status.parents conditions (Accepted, ResolvedRefs).
+    source_readings:
+      - sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+    prompt: >-
+      A route is applied without errors. Its `status.parents` shows `Accepted=True` and `ResolvedRefs=False` with the reason `BackendNotFound`. A request that matches the route gets `500 Internal Server Error`. What is wrong?
+    options:
+      - id: a
+        text: >-
+          The Gateway listener does not allow the route's namespace
+        explanation: >-
+          That problem shows as `Accepted=False` with `NotAllowedByListeners`. Here `Accepted` is `True`.
+      - id: b
+        text: >-
+          A Service named in `backendRefs` does not exist, so the route is attached but has no usable backend
+        explanation: >-
+          Correct. `ResolvedRefs=False` with `BackendNotFound` names a missing Service.
+      - id: c
+        text: >-
+          No rule matched the request, which is why the proxy returns 500
+        explanation: >-
+          When no rule matches, the proxy returns `404`. A `500` means a rule matched.
+      - id: d
+        text: >-
+          The GatewayClass has no controller
+        explanation: >-
+          Without a controller, the route would not get any status conditions.
+    correct_option: b
+    explanation: >-
+      `Accepted=True` means the Gateway let the route in. `ResolvedRefs=False` with `BackendNotFound` means a referenced Service is missing. A `500` means a rule matched but its backend is not usable; a `404` means no rule matched.
+
+  - id: ats017-020-01-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Allow a route from another namespace with allowedRoutes and a ReferenceGrant where needed.
+    source_readings:
+      - sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+    prompt: >-
+      The platform team changes the listener to `allowedRoutes.namespaces.from: Selector` with a selector that matches only the label `kubernetes.io/metadata.name: outpost`. The `outpost` team's route now attaches. The `bridge` route in the Gateway's own namespace `starfleet` now shows `Accepted=False` with `NotAllowedByListeners`. How do you fix it?
+    options:
+      - id: a
+        text: >-
+          Add a ReferenceGrant in `starfleet`
+        explanation: >-
+          A ReferenceGrant controls backends in other namespaces. It does not control route attachment.
+      - id: b
+        text: >-
+          Set `from: Same`, because `Selector` cannot allow two namespaces
+        explanation: >-
+          `Selector` can allow many namespaces. `Same` would lock out the `outpost` team again.
+      - id: c
+        text: >-
+          Add `kubernetes.io/metadata.name: starfleet` to the same `matchLabels`
+        explanation: >-
+          One `matchLabels` key holds one value, so the second line would replace the first.
+      - id: d
+        text: >-
+          Change the selector so it also matches `starfleet`, for example with `matchExpressions` and the operator `In` and both namespace names
+        explanation: >-
+          Correct. With `Selector`, the Gateway's own namespace is allowed only if the selector matches it.
+    correct_option: d
+    explanation: >-
+      With `Selector`, the Gateway's own namespace is allowed only if the selector matches it. One `matchLabels` key cannot hold two values, so use `matchExpressions` with `In`. A ReferenceGrant controls backends in other namespaces, not route attachment.

@@ -185,3 +185,27 @@ You can now tell a throttled container from an `OOMKilled` one by its status, it
 > - **Reading only the current `State`.** After a restart it says `Running`. The reason is in `Last State`.
 > - **Deleting the pod to "fix" an `OOMKilled` container.** The new pod has the same limit and is killed again. Change the limit or the application.
 > - **Setting a memory limit far above the request on many pods.** Each pod looks fine alone, but together they can use more memory than the node has.
+
+## Your mission: Stop The OOMKilled Scout
+
+You can now tell an `OOMKilled` container from a throttled one and read the reason in `Last State`. The mission gives you a `scout` Deployment that the kernel kills because its memory limit is too low. You find the reason in the pod status and set a request and limit that keep the pod running with the `Burstable` QoS class.
+
+Pause the playground first:
+
+```sh
+astrona stop ats-017-playground-010-01
+```
+
+Start the mission and send it for grading:
+
+```sh
+astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-010/module-01/labs/lab-01
+astrona submit -c sections/section-010/module-01/labs/lab-01
+```
+
+When you finish, remove the mission cluster and resume the playground:
+
+```sh
+astrona destroy ats-017-lab-010-01-01
+astrona start ats-017-playground-010-01
+```
