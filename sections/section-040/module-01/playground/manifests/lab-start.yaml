@@ -1,4 +1,8 @@
 # Workloads for the OpenCost allocation playground.
+# starfleet: scout and probe request more than they use, scout-busy uses more
+# CPU and memory than it requests, shuttle sends steady traffic.
+# outpost: probe requests a lot, mounts a 20Gi PersistentVolumeClaim, and does
+# almost nothing.
 ---
 apiVersion: v1
 kind: Namespace
@@ -130,6 +134,38 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: scout-busy
+  namespace: starfleet
+  labels:
+    app: scout-busy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-busy
+  template:
+    metadata:
+      labels:
+        app: scout-busy
+    spec:
+      containers:
+        - name: scout-busy
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          args: ["./podinfo", "--stress-cpu=1", "--stress-memory=100"]
+          ports:
+            - name: http
+              containerPort: 9898
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 400m
+              memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: probe
   namespace: outpost
   labels:
@@ -154,6 +190,13 @@ spec:
             requests:
               cpu: 200m
               memory: 256Mi
+          volumeMounts:
+            - name: archive
+              mountPath: /archive
+      volumes:
+        - name: archive
+          persistentVolumeClaim:
+            claimName: archive
 ---
 apiVersion: v1
 kind: Service
@@ -167,3 +210,15 @@ spec:
     - name: http
       port: 80
       targetPort: http
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: archive
+  namespace: outpost
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi

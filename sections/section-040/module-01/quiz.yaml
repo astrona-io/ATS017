@@ -1,0 +1,125 @@
+# Knowledge check for section 040, module 01. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-040-01
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-040/module-01
+  title: Read Cost Allocation With OpenCost
+questions:
+- id: ats017-040-01-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Say which quantity OpenCost charges for a container.
+  source_readings:
+  - sections/section-040/module-01/course-01-how-opencost-computes-cost-allocation.md
+  prompt: A container requests `500m` CPU and uses `50m` for the whole window. Which CPU quantity does OpenCost charge for it?
+  options:
+  - id: a
+    text: "`50m`, the usage"
+    explanation: Usage is charged only when it is larger than the request.
+  - id: b
+    text: "`500m`, the larger of the request and the usage"
+    explanation: Correct. OpenCost charges the larger of the request and the usage for each minute. The scheduler keeps the requested amount from other pods whether the container uses it or not.
+  - id: c
+    text: "`275m`, the mean of the two"
+    explanation: OpenCost does not average the request and the usage.
+  - id: d
+    text: "`0`, because the container is idle"
+    explanation: An idle container still holds its request on the node, so it still costs money.
+  correct_option: b
+  explanation: OpenCost charges the larger of the request and the usage for each minute. An idle container with a large request costs what it requests.
+- id: ats017-040-01-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Find the cause of a cost of zero.
+  source_readings:
+  - sections/section-040/module-01/course-02-install-and-data-sources.md
+  prompt: OpenCost is `Running`, its API answers with `200`, and every `totalCost` is `0`. The log says `No pricing found for key=default, setting values to 0`. What is missing?
+  options:
+  - id: a
+    text: A larger memory limit for the OpenCost pod
+    explanation: The memory limit does not decide the price. The log line names the price list.
+  - id: b
+    text: A LoadBalancer Service for the OpenCost API
+    explanation: The API already answers. The problem is the prices, not the network path.
+  - id: c
+    text: A price list, which the chart creates as the ConfigMap `custom-pricing-model` when `opencost.customPricing.enabled` is true
+    explanation: Correct. Without a price list OpenCost multiplies every quantity by zero and does not report an error.
+  - id: d
+    text: A ResourceQuota in the namespace `opencost`
+    explanation: A quota limits what a namespace may create. It does not give OpenCost prices.
+  correct_option: c
+  explanation: OpenCost needs a price list. On a cluster with no cloud bill, it comes from the ConfigMap `custom-pricing-model`, which the chart creates from `opencost.customPricing`.
+- id: ats017-040-01-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Choose the query that returns a repeatable cost.
+  source_readings:
+  - sections/section-040/module-01/course-03-query-the-allocation-api.md
+  prompt: You want the cost of the namespaces for a period, and you want to get the same numbers every time you ask. Which query does that?
+  options:
+  - id: a
+    text: "`window=1793570659,1793571019&aggregate=namespace`"
+    explanation: Correct. A pair of Unix timestamps is a closed window. OpenCost returns the same costs for it each time.
+  - id: b
+    text: "`window=1h&aggregate=namespace`"
+    explanation: The window `1h` is aligned to the clock, so it moves and its numbers change.
+  - id: c
+    text: "`window=today&aggregate=namespace`"
+    explanation: The window `today` grows during the day, so its numbers change.
+  - id: d
+    text: "`aggregate=namespace` with no window"
+    explanation: The API needs a window. Without one it does not return a cost.
+  correct_option: a
+  explanation: Only a closed pair of Unix timestamps always gives the same numbers. Durations such as `1h` and names such as `today` move.
+- id: ats017-040-01-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Pick the aggregate that keeps controllers apart.
+  source_readings:
+  - sections/section-040/module-01/course-03-query-the-allocation-api.md
+  prompt: Two namespaces each run a Deployment named `probe`. You want one cost for each of them. Which `aggregate` value does that?
+  options:
+  - id: a
+    text: "`controller`"
+    explanation: The key is only `deployment:probe`, so OpenCost can merge the two controllers into one entry.
+  - id: b
+    text: "`pod`"
+    explanation: This gives one entry for each pod, not for each Deployment.
+  - id: c
+    text: "`namespace`"
+    explanation: This gives one entry for each namespace and hides the Deployments.
+  - id: d
+    text: "`namespace,controller`"
+    explanation: Correct. Each key has the form `namespace/deployment:name`, so the two `probe` Deployments stay separate.
+  correct_option: d
+  explanation: "`aggregate=namespace,controller` puts the namespace into the key, so controllers with the same name in different namespaces stay apart."
+- id: ats017-040-01-q05
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Find the least efficient workload.
+  source_readings:
+  - sections/section-040/module-01/course-04-read-efficiency-and-find-waste.md
+  prompt: Deployment `crunch` has the highest `totalCost` in the namespace. Deployment `reports` has a lower `totalCost` and a `totalEfficiency` of `0.03`. The `totalEfficiency` of `crunch` is `0.9`. Which Deployment wastes more of what it requests?
+  options:
+  - id: a
+    text: "`crunch`, because its `totalCost` is higher"
+    explanation: Cost shows what a workload costs. It does not show how much of the cost is unused.
+  - id: b
+    text: "`reports`, because its `totalEfficiency` is lower"
+    explanation: Correct. Efficiency is usage divided by request. A value of `0.03` means the container uses about 3 percent of what it reserves.
+  - id: c
+    text: Both waste the same, because efficiency does not matter
+    explanation: Efficiency is the figure that compares usage with the request.
+  - id: d
+    text: "`crunch`, because a value near `1` means waste"
+    explanation: A value near `1` means the usage is close to the request, so little is wasted.
+  correct_option: b
+  explanation: Sort by `totalEfficiency`, not by `totalCost`. The lowest value is the workload that uses the smallest share of its request.

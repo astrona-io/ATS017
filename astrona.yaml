@@ -485,6 +485,68 @@ modules:
       - type: reading
         title: Section Overview
         path: sections/section-040/README.md
+      - type: reading
+        title: "Read Cost Allocation With OpenCost"
+        path: sections/section-040/module-01/course.md
+      - type: reading
+        title: "How OpenCost Computes Cost Allocation"
+        path: sections/section-040/module-01/course-01-how-opencost-computes-cost-allocation.md
+      - type: reading
+        title: "Install OpenCost And Check Its Data Sources"
+        path: sections/section-040/module-01/course-02-install-and-data-sources.md
+      - type: reading
+        title: "Query The Allocation API"
+        path: sections/section-040/module-01/course-03-query-the-allocation-api.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Report Cost Per Namespace Lab"
+        path: sections/section-040/module-01/labs/lab-01
+        difficulty: beginner
+        estimated_duration: 25m
+        topic: cost
+        task_kind: build
+        tags: [opencost, cost-allocation, prometheus, pvc]
+        learning_goals:
+          - Query the OpenCost allocation API for a closed window with aggregate=namespace
+          - Read the totalCost of two namespaces from the answer
+          - Store the window and the two costs in a ConfigMap that matches OpenCost
+        resources:
+          - name: "OpenCost Documentation"
+            url: https://opencost.io/docs/
+          - name: "OpenCost API"
+            url: https://opencost.io/docs/integrations/api
+      - type: reading
+        title: "Read Efficiency And Find Waste"
+        path: sections/section-040/module-01/course-04-read-efficiency-and-find-waste.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-01/labs/lab-02/question.md
+      - type: lab
+        title: "Find The Least Efficient Workload Lab"
+        path: sections/section-040/module-01/labs/lab-02
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: cost
+        task_kind: troubleshooting
+        tags: [opencost, cost-allocation, usage-vs-requests, right-sizing]
+        learning_goals:
+          - Query OpenCost for a closed window grouped by namespace and controller
+          - Compare totalEfficiency to find the Deployment that wastes the most of its request
+          - Tell apart the workload that costs the most from the workload that wastes the most
+        resources:
+          - name: "OpenCost Documentation"
+            url: https://opencost.io/docs/
+          - name: "OpenCost API"
+            url: https://opencost.io/docs/integrations/api
+      - type: reading
+        title: Summary
+        path: sections/section-040/module-01/course-05-summary.md
+      - type: quiz
+        title: "Knowledge Check: Read Cost Allocation With OpenCost"
+        path: sections/section-040/module-01/quiz.yaml
+        question_count: 5
 
   - id: module-050
     title: "Multi-Tenancy Resources"

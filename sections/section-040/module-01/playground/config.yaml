@@ -19,27 +19,13 @@ runtime:
       - curlimages/curl:8.22.0
       - ghcr.io/stefanprodan/podinfo:6.15.0
       - mccutchen/go-httpbin:2.25.0
-      - quay.io/prometheus/prometheus:v3.15.0
 
 bootstrap:
-  manifests:
-    - name: prometheus
+  init:
+    - name: prepare
+      description: Creates the starfleet and outpost workloads, then installs a small Prometheus and OpenCost with Helm
       type: file
-      source: manifests/prometheus.yaml
-    - name: opencost
-      type: file
-      source: manifests/opencost.yaml
-    - name: lab-start
-      type: file
-      source: manifests/lab-start.yaml
-  waitFor:
-    - resource: deploy/prometheus
-      namespace: monitoring
-    - resource: deploy/opencost
-      namespace: opencost
-      timeout: 5m
-    - resource: deploy/shuttle
-      namespace: starfleet
+      source: bootstrap/prepare.sh
 
 teardown:
   keepCluster: false

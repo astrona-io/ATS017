@@ -110,13 +110,13 @@ items:
 - key: section-040/module-01/playground
   kind: playground
   what: 'playground for module 1: Read Cost Allocation With OpenCost'
-  status: pending
-  note: ''
+  status: done
+  note: 'Helm-installed Prometheus 29.40.3 and OpenCost 2.5.33 (1.121.3) with customPricing enabled; booted and verified on Kubernetes 1.35.8 2026-11-02'
 - key: section-040/module-01/course
   kind: course
   what: 'chapter for module 1: Read Cost Allocation With OpenCost'
-  status: pending
-  note: ''
+  status: done
+  note: 'landing, four parts and summary, two labs (astrona test passed), quiz; outputs from real runs; data needs about 15 minutes'
 - key: section-040/module-02/playground
   kind: playground
   what: 'playground for module 2: Attribute Cost By Label And Find Idle Spend'

@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Find The Least Efficient Workload (ats-017-lab-040-01-02)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster.
+# A small Prometheus and OpenCost 1.121.3 (default on-premises prices) are
+# installed by the bootstrap script. The script takes about 12 minutes,
+# because OpenCost needs samples before it returns costs.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-040-01-02
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Creates five Deployments in starfleet and one in outpost, installs Prometheus and OpenCost with Helm, and waits until OpenCost returns costs
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-least-efficient
+      description: Checks the ConfigMap least-efficient against the efficiency that OpenCost returns for the stored window
+      type: file
+      source: validation/validate-least-efficient.sh
+
+teardown:
+  keepCluster: false
