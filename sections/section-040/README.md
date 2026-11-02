@@ -37,15 +37,15 @@ The reader makes cost visible: OpenCost splits node, storage and network cost ac
     ```
 
 ### Section Capstone Challenge
-*   **Comprehensive Challenge:** Cost Visibility Capstone — `sections/section-040/capstone/labs/lab-01` *(created in the build phase)*
+*   **Comprehensive Challenge:** Cost Visibility Capstone — `sections/section-040/capstone/labs/lab-01`
     ```bash
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/capstone/labs/lab-01
     astrona submit -c .
     ```
-*   **Hands-on Objective:** The finance team needs the cost of each team. The reader labels every workload with its team, reports cost per team for the last hour from the OpenCost API, finds the least efficient workload and right-sizes its requests, and shows the efficiency change.
+*   **Hands-on Objective:** The finance team needs the cost of each team. The reader labels every workload with its team, reports cost per team for a fixed window from the OpenCost API, finds the least efficient workload and right-sizes its requests.
 
 ---
 
 ## Ready for Assessment?
 
-*   **[Take the Section 040 Knowledge Check](./quiz.md)**
+Each module ends with a knowledge check.

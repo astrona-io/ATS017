@@ -1,0 +1,177 @@
+# Starting state for ats-017-lab-040-02-02: scout-overprovisioned requests far
+# more than it uses, crunch uses what it requests.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout
+  namespace: starfleet
+  labels:
+    app: scout
+    team: navigation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout
+  template:
+    metadata:
+      labels:
+        app: scout
+        team: navigation
+    spec:
+      containers:
+        - name: scout
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout
+  namespace: starfleet
+spec:
+  selector:
+    app: scout
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scout-overprovisioned
+  namespace: starfleet
+  labels:
+    app: scout-overprovisioned
+    team: science
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-overprovisioned
+  template:
+    metadata:
+      labels:
+        app: scout-overprovisioned
+        team: science
+    spec:
+      containers:
+        - name: scout-overprovisioned
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          ports:
+            - name: http
+              containerPort: 9898
+          resources:
+            requests:
+              cpu: 1500m
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout-overprovisioned
+  namespace: starfleet
+spec:
+  selector:
+    app: scout-overprovisioned
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shuttle
+  namespace: starfleet
+  labels:
+    app: shuttle
+    team: navigation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shuttle
+  template:
+    metadata:
+      labels:
+        app: shuttle
+        team: navigation
+    spec:
+      containers:
+        - name: shuttle
+          image: curlimages/curl:8.22.0
+          # Steady background load on the other workloads.
+          command:
+            - sh
+            - -c
+            - |
+              while true; do
+                curl -s -o /dev/null http://scout
+                curl -s -o /dev/null http://scout-overprovisioned
+                sleep 1
+              done
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crunch
+  namespace: starfleet
+  labels:
+    app: crunch
+    team: science
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crunch
+  template:
+    metadata:
+      labels:
+        app: crunch
+        team: science
+    spec:
+      containers:
+        - name: crunch
+          image: ghcr.io/stefanprodan/podinfo:6.15.0
+          args: ["./podinfo", "--stress-cpu=1", "--stress-memory=100"]
+          ports:
+            - name: http
+              containerPort: 9898
+          resources:
+            requests:
+              cpu: 400m
+              memory: 128Mi
+            limits:
+              cpu: 400m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crunch
+  namespace: starfleet
+spec:
+  selector:
+    app: crunch
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

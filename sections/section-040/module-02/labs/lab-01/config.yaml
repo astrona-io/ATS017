@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Attribute Cost To Teams (ats-017-lab-040-02-01)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster.
+# A small Prometheus and OpenCost 1.121.3 (default on-premises prices) are
+# installed by the bootstrap script. The script takes about 10 minutes,
+# because OpenCost needs samples before it returns costs.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-040-02-01
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Creates the starfleet and outpost workloads (one without a team label), installs Prometheus and OpenCost with Helm, and waits until OpenCost returns costs
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-team-costs
+      description: Checks the label on the archive pods in the live OpenCost API and the ConfigMap team-cost-report against the stored window
+      type: file
+      source: validation/validate-team-costs.sh
+
+teardown:
+  keepCluster: false

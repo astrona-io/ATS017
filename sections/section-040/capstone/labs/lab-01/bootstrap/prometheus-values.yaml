@@ -1,0 +1,30 @@
+# Values for the small Prometheus behind OpenCost (chart 29.40.3).
+alertmanager:
+  enabled: false
+prometheus-pushgateway:
+  enabled: false
+prometheus-node-exporter:
+  enabled: false
+kube-state-metrics:
+  enabled: true
+server:
+  persistentVolume:
+    enabled: false
+  retention: 6h
+  global:
+    scrape_interval: 1m
+    scrape_timeout: 10s
+# OpenCost exports its own price metrics (node_cpu_hourly_cost and others).
+# Prometheus must scrape them, because OpenCost queries them back.
+extraScrapeConfigs: |
+  - job_name: opencost
+    honor_labels: true
+    scrape_interval: 1m
+    scrape_timeout: 10s
+    metrics_path: /metrics
+    scheme: http
+    dns_sd_configs:
+      - names:
+          - opencost.opencost
+        type: A
+        port: 9003

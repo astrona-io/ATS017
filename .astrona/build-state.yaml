@@ -120,23 +120,23 @@ items:
 - key: section-040/module-02/playground
   kind: playground
   what: 'playground for module 2: Attribute Cost By Label And Find Idle Spend'
-  status: pending
-  note: ''
+  status: done
+  note: 'Prometheus 29.40.3 and OpenCost 1.121.3 via Helm; booted and verified 2026-11-02'
 - key: section-040/module-02/course
   kind: course
   what: 'chapter for module 2: Attribute Cost By Label And Find Idle Spend'
-  status: pending
-  note: ''
+  status: done
+  note: 'landing, three parts and summary, two labs (astrona test passed, seed about 9 min), quiz; outputs from real runs'
 - key: section-040/quiz
   kind: quiz
   what: 'knowledge check for section-040: Cost Visibility With OpenCost'
-  status: pending
-  note: ''
+  status: done
+  note: 'module-02 quiz.yaml, 5 questions; module-01 quiz done earlier'
 - key: section-040/capstone
   kind: capstone
   what: 'capstone lab: Cost Visibility Capstone'
-  status: pending
-  note: ''
+  status: done
+  note: 'astrona test passed (seed 8m47s)'
 - key: section-050/module-01/playground
   kind: playground
   what: 'playground for module 1: Bound Tenants With ResourceQuota And LimitRange'

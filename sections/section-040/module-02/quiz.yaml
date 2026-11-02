@@ -1,0 +1,125 @@
+# Knowledge check for section 040, module 02. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-040-02
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-040/module-02
+  title: Attribute Cost By Label And Find Idle Spend
+questions:
+- id: ats017-040-02-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Say where a Deployment must carry the label that OpenCost groups by.
+  source_readings:
+  - sections/section-040/module-02/course-01-labels-as-the-unit-of-showback.md
+  prompt: You add `team=operations` under `metadata.labels` of a Deployment. The pods are not recreated, and OpenCost still lists their cost under `__unallocated__` when you query `aggregate=label:team`. Which change attributes the cost to `operations`?
+  options:
+  - id: a
+    text: Add the label under `spec.template.metadata.labels`, so the pods that the Deployment creates carry it
+    explanation: Correct. OpenCost reads the labels of pods. The pod template is the only place on a Deployment whose labels reach the pods.
+  - id: b
+    text: Add the label to the Service of the Deployment
+    explanation: A Service label does not change the labels of the pods behind it.
+  - id: c
+    text: Query `aggregate=label:operations` instead
+    explanation: The aggregate names the label key, which is `team`. The value `operations` is the group that appears in the answer.
+  - id: d
+    text: Restart OpenCost
+    explanation: OpenCost already reads the pod labels from Prometheus. The pods do not carry the label, so a restart changes nothing.
+  correct_option: a
+  explanation: OpenCost groups cost by the labels of pods. A label on the Deployment object alone does not reach the pods, so the label belongs under `spec.template.metadata.labels`.
+- id: ats017-040-02-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain what the bucket `__unallocated__` holds.
+  source_readings:
+  - sections/section-040/module-02/course-01-labels-as-the-unit-of-showback.md
+  prompt: A query with `aggregate=label:team` returns the entries `navigation`, `research`, `science` and `__unallocated__`. What does `__unallocated__` hold?
+  options:
+  - id: a
+    text: The cost of node capacity that no pod requests
+    explanation: That is idle cost. It appears as `__idle__` and only when you add `includeIdle=true`.
+  - id: b
+    text: The cost of every pod that has no `team` label, including the pods of the system namespaces
+    explanation: Correct. A pod without the label key falls into this bucket. Filter by namespace to separate your workloads from the system pods.
+  - id: c
+    text: The cost of pods that failed to start
+    explanation: OpenCost does not group by pod status.
+  - id: d
+    text: The cost of storage that no pod mounts
+    explanation: Unmounted volumes are a separate kind of cost. They do not form this bucket.
+  correct_option: b
+  explanation: OpenCost puts the cost of every pod without the requested label key into `__unallocated__`. That includes the system pods of `kube-system` and your own unlabelled workloads.
+- id: ats017-040-02-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Predict what a closed window returns after a label is fixed.
+  source_readings:
+  - sections/section-040/module-02/course-02-aggregate-by-label-namespace-and-controller.md
+  prompt: Last week's report used a closed window of two Unix timestamps. You fixed the missing `team` label of a Deployment today. You run the same query for the same closed window again. Where does the cost of that Deployment appear?
+  options:
+  - id: a
+    text: Under its new team, because OpenCost recomputes old windows
+    explanation: OpenCost does not rewrite history. The pods that ran in that window had no label.
+  - id: b
+    text: Under `__unallocated__`, because the pods that ran in that window had no label
+    explanation: Correct. A closed window returns the same numbers every time, with the attribution that the pods had then.
+  - id: c
+    text: Under `__idle__`
+    explanation: Idle cost is capacity that no pod requested. The pods requested their resources in that window.
+  - id: d
+    text: Nowhere, because the Deployment was changed
+    explanation: A change to a Deployment does not delete the cost of the pods that ran before it.
+  correct_option: b
+  explanation: OpenCost attributes cost from the labels that the pods had when they ran. A label fix changes only the pods that start after it, so an old closed window keeps its old attribution.
+- id: ats017-040-02-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain what `includeIdle` and `shareIdle` do.
+  source_readings:
+  - sections/section-040/module-02/course-03-find-idle-and-shared-cost.md
+  prompt: You add `includeIdle=true` and `shareIdle=true` to a query with `aggregate=label:team`, and you do not filter by namespace. What happens to the idle cost?
+  options:
+  - id: a
+    text: The entry `__idle__` disappears, and its cost is added to the other entries in proportion to their CPU and memory cost
+    explanation: Correct. `shareIdle=true` splits the idle cost between the entries, so the totals add up to the cost of the nodes.
+  - id: b
+    text: The entry `__idle__` stays, and nothing else changes
+    explanation: That is the result of `includeIdle=true` alone.
+  - id: c
+    text: The idle cost is deleted from the report
+    explanation: Sharing moves the cost, it does not delete it.
+  - id: d
+    text: Only the team `__unallocated__` receives the idle cost
+    explanation: Every entry receives a share.
+  correct_option: a
+  explanation: With `includeIdle=true` OpenCost adds the entry `__idle__`. With `shareIdle=true` it moves that cost into the other entries, so each team carries a share of the capacity nobody requested.
+- id: ats017-040-02-q05
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Predict where cost goes after a request is lowered on a single node.
+  source_readings:
+  - sections/section-040/module-02/course-03-find-idle-and-shared-cost.md
+  prompt: A cluster has one node. A workload requests `1500m` CPU and uses `5m`. You lower its request to `50m`. You query a new closed window with `includeIdle=true`. What do you see?
+  options:
+  - id: a
+    text: The cost of the workload falls, and the entry `__idle__` grows by about the same amount
+    explanation: Correct. The node costs the same. The capacity that the workload no longer requests becomes idle capacity.
+  - id: b
+    text: The cost of the workload falls, and the total cost of the cluster falls with it
+    explanation: The node is still there. Only removing a node lowers the bill.
+  - id: c
+    text: Nothing changes, because OpenCost charges the usage
+    explanation: OpenCost charges the larger of the request and the usage, so the request was the charge.
+  - id: d
+    text: The cost of the workload rises, because less memory is reserved
+    explanation: A lower request lowers the charge for the workload.
+  correct_option: a
+  explanation: A smaller request moves cost from the workload to idle cost. The saving becomes real when the freed capacity lets you remove a node or run more workloads on the same node.

@@ -547,6 +547,84 @@ modules:
         title: "Knowledge Check: Read Cost Allocation With OpenCost"
         path: sections/section-040/module-01/quiz.yaml
         question_count: 5
+      - type: reading
+        title: "Attribute Cost By Label And Find Idle Spend"
+        path: sections/section-040/module-02/course.md
+      - type: reading
+        title: "Labels As The Unit Of Showback"
+        path: sections/section-040/module-02/course-01-labels-as-the-unit-of-showback.md
+      - type: reading
+        title: "Aggregate By Label, Namespace And Controller"
+        path: sections/section-040/module-02/course-02-aggregate-by-label-namespace-and-controller.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Attribute Cost To Teams Lab"
+        path: sections/section-040/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: cost
+        task_kind: build
+        tags: [opencost, cost-allocation, cost-labels, prometheus]
+        learning_goals:
+          - Query OpenCost for a closed window with aggregate=label:team and read the cost of each team
+          - Find the bucket __unallocated__ and the Deployment that causes it
+          - Add the missing team label to the pod template and prove that OpenCost lists the pod under its team
+        resources:
+          - name: "OpenCost Documentation"
+            url: https://opencost.io/docs/
+          - name: "OpenCost API"
+            url: https://opencost.io/docs/integrations/api
+      - type: reading
+        title: "Find Idle And Shared Cost"
+        path: sections/section-040/module-02/course-03-find-idle-and-shared-cost.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-02/labs/lab-02/question.md
+      - type: lab
+        title: "Cut Idle Cost By Right-Sizing Lab"
+        path: sections/section-040/module-02/labs/lab-02
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: cost
+        task_kind: troubleshooting
+        tags: [opencost, idle-cost, usage-vs-requests, right-sizing]
+        learning_goals:
+          - Read totalEfficiency and the entry __idle__ to find the Deployment that wastes its request
+          - Lower the requests to fit the measured usage and keep the pod running
+        resources:
+          - name: "OpenCost Documentation"
+            url: https://opencost.io/docs/
+          - name: "OpenCost API"
+            url: https://opencost.io/docs/integrations/api
+      - type: reading
+        title: Summary
+        path: sections/section-040/module-02/course-04-summary.md
+      - type: quiz
+        title: "Knowledge Check: Attribute Cost By Label And Find Idle Spend"
+        path: sections/section-040/module-02/quiz.yaml
+        question_count: 5
+      - type: reading
+        title: Question
+        path: sections/section-040/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Cost Visibility Capstone"
+        path: sections/section-040/capstone/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 45m
+        topic: cost
+        task_kind: build
+        tags: [opencost, cost-allocation, cost-labels, right-sizing, usage-vs-requests, idle-cost]
+        learning_goals:
+          - Read the cost of each Deployment for a closed window and add it up per team
+          - Label every pod template with its team so that OpenCost attributes future cost
+          - Find the least efficient Deployment from totalEfficiency and right-size its requests
+        resources:
+          - name: "OpenCost Documentation"
+            url: https://opencost.io/docs/
+          - name: "OpenCost API"
+            url: https://opencost.io/docs/integrations/api
 
   - id: module-050
     title: "Multi-Tenancy Resources"

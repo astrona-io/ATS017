@@ -1,0 +1,20 @@
+# Values for OpenCost (chart 2.5.33, OpenCost 1.121.3).
+opencost:
+  prometheus:
+    internal:
+      namespaceName: monitoring
+      serviceName: prometheus-server
+      port: 80
+  mcp:
+    enabled: false
+  # Without this block OpenCost logs "No pricing found for key=default,
+  # setting values to 0" and every cost is 0. The prices below are the
+  # on-premises defaults from OpenCost's default.json (USD per hour).
+  customPricing:
+    enabled: true
+    provider: custom
+    costModel:
+      description: OpenCost default on-premises prices
+      CPU: 0.031611
+      RAM: 0.004237
+      storage: 0.00005479452
