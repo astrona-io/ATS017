@@ -40,6 +40,20 @@ You should see something like (one line in the terminal):
 
 The peak CPU is about `1.9m` and `1.7m`. For a workload with a spiky load, the maximum can come from one rare spike. In that case use `quantile_over_time(0.95, ...)` in place of `max_over_time`. The 95th percentile is the value that the usage stays below 95 percent of the time, so it ignores the highest 5 percent of the samples.
 
+Run the CPU query again with `quantile_over_time`. The first argument, `0.95`, is the quantile:
+
+```sh
+query_prometheus 'quantile_over_time(0.95, sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="starfleet",container="scout"}[1m]))[5m:15s])'
+```
+
+You should see something like (one line in the terminal):
+
+```text
+{"status":"success","data":{"resultType":"vector","result":[{"metric":{"pod":"scout-overprovisioned-786cfdfb8d-nh8pp"},"value":[1793649325.721,"0.002265933091176823"]},{"metric":{"pod":"scout-underprovisioned-7f6bcf55b7-5s7qp"},"value":[1793649325.721,"0.00197485963547172"]}]}}
+```
+
+The 95th percentile is about `2.3m` for `scout-overprovisioned` and `2.0m` for `scout-underprovisioned`. These pods have an even load, so the values sit close to the peaks above, and both are still below the `10m` floor.
+
 ## Rules for the numbers
 
 Memory and CPU need different rules, because the kernel treats them differently. A container that goes over its CPU limit is **throttled**, which makes it slower. A container that goes over its memory limit is killed with `OOMKilled`. A memory limit must therefore never sit below the real peak.
