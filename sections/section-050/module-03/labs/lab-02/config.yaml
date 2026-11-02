@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Generate Tenant Defaults With Kyverno (ats-017-lab-050-03-02)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster
+# with Kyverno (Helm chart 3.9.2, Kyverno v1.19.2).
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-050-03-02
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Installs Kyverno with Helm. No policy and no tenant namespace exists yet
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-generate-policy
+      description: Creates a labeled and an unlabeled namespace and checks the generated ResourceQuota and LimitRange, the synchronize behaviour, the defaults on a pod, and the memory maximum
+      type: file
+      source: validation/validate-generate.sh
+
+teardown:
+  keepCluster: false

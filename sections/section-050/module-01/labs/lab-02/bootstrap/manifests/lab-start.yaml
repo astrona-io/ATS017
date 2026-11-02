@@ -1,0 +1,41 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: outpost
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: outpost-quota
+  namespace: outpost
+spec:
+  hard:
+    requests.cpu: 400m
+    requests.memory: 512Mi
+    limits.memory: 1Gi
+    pods: "10"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: batch-worker
+  namespace: outpost
+  labels:
+    app: batch-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: batch-worker
+  template:
+    metadata:
+      labels:
+        app: batch-worker
+    spec:
+      containers:
+        - name: worker
+          image: mccutchen/go-httpbin:2.25.0
+          ports:
+            - name: http
+              containerPort: 8080

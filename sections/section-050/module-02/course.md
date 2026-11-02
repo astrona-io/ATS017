@@ -1,5 +1,9 @@
 # Share Capacity With PriorityClasses And Quota Scopes
 
+A ResourceQuota caps a namespace, but it does not decide which pod wins when the cluster is full. When two tenants compete for the last CPU on a node, the scheduler needs a rule. A PriorityClass is that rule: it gives pods a number, and the scheduler may evict pods with a lower number to place a pod with a higher number. This module teaches the PriorityClass, preemption, and the quota scopes that stop one tenant from abusing priority.
+
+The key sentence of this module: **a PriorityClass decides who may evict whom, and a quota scope decides how many pods of each kind a namespace may run.**
+
 <!-- astrona:playground -->
 > [!NOTE]
 > This module has a playground — a throwaway environment to run the commands in.
@@ -7,33 +11,18 @@
 > astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-02/playground
 > ```
 
-<!-- TODO(build): opening framing — what this module settles, and the contrast that sharpens its boundary. -->
-
 ## Learning objectives
 
-- Create PriorityClasses and assign them to pods with priorityClassName
-- Observe a higher-priority pod preempt lower-priority pods on a full node and read the Preempted events
-- Prevent preemption by a class with preemptionPolicy Never
-- Limit how much of a namespace's quota high-priority pods may use with a PriorityClass scopeSelector
-- Count only BestEffort or Terminating pods with quota scopes
+- Create PriorityClasses and assign them to pods with `priorityClassName`
+- Observe a higher-priority pod preempt lower-priority pods on a full node and read the `Preempted` events
+- Prevent preemption with `preemptionPolicy: Never`
+- Limit how many high-priority pods a namespace may run with a `PriorityClass` quota scope
+- Count only `BestEffort` or `Terminating` pods with quota scopes
 
 ## Before you start
 
-<!-- TODO(build): assumed knowledge, and what the playground already provides. -->
+You should know what a ResourceQuota is and how to read a request and a limit. The playground has one `kind` node with the namespaces `starfleet` and `outpost`. The `probe` Deployment in `outpost` has three replicas that request almost all the free CPU, so a new pod that asks for `300m` of CPU cannot fit. Only the built-in system PriorityClasses exist, and there is no ResourceQuota.
 
-## Outline
+## What comes next
 
-<!-- TODO(build): each beat below becomes a section of this module (or a deep-dive part via /astrona-course-deep-dive). Delete this Outline section once written. -->
-
-- Pod priority and the scheduler's preemption step
-- PriorityClass fields, globalDefault and the system classes
-- Quota scopes and scopeSelector on PriorityClass
-- Designing a fair priority scheme for tenants
-
-## Diagrams planned
-
-<!-- TODO(build): mermaid `sequence` — High-priority pod cannot fit, scheduler picks victims, evicts them, binds the pending pod -->
-
-<!-- playground provides: Three-node kind cluster (one control plane, two workers; note the extra memory cost). Namespaces `starfleet` and `outpost`. `outpost` runs `probe` replicas with large requests that fill the workers' allocatable CPU, so a new pod cannot fit. A `scout-critical` Deployment manifest is ready to apply. No PriorityClasses except the built-in system classes, and no ResourceQuota. -->
-
-<!-- module section-050/module-02 (Module 2) — stub written by /astrona-course-domain-scaffold, prose written by /astrona-course-domain-build. -->
+The first part creates a PriorityClass and watches the scheduler evict pods to make room. The second part adds quota scopes, so a namespace cannot run more than a fixed number of high-priority pods.

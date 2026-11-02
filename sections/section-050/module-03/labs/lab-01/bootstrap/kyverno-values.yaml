@@ -1,0 +1,11 @@
+# Small Kyverno for a one-node kind cluster. Plumbing for the module: the
+# admission controller (validate rules), the background controller (generate
+# rules) and the reports controller (PolicyReport). No cleanup controller.
+admissionController:
+  replicas: 1
+backgroundController:
+  replicas: 1
+reportsController:
+  replicas: 1
+cleanupController:
+  enabled: false

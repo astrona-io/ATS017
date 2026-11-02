@@ -1,0 +1,184 @@
+# Knowledge check for section 050, module 02. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-050-02
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-050/module-02
+  title: "Share Capacity With PriorityClasses And Quota Scopes"
+questions:
+  - id: ats017-050-02-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Name the field that attaches a PriorityClass to a pod.
+    source_readings:
+      - sections/section-050/module-02/course-01-priorityclass-and-preemption.md
+    prompt: >-
+      Which pod field selects a PriorityClass?
+    options:
+      - id: a
+        text: >-
+          spec.priorityClassName
+        explanation: >-
+          Correct. The API server copies the class value into spec.priority.
+      - id: b
+        text: >-
+          metadata.labels.priority
+        explanation: >-
+          Labels do not set priority.
+      - id: c
+        text: >-
+          spec.priority, set by the user as a class name
+        explanation: >-
+          spec.priority holds the number. The user sets the class name instead.
+      - id: d
+        text: >-
+          spec.schedulerName
+        explanation: >-
+          This field selects a scheduler, not a priority.
+    correct_option: a
+    explanation: >-
+      A pod names its class in spec.priorityClassName.
+
+  - id: ats017-050-02-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Explain why a pod stays Pending when no lower-priority pod exists.
+    source_readings:
+      - sections/section-050/module-02/course-01-priorityclass-and-preemption.md
+    prompt: >-
+      A new pod is Pending with the message 'No preemption victims found for incoming pod'. All other pods have priority 0, and so does the new pod. What is the cause?
+    options:
+      - id: a
+        text: >-
+          Preemption needs pods with a lower priority than the new pod, and none exist
+        explanation: >-
+          Correct. Equal priorities never evict each other.
+      - id: b
+        text: >-
+          The node is cordoned
+        explanation: >-
+          A cordoned node gives a different message.
+      - id: c
+        text: >-
+          The PriorityClass has the wrong value
+        explanation: >-
+          The pod has no class, so its priority is 0.
+      - id: d
+        text: >-
+          The ResourceQuota is full
+        explanation: >-
+          A full quota rejects the pod at admission, so it would not exist.
+    correct_option: a
+    explanation: >-
+      Preemption needs a priority gap.
+
+  - id: ats017-050-02-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Describe what preemptionPolicy Never does.
+    source_readings:
+      - sections/section-050/module-02/course-01-priorityclass-and-preemption.md
+    prompt: >-
+      A PriorityClass has value 50000 and preemptionPolicy Never. What happens to a pod of this class when the node is full?
+    options:
+      - id: a
+        text: >-
+          It stays Pending and evicts no pod
+        explanation: >-
+          Correct. The class keeps its number for queue order but gives no right to evict.
+      - id: b
+        text: >-
+          It evicts pods with a lower priority
+        explanation: >-
+          That is PreemptLowerPriority.
+      - id: c
+        text: >-
+          The API server rejects the pod
+        explanation: >-
+          The pod is accepted. The scheduler cannot place it.
+      - id: d
+        text: >-
+          It runs without requests
+        explanation: >-
+          Requests are still counted.
+    correct_option: a
+    explanation: >-
+      Never removes the right to evict, not the priority.
+
+  - id: ats017-050-02-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Choose the quota scope that limits pods by PriorityClass.
+    source_readings:
+      - sections/section-050/module-02/course-02-quota-scopes.md
+    prompt: >-
+      How do you let one namespace run at most one pod of the class platform-high?
+    options:
+      - id: a
+        text: >-
+          A ResourceQuota with pods: 1 and a scopeSelector on PriorityClass in [platform-high]
+        explanation: >-
+          Correct. Only pods of that class count against the quota.
+      - id: b
+        text: >-
+          A LimitRange with max pods 1
+        explanation: >-
+          A LimitRange sets limits for containers, not pod counts.
+      - id: c
+        text: >-
+          A PriorityClass with value 1
+        explanation: >-
+          The value sets priority, not a count.
+      - id: d
+        text: >-
+          A ResourceQuota with scopes: [BestEffort]
+        explanation: >-
+          BestEffort matches pods without resources, not a class.
+    correct_option: a
+    explanation: >-
+      The PriorityClass scope needs a scopeSelector with the class names.
+
+  - id: ats017-050-02-q05
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Predict what a BestEffort scoped quota with pods 0 does.
+    source_readings:
+      - sections/section-050/module-02/course-02-quota-scopes.md
+    prompt: >-
+      A quota has scopes [BestEffort] and hard pods: 0. A user creates a pod with requests and limits, and then a pod with none. What happens?
+    options:
+      - id: a
+        text: >-
+          The first pod is accepted and the second is rejected
+        explanation: >-
+          Correct. Only pods without requests and limits match the scope.
+      - id: b
+        text: >-
+          Both pods are rejected
+        explanation: >-
+          The first pod has resources, so it is outside the scope.
+      - id: c
+        text: >-
+          Both pods are accepted
+        explanation: >-
+          The second pod matches the scope and the cap is 0.
+      - id: d
+        text: >-
+          The first pod is rejected and the second is accepted
+        explanation: >-
+          The scope matches the opposite pods.
+    correct_option: a
+    explanation: >-
+      BestEffort matches pods that declare no requests and no limits.

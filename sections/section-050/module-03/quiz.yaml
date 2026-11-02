@@ -1,0 +1,184 @@
+# Knowledge check for section 050, module 03. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-050-03
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-050/module-03
+  title: "Enforce Tenant Rules With Kyverno"
+questions:
+  - id: ats017-050-03-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Name how Kyverno receives requests.
+    source_readings:
+      - sections/section-050/module-03/course-01-validate-rules-enforce-and-audit.md
+    prompt: >-
+      How does Kyverno check a new pod before it is stored?
+    options:
+      - id: a
+        text: >-
+          The API server calls the Kyverno admission webhook, and the answer allows or denies the request
+        explanation: >-
+          Correct. Kyverno runs as an admission webhook.
+      - id: b
+        text: >-
+          Kyverno edits the pod after the kubelet starts it
+        explanation: >-
+          Kyverno acts at admission, before the pod is stored.
+      - id: c
+        text: >-
+          The scheduler asks Kyverno for a node
+        explanation: >-
+          The scheduler does not call Kyverno.
+      - id: d
+        text: >-
+          kubectl runs the policies on the user's machine
+        explanation: >-
+          Policies run in the cluster, not in kubectl.
+    correct_option: a
+    explanation: >-
+      Kyverno is an admission webhook.
+
+  - id: ats017-050-03-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Choose Enforce or Audit from a behaviour.
+    source_readings:
+      - sections/section-050/module-03/course-01-validate-rules-enforce-and-audit.md
+    prompt: >-
+      A ClusterPolicy validate rule has failureAction Audit. A user creates a pod that breaks the rule. What happens?
+    options:
+      - id: a
+        text: >-
+          The pod is created and the failure is recorded in a PolicyReport
+        explanation: >-
+          Correct. Audit allows the request and records the result.
+      - id: b
+        text: >-
+          The API server denies the pod
+        explanation: >-
+          That is Enforce.
+      - id: c
+        text: >-
+          The pod is created and then deleted by Kyverno
+        explanation: >-
+          Kyverno does not delete pods for an Audit failure.
+      - id: d
+        text: >-
+          The pod stays Pending
+        explanation: >-
+          Pending is a scheduling state, not an admission result.
+    correct_option: a
+    explanation: >-
+      Audit reports and does not block.
+
+  - id: ats017-050-03-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Explain why a rule on Pod also blocks a Deployment.
+    source_readings:
+      - sections/section-050/module-03/course-01-validate-rules-enforce-and-audit.md
+    prompt: >-
+      A validate rule matches kinds [Pod] and is set to Enforce. A user creates a Deployment whose pod template has no memory limit. What happens?
+    options:
+      - id: a
+        text: >-
+          The Deployment is denied by an autogen rule that applies the pattern to the pod template
+        explanation: >-
+          Correct. Kyverno adds autogen rules for pod controllers.
+      - id: b
+        text: >-
+          The Deployment is created and its pods are denied later without any message
+        explanation: >-
+          The Deployment itself is denied at admission.
+      - id: c
+        text: >-
+          The Deployment is accepted, because the rule matches only Pod
+        explanation: >-
+          Kyverno adds autogen rules for controllers.
+      - id: d
+        text: >-
+          The Deployment is accepted and the pods get default limits
+        explanation: >-
+          Defaults come from a LimitRange, not from a validate rule.
+    correct_option: a
+    explanation: >-
+      Autogen rules cover Deployments and other controllers.
+
+  - id: ats017-050-03-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Describe what a generate rule with synchronize true does when the object is deleted.
+    source_readings:
+      - sections/section-050/module-03/course-02-generate-rules-for-new-tenants.md
+    prompt: >-
+      A generate rule has synchronize: true and created a ResourceQuota in a tenant namespace. A user deletes the quota. What happens?
+    options:
+      - id: a
+        text: >-
+          Kyverno creates the quota again
+        explanation: >-
+          Correct. The background controller keeps the object in place.
+      - id: b
+        text: >-
+          The namespace is deleted
+        explanation: >-
+          Kyverno does not delete the namespace.
+      - id: c
+        text: >-
+          Nothing happens until the policy is applied again
+        explanation: >-
+          synchronize: true keeps the object in step with the policy.
+      - id: d
+        text: >-
+          The quota is replaced by a LimitRange
+        explanation: >-
+          The two objects are separate.
+    correct_option: a
+    explanation: >-
+      synchronize ties the generated object to the policy.
+
+  - id: ats017-050-03-q05
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Predict which namespaces a label-based generate rule affects.
+    source_readings:
+      - sections/section-050/module-03/course-02-generate-rules-for-new-tenants.md
+    prompt: >-
+      A generate rule matches Namespaces with the label tenant: "true". Which namespace gets the generated quota?
+    options:
+      - id: a
+        text: >-
+          A namespace created with the label tenant: "true"
+        explanation: >-
+          Correct. The label selects the tenant namespaces.
+      - id: b
+        text: >-
+          Every namespace in the cluster
+        explanation: >-
+          Only matching namespaces get the objects.
+      - id: c
+        text: >-
+          Only namespaces without the label
+        explanation: >-
+          The rule matches the label, not its absence.
+      - id: d
+        text: >-
+          Only the namespace kube-system
+        explanation: >-
+          The rule does not name kube-system.
+    correct_option: a
+    explanation: >-
+      The label decides which namespaces become tenants.

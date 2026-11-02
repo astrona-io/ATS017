@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Default Resources With A LimitRange (ats-017-lab-050-01-02)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-050-01-02
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Creates the outpost namespace with a ResourceQuota and a batch-worker Deployment whose pods declare no resources
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-limitrange
+      description: Checks the quota and the Deployment are unchanged, a LimitRange gives pods the default requests and limit, the three pods run, and a pod above the memory maximum is rejected
+      type: file
+      source: validation/validate-limitrange.sh
+
+teardown:
+  keepCluster: false

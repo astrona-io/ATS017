@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Limit High-Priority Pods With A Quota Scope (ats-017-lab-050-02-02)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-050-02-02
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Creates the platform-high PriorityClass and the beacon Deployment in outpost with two pods of that class
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-scoped-quota
+      description: Checks a third platform-high pod and a pod without resources are rejected in outpost, while an ordinary pod with resources is accepted and platform-high pods are accepted in starfleet
+      type: file
+      source: validation/validate-scoped-quota.sh
+
+teardown:
+  keepCluster: false

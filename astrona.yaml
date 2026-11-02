@@ -639,3 +639,189 @@ modules:
         title: Section Overview
         path: sections/section-050/README.md
 
+      - type: reading
+        title: "Bound Tenants With ResourceQuota And LimitRange"
+        path: sections/section-050/module-01/course.md
+      - type: reading
+        title: "ResourceQuota Caps A Namespace"
+        path: sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+      - type: reading
+        title: Question
+        path: sections/section-050/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Fit A Deployment Inside A ResourceQuota Lab"
+        path: sections/section-050/module-01/labs/lab-01
+        difficulty: beginner
+        estimated_duration: 20m
+        topic: multi-tenancy
+        task_kind: troubleshooting
+        tags: [resourcequota, requests-limits, pending-pod, namespace-isolation]
+        learning_goals:
+          - Read the quota error on a ReplicaSet to find why a Deployment has no pods
+          - Set requests and limits that fit inside the namespace quota
+          - Prove the fix with Ready pods and used against hard in the quota
+        resources:
+          - name: "Resource Quotas"
+            url: https://kubernetes.io/docs/concepts/policy/resource-quotas/
+      - type: reading
+        title: "LimitRange Sets Defaults And Maximums"
+        path: sections/section-050/module-01/course-02-limitrange-sets-defaults-and-maximums.md
+      - type: reading
+        title: Question
+        path: sections/section-050/module-01/labs/lab-02/question.md
+      - type: lab
+        title: "Default Resources With A LimitRange Lab"
+        path: sections/section-050/module-01/labs/lab-02
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: multi-tenancy
+        task_kind: build
+        tags: [limitrange, resourcequota, requests-limits, namespace-isolation]
+        learning_goals:
+          - Create a LimitRange that gives every container default requests and limits
+          - Keep the quota unchanged and make the rejected pods run
+          - Prove the defaults with a pod that sets no resources
+        resources:
+          - name: "Limit Ranges"
+            url: https://kubernetes.io/docs/concepts/policy/limit-range/
+          - name: "Resource Quotas"
+            url: https://kubernetes.io/docs/concepts/policy/resource-quotas/
+      - type: reading
+        title: Summary
+        path: sections/section-050/module-01/course-03-summary.md
+      - type: quiz
+        title: "Knowledge Check: Bound Tenants With ResourceQuota And LimitRange"
+        path: sections/section-050/module-01/quiz.yaml
+        question_count: 5
+      - type: reading
+        title: "Share Capacity With PriorityClasses And Quota Scopes"
+        path: sections/section-050/module-02/course.md
+      - type: reading
+        title: "PriorityClass And Preemption"
+        path: sections/section-050/module-02/course-01-priorityclass-and-preemption.md
+      - type: reading
+        title: Question
+        path: sections/section-050/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Make Room With A PriorityClass Lab"
+        path: sections/section-050/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: multi-tenancy
+        task_kind: troubleshooting
+        tags: [priorityclass, preemption, pending-pod, namespace-isolation]
+        learning_goals:
+          - Find from the scheduler events why a critical pod stays Pending
+          - Create a PriorityClass and assign it so the scheduler preempts a lower-priority pod
+          - Prove the result with a Ready pod and a Preempted event
+        resources:
+          - name: "Pod Priority and Preemption"
+            url: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+      - type: reading
+        title: "Quota Scopes Limit Each Kind Of Pod"
+        path: sections/section-050/module-02/course-02-quota-scopes.md
+      - type: reading
+        title: Question
+        path: sections/section-050/module-02/labs/lab-02/question.md
+      - type: lab
+        title: "Limit High-Priority Pods With A Quota Scope Lab"
+        path: sections/section-050/module-02/labs/lab-02
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: multi-tenancy
+        task_kind: build
+        tags: [quota-scopes, resourcequota, priorityclass, namespace-isolation]
+        learning_goals:
+          - Limit the pods of one PriorityClass in a namespace with a scopeSelector quota
+          - Reject pods without resources with a BestEffort scope quota
+          - Prove that other pods and other namespaces are not affected
+        resources:
+          - name: "Resource Quotas"
+            url: https://kubernetes.io/docs/concepts/policy/resource-quotas/
+          - name: "Pod Priority and Preemption"
+            url: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+      - type: reading
+        title: Summary
+        path: sections/section-050/module-02/course-03-summary.md
+      - type: quiz
+        title: "Knowledge Check: Share Capacity With PriorityClasses And Quota Scopes"
+        path: sections/section-050/module-02/quiz.yaml
+        question_count: 5
+      - type: reading
+        title: "Enforce Tenant Rules With Kyverno"
+        path: sections/section-050/module-03/course.md
+      - type: reading
+        title: "Validate Rules: Enforce And Audit"
+        path: sections/section-050/module-03/course-01-validate-rules-enforce-and-audit.md
+      - type: reading
+        title: Question
+        path: sections/section-050/module-03/labs/lab-01/question.md
+      - type: lab
+        title: "Require Resources With A Kyverno Policy Lab"
+        path: sections/section-050/module-03/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 30m
+        topic: multi-tenancy
+        task_kind: build
+        tags: [namespace-isolation, requests-limits, resourcequota, limitrange]
+        learning_goals:
+          - Write a Kyverno validate policy that denies pods without requests and limits
+          - Limit the policy to one tenant namespace
+          - Prove the policy with a denied pod and an accepted pod
+        resources:
+          - name: "Resource Management for Pods and Containers"
+            url: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+          - name: "Multi-tenancy"
+            url: https://kubernetes.io/docs/concepts/security/multi-tenancy/
+      - type: reading
+        title: "Generate Rules For New Tenants"
+        path: sections/section-050/module-03/course-02-generate-rules-for-new-tenants.md
+      - type: reading
+        title: Question
+        path: sections/section-050/module-03/labs/lab-02/question.md
+      - type: lab
+        title: "Generate Tenant Defaults With Kyverno Lab"
+        path: sections/section-050/module-03/labs/lab-02
+        difficulty: advanced
+        estimated_duration: 30m
+        topic: multi-tenancy
+        task_kind: build
+        tags: [resourcequota, limitrange, namespace-isolation, requests-limits]
+        learning_goals:
+          - Write a Kyverno generate rule that creates a ResourceQuota and a LimitRange in each tenant namespace
+          - Keep the generated objects in place with synchronize
+          - Prove the defaults and the maximum with pods in a new namespace
+        resources:
+          - name: "Resource Quotas"
+            url: https://kubernetes.io/docs/concepts/policy/resource-quotas/
+          - name: "Limit Ranges"
+            url: https://kubernetes.io/docs/concepts/policy/limit-range/
+      - type: reading
+        title: Summary
+        path: sections/section-050/module-03/course-03-summary.md
+      - type: quiz
+        title: "Knowledge Check: Enforce Tenant Rules With Kyverno"
+        path: sections/section-050/module-03/quiz.yaml
+        question_count: 5
+      - type: reading
+        title: Question
+        path: sections/section-050/capstone/labs/lab-01/question.md
+      - type: lab
+        title: "Multi-Tenancy Capstone"
+        path: sections/section-050/capstone/labs/lab-01
+        difficulty: advanced
+        estimated_duration: 45m
+        topic: multi-tenancy
+        task_kind: troubleshooting
+        tags: [priorityclass, preemption, limitrange, resourcequota, quota-scopes, pending-pod]
+        learning_goals:
+          - Create a PriorityClass so a critical pod preempts a lower-priority pod
+          - Set LimitRange defaults so pods rejected by a quota run
+          - Keep one PriorityClass out of a namespace with a scoped ResourceQuota
+        resources:
+          - name: "Resource Quotas"
+            url: https://kubernetes.io/docs/concepts/policy/resource-quotas/
+          - name: "Limit Ranges"
+            url: https://kubernetes.io/docs/concepts/policy/limit-range/
+          - name: "Pod Priority and Preemption"
+            url: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/

@@ -1,5 +1,5 @@
 # Namespaces for the priority playground. The filling outpost workload is
-# created by bootstrap/fill-workers.sh, sized to each worker's allocatable CPU.
+# created by bootstrap/fill-node.sh, sized to the free CPU of the node.
 ---
 apiVersion: v1
 kind: Namespace

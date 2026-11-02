@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Multi-Tenancy Capstone (ats-017-capstone-050)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-capstone-050
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Fills the node with the outpost probe pods, adds a quota to outpost, and creates a Pending scout-critical and a failing batch-worker Deployment
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-multi-tenancy
+      description: Checks preemption through platform-high, the LimitRange defaults in outpost, the scoped quota on platform-high, and that the outpost quota and probe are unchanged
+      type: file
+      source: validation/validate-capstone.sh
+
+teardown:
+  keepCluster: false

@@ -1,0 +1,184 @@
+# Knowledge check for section 050, module 01. Listed in astrona.yaml as a
+# `type: quiz` entry right after the module summary. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-050-01
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-050/module-01
+  title: "Bound Tenants With ResourceQuota And LimitRange"
+questions:
+  - id: ats017-050-01-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: >-
+      Name what a ResourceQuota limits.
+    source_readings:
+      - sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+    prompt: >-
+      What does a ResourceQuota limit?
+    options:
+      - id: a
+        text: >-
+          The total compute, storage and object counts of all workloads in one namespace
+        explanation: >-
+          Correct. The quota caps the sum for the whole namespace.
+      - id: b
+        text: >-
+          The CPU and memory of each single container
+        explanation: >-
+          That is the job of a LimitRange.
+      - id: c
+        text: >-
+          The number of nodes a namespace may use
+        explanation: >-
+          A quota does not select nodes.
+      - id: d
+        text: >-
+          The network traffic between namespaces
+        explanation: >-
+          Network traffic is limited by NetworkPolicy, not by a quota.
+    correct_option: a
+    explanation: >-
+      A ResourceQuota is a namespaced object whose `spec.hard` field caps compute, storage and object counts for the namespace as a whole.
+
+  - id: ats017-050-01-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Find where the rejection of a Deployment pod appears.
+    source_readings:
+      - sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+    prompt: >-
+      A Deployment in a namespace with a full quota shows `4/8` ready and no error in the terminal. Where do you read the quota rejection?
+    options:
+      - id: a
+        text: >-
+          In the `ReplicaFailure` condition of the Deployment and the `FailedCreate` events of its ReplicaSet
+        explanation: >-
+          Correct. The ReplicaSet creates the pods and records the `Forbidden` message.
+      - id: b
+        text: >-
+          In the logs of the running pods
+        explanation: >-
+          The rejected pods never start, so they have no logs.
+      - id: c
+        text: >-
+          In the `kubectl top` output
+        explanation: >-
+          `kubectl top` shows usage, not admission errors.
+      - id: d
+        text: >-
+          In the events of the node
+        explanation: >-
+          The scheduler never saw the pods, so the node has no events about them.
+    correct_option: a
+    explanation: >-
+      The quota rejects the pod when the ReplicaSet controller asks the API server to create it. The controller writes the message into the Deployment condition `ReplicaFailure` and into `FailedCreate` events.
+
+  - id: ats017-050-01-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Explain the must specify message.
+    source_readings:
+      - sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+    prompt: >-
+      A namespace has a quota with `requests.cpu`. A new pod is rejected with `must specify requests.cpu`. What is the cause?
+    options:
+      - id: a
+        text: >-
+          The pod declares no CPU request, and the quota counts CPU requests
+        explanation: >-
+          Correct. The API server cannot add a missing number to `used`.
+      - id: b
+        text: >-
+          The quota is full
+        explanation: >-
+          A full quota gives `exceeded quota`, not `must specify`.
+      - id: c
+        text: >-
+          The node has no CPU left
+        explanation: >-
+          That would leave the pod Pending, not rejected.
+      - id: d
+        text: >-
+          The pod has a CPU limit that is too high
+        explanation: >-
+          Limits are not the reason for this message.
+    correct_option: a
+    explanation: >-
+      When a quota counts a compute resource, every new pod must declare it. A LimitRange default can supply the value.
+
+  - id: ats017-050-01-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: >-
+      Know that a quota does not affect running pods.
+    source_readings:
+      - sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+    prompt: >-
+      You lower `requests.cpu` in a ResourceQuota below the amount that running pods already use. What happens to the running pods?
+    options:
+      - id: a
+        text: >-
+          Nothing. They keep running, and only new pods are checked
+        explanation: >-
+          Correct. A quota decides about new objects only.
+      - id: b
+        text: >-
+          The API server evicts pods until `used` is below `hard`
+        explanation: >-
+          A quota never evicts pods.
+      - id: c
+        text: >-
+          The pods restart with lower requests
+        explanation: >-
+          Requests of a running pod do not change.
+      - id: d
+        text: >-
+          The namespace becomes read-only
+        explanation: >-
+          A quota rejects only the creation of objects it counts.
+    correct_option: a
+    explanation: >-
+      Existing pods count in `used`, but a quota never stops or deletes them.
+
+  - id: ats017-050-01-q05
+    type: single_choice
+    difficulty: advanced
+    learning_objective: >-
+      Explain the order of LimitRange and ResourceQuota admission.
+    source_readings:
+      - sections/section-050/module-01/course-02-limitrange-sets-defaults-and-maximums.md
+    prompt: >-
+      A namespace has a compute quota and a LimitRange with `defaultRequest` and `default`. A Deployment's pods declare no resources. What happens?
+    options:
+      - id: a
+        text: >-
+          The LimitRange step adds the defaults first, then the quota step counts them, and the pods are accepted
+        explanation: >-
+          Correct. The LimitRange runs before the quota check.
+      - id: b
+        text: >-
+          The quota rejects the pods because the template has no resources
+        explanation: >-
+          The quota step sees the pod after the defaults are written.
+      - id: c
+        text: >-
+          The pods run without resources and are not counted
+        explanation: >-
+          Defaulted values are counted in `used`.
+      - id: d
+        text: >-
+          The LimitRange adds the defaults only after the pod runs
+        explanation: >-
+          Defaults are written at admission, before the pod is stored.
+    correct_option: a
+    explanation: >-
+      The API server applies the LimitRange defaults and checks `min` and `max` first. The ResourceQuota step then adds the completed pod to `used`.

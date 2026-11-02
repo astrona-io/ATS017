@@ -1,0 +1,42 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Require Resources With A Kyverno Policy (ats-017-lab-050-03-01)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster
+# with Kyverno (Helm chart 3.9.2, Kyverno v1.19.2).
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-050-03-01
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Installs Kyverno with Helm and creates the outpost probe Deployment, which declares no resources
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-validate-policy
+      description: Checks pods without resources, or without a memory limit, are denied by Kyverno in outpost, a pod with resources is accepted, pods in starfleet are not affected, and probe still runs
+      type: file
+      source: validation/validate-policy.sh
+
+teardown:
+  keepCluster: false

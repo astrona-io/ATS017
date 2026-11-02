@@ -1,0 +1,41 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Fit A Deployment Inside A ResourceQuota (ats-017-lab-050-01-01)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-050-01-01
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Creates the outpost namespace with a ResourceQuota and a probe Deployment that asks for more CPU than the quota allows
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-quota-fit
+      description: Checks the quota is unchanged and still enforced, probe keeps 4 replicas with a CPU request between 50m and 120m, and all 4 pods are ready
+      type: file
+      source: validation/validate-quota-fit.sh
+
+teardown:
+  keepCluster: false

@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
 #
 # Share Capacity With PriorityClasses And Quota Scopes (PLAYGROUND).
-# Three nodes (one control plane, two workers). Both workers are filled by
-# `probe` in `outpost`, so a new pod that requests CPU cannot fit. Only the
-# built-in system PriorityClasses exist, and no ResourceQuota.
+# One node. `probe` in `outpost` requests almost all the free CPU, so a new
+# pod that requests 300m cannot fit. Only the built-in system PriorityClasses
+# exist, and no ResourceQuota.
 apiVersion: astrona.io/v1
 metadata:
   name: ats-017-playground-050-02
@@ -14,12 +14,8 @@ runtime:
   type: kind
   kind:
     image: kindest/node:v1.35.8
-    nodes:
-      controlPlanes: 1
-      workers: 2
     preloadImages:
       - curlimages/curl:8.22.0
-      - ghcr.io/stefanprodan/podinfo:6.15.0
       - mccutchen/go-httpbin:2.25.0
 
 bootstrap:
@@ -28,10 +24,10 @@ bootstrap:
       type: file
       source: manifests/lab-start.yaml
   init:
-    - name: fill-workers
-      description: "Create outpost/probe with one replica per worker, sized to fill each worker's allocatable CPU"
+    - name: fill-node
+      description: "Create outpost/probe with three replicas sized to use almost all the free CPU of the node"
       type: file
-      source: bootstrap/fill-workers.sh
+      source: bootstrap/fill-node.sh
   waitFor:
     - resource: deploy/shuttle
       namespace: starfleet

@@ -16,7 +16,7 @@ Each section ends with a **capstone lab** combining its modules and a knowledge-
 
 [`astrona.yaml`](astrona.yaml) is the manifest: every section, module, reading, playground, lab and capstone in the order they are meant to be taken.
 
-Everything targets **kind v0.33.0**, **kubernetes v1.35.8**, **metrics-server v0.9.0**, **gateway-api v1.6.3**, **gateway-controller astrona gatewayAPI addon (envoy), plumbing only**, **opencost 1.121.3**, **prometheus pin at build (small prometheus-community/prometheus chart, not kube-prometheus-stack)**, **tool-scope official CNPE tool list plus built-in Kubernetes only; metrics-server, the gateway controller and Prometheus-for-OpenCost are plumbing**, **helm 4.3.0**, **podinfo 6.15.0**, **go-httpbin v2.25.0** on `kind`.
+Everything targets **kind v0.33.0**, **kubernetes v1.35.8**, **metrics-server v0.9.0**, **gateway-api v1.6.1 (experimental channel)**, **gateway-controller astrona gatewayAPI addon (envoy), plumbing only**, **opencost 1.121.3**, **kyverno chart 3.9.2 (v1.19.2)**, **prometheus pin at build (small prometheus-community/prometheus chart, not kube-prometheus-stack)**, **tool-scope official CNPE tool list plus built-in Kubernetes only; metrics-server, the gateway controller and Prometheus-for-OpenCost are plumbing**, **helm 4.3.0 (4.3.1 in use)**, **podinfo 6.15.0**, **go-httpbin v2.25.0** on `kind`.
 
 ---
 
@@ -28,7 +28,7 @@ Everything targets **kind v0.33.0**, **kubernetes v1.35.8**, **metrics-server v0
 | [020](sections/section-020) | Networking And Storage | 3 | Applying Platform Architecture Best Practices for Networking, Storage, and Compute |
 | [030](sections/section-030) | Right-Sizing And Autoscaling | 2 | Using Cost Management Solutions for Right-Sizing and Scaling |
 | [040](sections/section-040) | Cost Visibility With OpenCost | 2 | Using Cost Management Solutions for Right-Sizing and Scaling |
-| [050](sections/section-050) | Multi-Tenancy Resources | 2 | Optimizing Multi-Tenancy Resource Usage |
+| [050](sections/section-050) | Multi-Tenancy Resources | 3 | Optimizing Multi-Tenancy Resource Usage |
 
 ---
 
