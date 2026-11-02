@@ -240,14 +240,17 @@ section is only true for this one.
   | 020 | Networking And Storage | Applying Platform Architecture Best Practices for Networking, Storage, and Compute |
   | 030 | Right-Sizing And Autoscaling | Using Cost Management Solutions for Right-Sizing and Scaling |
   | 040 | Cost Visibility With OpenCost | Using Cost Management Solutions for Right-Sizing and Scaling |
-  | 050 | Multi-Tenancy Resources | Optimizing Multi-Tenancy Resource Usage |
+  | 050 | Multi-Tenancy Resources (ResourceQuota, LimitRange, PriorityClass, Kyverno policies) | Optimizing Multi-Tenancy Resource Usage |
 
 - **Teach only the official CNPE tools.** The exam's tool list is Argo,
   Crossplane, Flagger, Flux, Gatekeeper, Grafana, Istio, Jaeger, Kyverno,
   Linkerd, OPA, OpenCost, OpenTelemetry, Prometheus and Tekton, plus built-in
   Kubernetes features (requests and limits, scheduling, Gateway API objects,
   NetworkPolicy, StorageClass, HPA, ResourceQuota, LimitRange, PriorityClass,
-  in-place pod resize, `kubectl top`). Any other tool is plumbing: it may run
+  in-place pod resize, `kubectl top`). In this course the CNPE tools taught
+  are OpenCost and Prometheus (sections 030 and 040) and Kyverno (section
+  050, only `validate` and `generate` rules for tenant resources). Any other
+  tool is plumbing: it may run
   in a playground, but a page names it in one sentence at most and never
   teaches it. In this course that means metrics-server (behind `kubectl top`
   and the HPA), the Gateway API controller from the astrona `gatewayAPI`
@@ -265,6 +268,7 @@ section is only true for this one.
   | Gateway API controller (astrona `gatewayAPI: envoy` addon, plumbing) | set by astrona | 020 |
   | OpenCost | 1.121.3 | 040 |
   | Prometheus (small chart; usage queries in 030, plumbing for OpenCost in 040) | pin at build | 030, 040 |
+  | Kyverno (Helm chart `kyverno/kyverno` 3.9.2, Kyverno v1.19.2; validate and generate rules for tenants) | 3.9.2 | 050 |
   | Helm | 4.3.0 | 020, 030, 040 (install only) |
   | podinfo | 6.15.0 | every section |
   | go-httpbin | 2.25.0 (image tag has no `v`) | every section |
@@ -370,7 +374,13 @@ page states them as fact, and remove the mark when checked.
   pod uses it (checked on `kindest/node:v1.35.8`: `standard (default)`,
   `rancher.io/local-path`, `Delete`, `WaitForFirstConsumer`, expansion
   `false`). Volumes are directories on the
-  node; they support `ReadWriteOnce` only and do not resize.
+  node and do not resize. Checked on this playground: `ReadWriteOnce`
+  permits two consumers on the same node; `ReadWriteMany` provisioning fails.
+  The provisioner also accepts `ReadWriteOncePod`: the claim binds, the first
+  consumer runs, and the scheduler leaves a second consumer `Pending` because
+  the claim is already in use (checked on 2026-10-12). Do not assume this
+  additional mode works with every local provisioner; the portable documented
+  requirement for `ReadWriteOncePod` is a CSI volume.
 - **metrics-server on kind** needs `--kubelet-insecure-tls`, because the
   kubelet serving certificates are self-signed. The astrona `metricsServer`
   addon installs v0.9.0 with that flag already set (checked). On a kind
