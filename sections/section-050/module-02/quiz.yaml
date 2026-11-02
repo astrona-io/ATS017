@@ -87,7 +87,7 @@ questions:
     learning_objective: >-
       Describe what preemptionPolicy Never does.
     source_readings:
-      - sections/section-050/module-02/course-01-priorityclass-and-preemption.md
+      - sections/section-050/module-02/course-02-preemption-policy-never.md
     prompt: >-
       A PriorityClass has value 50000 and preemptionPolicy Never. What happens to a pod of this class when the node is full?
     options:
@@ -121,7 +121,7 @@ questions:
     learning_objective: >-
       Choose the quota scope that limits pods by PriorityClass.
     source_readings:
-      - sections/section-050/module-02/course-02-quota-scopes.md
+      - sections/section-050/module-02/course-03-quota-scopes.md
     prompt: >-
       How do you let one namespace run at most one pod of the class platform-high?
     options:
@@ -155,7 +155,7 @@ questions:
     learning_objective: >-
       Predict what a BestEffort scoped quota with pods 0 does.
     source_readings:
-      - sections/section-050/module-02/course-02-quota-scopes.md
+      - sections/section-050/module-02/course-03-quota-scopes.md
     prompt: >-
       A quota has scopes [BestEffort] and hard pods: 0. A user creates a pod with requests and limits, and then a pod with none. What happens?
     options:

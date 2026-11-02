@@ -156,7 +156,7 @@ questions:
     learning_objective: >-
       Set the default StorageClass with the is-default-class annotation.
     source_readings:
-      - sections/section-020/module-03/course-05-default-classes-and-statefulset-claims.md
+      - sections/section-020/module-03/course-05-changing-the-default-storageclass.md
     prompt: >-
       A cluster has two classes, `standard` (default) and `standard-retain`. An administrator wants claims that omit `storageClassName` to use `standard-retain`. What should the administrator do?
     options:

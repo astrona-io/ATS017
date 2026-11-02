@@ -155,7 +155,7 @@ questions:
     learning_objective: >-
       Make a resize permanent.
     source_readings:
-      - sections/section-030/module-02/course-05-making-the-change-permanent-and-hpa.md
+      - sections/section-030/module-02/course-05-making-the-change-permanent.md
       - sections/section-030/module-02/course-02-choosing-requests-and-limits-from-usage.md
     prompt: >-
       You resized one pod of a Deployment in place to a CPU request of `10m`. The node is later drained and the pod is recreated. What CPU request does the new pod have, and what fixes it?

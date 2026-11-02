@@ -409,7 +409,7 @@ questions:
     difficulty: advanced
     learning_objective: "Make an in-place resize permanent."
     source_readings:
-      - sections/section-030/module-02/course-05-making-the-change-permanent-and-hpa.md
+      - sections/section-030/module-02/course-05-making-the-change-permanent.md
     prompt: "You resized one pod of a Deployment in place and the new values work. A week later a new pod from the same Deployment has the old values. Why, and what is the fix?"
     options:
       - id: a

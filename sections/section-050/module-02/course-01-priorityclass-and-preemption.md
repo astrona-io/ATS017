@@ -157,75 +157,7 @@ probe-7cbdf54c48-kknzj   Running   <none>   0
 probe-7cbdf54c48-nc2mc   Running   <none>   0
 ```
 
-## Preemption can be switched off
-
-Some pods should run before others but must never evict anything. The field `preemptionPolicy` on the PriorityClass controls that. The default is `PreemptLowerPriority`. The value `Never` keeps the priority for queue order, but the scheduler does not evict pods for it.
-
-Save this as `priorityclass-batch-patient.yaml`:
-
-```yaml
-apiVersion: scheduling.k8s.io/v1
-kind: PriorityClass
-metadata:
-  name: batch-patient
-value: 50000
-globalDefault: false
-preemptionPolicy: Never
-description: "Higher than default, but never evicts other pods."
-```
-
-Apply it:
-
-```sh
-kubectl apply -f priorityclass-batch-patient.yaml
-```
-
-Save this as `deployment-batch-patient.yaml`. It asks for `1700m` of CPU, more than is free:
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: batch-patient
-  namespace: starfleet
-  labels:
-    app: batch-patient
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: batch-patient
-  template:
-    metadata:
-      labels:
-        app: batch-patient
-    spec:
-      priorityClassName: batch-patient
-      containers:
-        - name: worker
-          image: mccutchen/go-httpbin:2.25.0
-          resources:
-            requests:
-              cpu: 1700m
-              memory: 32Mi
-```
-
-Apply it, then read the scheduler message of the new pod:
-
-```sh
-kubectl apply -f deployment-batch-patient.yaml
-kubectl -n starfleet get pod -l app=batch-patient --field-selector status.phase=Pending -o jsonpath='{.items[0].status.conditions[?(@.type=="PodScheduled")].message}{"\n"}'
-```
-
-```text
-0/1 nodes are available: 1 Insufficient cpu. no new claims to deallocate, preemption: not eligible due to preemptionPolicy=Never.
-```
-
-The pod has priority `50000`, higher than every `probe` pod, but it stays `Pending`. The message `not eligible due to preemptionPolicy=Never` names the field that blocks it. Use `1700m` only if it is larger than the free CPU on your node; pick a larger value if your node is bigger.
-
-## What you know now
-
-A PriorityClass gives a pod a number through `priorityClassName`, and the API server stores it in `spec.priority`. When a pod does not fit, kube-scheduler can evict pods with a lower number and writes a `Preempted` event on each victim. The field `preemptionPolicy: Never` keeps the number but removes the right to evict. The open question is who may use a high class: any pod in any namespace can name `platform-high`. A quota scope limits that.
+A PriorityClass gives a pod a number through `priorityClassName`, and the API server stores it in `spec.priority`. When a pod does not fit, kube-scheduler can evict pods with a lower number and writes a `Preempted` event on each victim. The open question is whether a high priority always means the right to evict. It does not, and the next part shows the field that changes it.
 
 ## Common pitfalls
 

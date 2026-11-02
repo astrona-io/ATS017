@@ -25,4 +25,4 @@ You should know what a ResourceQuota is and how to read a request and a limit. T
 
 ## What comes next
 
-The first part creates a PriorityClass and watches the scheduler evict pods to make room. The second part adds quota scopes, so a namespace cannot run more than a fixed number of high-priority pods.
+The module has three parts. **PriorityClass And Preemption** creates a PriorityClass and watches the scheduler evict pods to make room. **Preemption Policy Never** shows a high-priority pod that may not evict anything. **Quota Scopes** adds quota scopes to the namespace, so a namespace cannot run more than a fixed number of high-priority pods.

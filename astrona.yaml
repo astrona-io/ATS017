@@ -270,8 +270,8 @@ modules:
         title: "Delete And Retain Reclaim Policies"
         path: sections/section-020/module-03/course-04-delete-and-retain-reclaim-policies.md
       - type: reading
-        title: "Default Classes And StatefulSet Claims"
-        path: sections/section-020/module-03/course-05-default-classes-and-statefulset-claims.md
+        title: "Changing The Default StorageClass"
+        path: sections/section-020/module-03/course-05-changing-the-default-storageclass.md
       - type: reading
         title: Question
         path: sections/section-020/module-03/labs/lab-02/question.md
@@ -293,8 +293,11 @@ modules:
           - name: "Change the default StorageClass"
             url: https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/
       - type: reading
+        title: "StatefulSet Claims"
+        path: sections/section-020/module-03/course-06-statefulset-claims.md
+      - type: reading
         title: Summary
-        path: sections/section-020/module-03/course-06-summary.md
+        path: sections/section-020/module-03/course-07-summary.md
       - type: quiz
         title: "Knowledge Check: Provision Storage With StorageClasses"
         path: sections/section-020/module-03/quiz.yaml
@@ -449,11 +452,14 @@ modules:
         title: "resizePolicy And Resizes That Do Not Finish"
         path: sections/section-030/module-02/course-04-resize-policy-and-resizes-that-do-not-finish.md
       - type: reading
-        title: "Making The Change Permanent And Right-Sizing Next To An HPA"
-        path: sections/section-030/module-02/course-05-making-the-change-permanent-and-hpa.md
+        title: "Making The Change Permanent"
+        path: sections/section-030/module-02/course-05-making-the-change-permanent.md
+      - type: reading
+        title: "Right-Sizing Next To An HPA"
+        path: sections/section-030/module-02/course-06-right-sizing-next-to-an-hpa.md
       - type: reading
         title: Summary
-        path: sections/section-030/module-02/course-06-summary.md
+        path: sections/section-030/module-02/course-07-summary.md
       - type: quiz
         title: "Knowledge Check: Right-Size Workloads From Measured Usage"
         path: sections/section-030/module-02/quiz.yaml
@@ -727,8 +733,11 @@ modules:
           - name: "Pod Priority and Preemption"
             url: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
       - type: reading
+        title: "Preemption Policy Never"
+        path: sections/section-050/module-02/course-02-preemption-policy-never.md
+      - type: reading
         title: "Quota Scopes Limit Each Kind Of Pod"
-        path: sections/section-050/module-02/course-02-quota-scopes.md
+        path: sections/section-050/module-02/course-03-quota-scopes.md
       - type: reading
         title: Question
         path: sections/section-050/module-02/labs/lab-02/question.md
@@ -751,7 +760,7 @@ modules:
             url: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
       - type: reading
         title: Summary
-        path: sections/section-050/module-02/course-03-summary.md
+        path: sections/section-050/module-02/course-04-summary.md
       - type: quiz
         title: "Knowledge Check: Share Capacity With PriorityClasses And Quota Scopes"
         path: sections/section-050/module-02/quiz.yaml
