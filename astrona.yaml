@@ -825,3 +825,7 @@ modules:
             url: https://kubernetes.io/docs/concepts/policy/limit-range/
           - name: "Pod Priority and Preemption"
             url: https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+      - type: quiz
+        title: "Final Quiz: Platform Architecture and Infrastructure"
+        path: sections/final-domain-quiz.yaml
+        question_count: 25

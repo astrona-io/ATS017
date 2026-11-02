@@ -180,5 +180,5 @@ items:
 - key: course/final-quiz
   kind: quiz
   what: final domain quiz across every section
-  status: pending
-  note: ''
+  status: done
+  note: "sections/final-domain-quiz.yaml, 25 questions, listed last in astrona.yaml; stub final-domain-quiz.md removed"

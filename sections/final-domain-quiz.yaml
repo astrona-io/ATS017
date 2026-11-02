@@ -1,0 +1,590 @@
+# Final domain quiz for ATS017 (Platform Architecture and Infrastructure). Listed in
+# astrona.yaml as the last `type: quiz` entry of the course. Contract:
+# schemas/question-bank.schema.json. Keep question ids stable once published.
+schema_version: 1
+kind: question_bank
+id: ats017-final-domain-quiz
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: "Original practice material written for this course; not official exam questions."
+scope:
+  type: domain
+  id: final
+  title: "Final Quiz: Platform Architecture and Infrastructure"
+questions:
+  - id: ats017-final-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name which component enforces a container limit."
+    source_readings:
+      - sections/section-010/module-01/course-01-requests-limits-and-who-reads-them.md
+    prompt: "A container has `resources.limits.memory: 128Mi`. Which component writes that limit into the container's control group, and which component enforces it while the container runs?"
+    options:
+      - id: a
+        text: "kube-scheduler writes it, and the kubelet enforces it"
+        explanation: "The scheduler does not write limits into a control group, and the kubelet does not enforce them."
+      - id: b
+        text: "The API server writes it, and metrics-server enforces it"
+        explanation: "The API server only stores the object, and metrics-server only reports usage."
+      - id: c
+        text: "The kubelet writes it, and kube-scheduler enforces it"
+        explanation: "The scheduler reads requests before the pod starts. It does not enforce anything at run time."
+      - id: d
+        text: "The kubelet writes it, and the Linux kernel enforces it"
+        explanation: "Correct. The scheduler reads requests once, and the kernel enforces the limits."
+    correct_option: d
+    explanation: "The kubelet writes the limits into the control group, and the kernel enforces them."
+
+  - id: ats017-final-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Tell CPU throttling from an OOM kill."
+    source_readings:
+      - sections/section-010/module-01/course-02-what-happens-at-the-limit.md
+    prompt: "Two containers reach their limits. One reaches its CPU limit and the other reaches its memory limit. What happens to each?"
+    options:
+      - id: a
+        text: "Both containers are throttled until usage drops"
+        explanation: "Memory cannot be throttled. The out-of-memory killer ends the process."
+      - id: b
+        text: "The CPU container is killed with `OOMKilled`; the memory container is throttled"
+        explanation: "The two resources fail the other way round."
+      - id: c
+        text: "The CPU container is throttled and keeps running; the memory container is killed with `OOMKilled` and exit code `137`"
+        explanation: "Correct. CPU is compressible and memory is not."
+      - id: d
+        text: "Both containers are evicted by the scheduler"
+        explanation: "The scheduler does not evict running pods. The kubelet evicts under node pressure, which is a different event."
+    correct_option: c
+    explanation: "CPU over the limit is throttled. Memory over the limit is `OOMKilled`."
+
+  - id: ats017-final-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Derive the QoS class from requests and limits."
+    source_readings:
+      - sections/section-010/module-01/course-03-qos-classes-and-eviction.md
+    prompt: "A pod has one container with requests of `cpu: 100m` and `memory: 64Mi`, and limits of `cpu: 200m` and `memory: 128Mi`. Which QoS class does `status.qosClass` show, and which pods does the kubelet evict first under node memory pressure?"
+    options:
+      - id: a
+        text: "`Guaranteed`; it is evicted last because it has limits"
+        explanation: "`Guaranteed` needs limits equal to requests for CPU and memory in every container."
+      - id: b
+        text: "`Burstable`; pods whose usage is above their memory request go first, so `BestEffort` pods go before `Guaranteed` pods"
+        explanation: "Correct. The limits are not equal to the requests, and the memory request is the main input to eviction order."
+      - id: c
+        text: "`BestEffort`; it is evicted first because it has no priority"
+        explanation: "`BestEffort` means no requests and no limits at all."
+      - id: d
+        text: "`Burstable`; the kubelet evicts pods in the order of their creation time"
+        explanation: "Eviction order depends on usage above the memory request, not on age."
+    correct_option: b
+    explanation: "The limits differ from the requests, so the class is `Burstable`."
+
+  - id: ats017-final-q04
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Find why a pod stays Pending."
+    source_readings:
+      - sections/section-010/module-01/course-04-node-capacity-and-pending-pods.md
+    prompt: "A Deployment shows `0/1` ready and its pod is `Pending`. Where do you read the reason, and what does it look like for a pod that requests more memory than any node has free?"
+    options:
+      - id: a
+        text: "In the `FailedScheduling` event of the pod, which names the reason for each node, such as `Insufficient memory`"
+        explanation: "Correct. The scheduler records the reason for each node as an event on the pod."
+      - id: b
+        text: "In the Deployment's rollout history, which shows `OOMKilled`"
+        explanation: "`OOMKilled` is for a container that started. A Pending pod has not started."
+      - id: c
+        text: "In the `cpu.stat` file of the container, which shows `nr_throttled`"
+        explanation: "A pod that never started has no control group to read."
+      - id: d
+        text: "In the output of `kubectl top pod`, which shows the missing memory"
+        explanation: "`kubectl top` shows usage of running pods and has no row for a Pending pod."
+    correct_option: a
+    explanation: "Read `kubectl describe pod` and its `FailedScheduling` event."
+
+  - id: ats017-final-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Dedicate a node with a taint, a toleration and node affinity."
+    source_readings:
+      - sections/section-010/module-02/course-02-taints-and-tolerations.md
+    prompt: "An administrator taints a node `team=billing:NoSchedule` to keep it for the billing team. The billing pods get a matching toleration and nothing else. What happens?"
+    options:
+      - id: a
+        text: "The billing pods run only on the tainted node, because a toleration attracts them"
+        explanation: "A toleration only lets a pod past a taint. It does not choose a node."
+      - id: b
+        text: "The billing pods stay `Pending`, because a toleration needs a `NoExecute` taint"
+        explanation: "`NoSchedule` and a toleration work together. The pods are not Pending for that reason."
+      - id: c
+        text: "The taint is ignored until the pods also set `nodeSelector`"
+        explanation: "A taint is enforced at once. Other pods without a toleration are repelled."
+      - id: d
+        text: "The billing pods may run on the tainted node but may also run on any other node; other pods stay off the tainted node"
+        explanation: "Correct. A toleration permits but never attracts. Add required node affinity to pull the pods to the node."
+    correct_option: d
+    explanation: "A toleration alone does not dedicate a node."
+
+  - id: ats017-final-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Choose between required and preferred node affinity."
+    source_readings:
+      - sections/section-010/module-02/course-01-node-labels-and-node-affinity.md
+    prompt: "No node has the label `disktype=ssd`. A pod has `preferredDuringSchedulingIgnoredDuringExecution` node affinity for that label. A second pod has `requiredDuringSchedulingIgnoredDuringExecution` for it. What happens?"
+    options:
+      - id: a
+        text: "Both pods stay `Pending`"
+        explanation: "A preference can never remove a node from the list."
+      - id: b
+        text: "Both pods are scheduled, and the second gets a warning event"
+        explanation: "Required affinity removes every node that does not match."
+      - id: c
+        text: "The first pod is scheduled on any node that passes the filter step; the second stays `Pending`"
+        explanation: "Correct. Required affinity is a filter. Preferred affinity only adds points in the score step."
+      - id: d
+        text: "The first pod stays `Pending`; the second is scheduled on a random node"
+        explanation: "The two forms behave the other way round."
+    correct_option: c
+    explanation: "Filters decide which nodes are allowed. Preferences only rank the allowed nodes."
+
+  - id: ats017-final-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Compare maxSkew with DoNotSchedule and ScheduleAnyway."
+    source_readings:
+      - sections/section-010/module-02/course-03-spreading-replicas.md
+    prompt: "A topology spread constraint uses `topologyKey: topology.kubernetes.io/zone` and `maxSkew: 1`. Which statement is true?"
+    options:
+      - id: a
+        text: "With `ScheduleAnyway` a pod that would break `maxSkew` stays `Pending`"
+        explanation: "`ScheduleAnyway` places the pod anyway and only prefers the better spread."
+      - id: b
+        text: "With `whenUnsatisfiable: DoNotSchedule` it is a filter, with `ScheduleAnyway` it only scores, and a scale-down does not respect it"
+        explanation: "Correct. The skew can grow again after a scale-down, because removing pods does not rebalance."
+      - id: c
+        text: "The constraint moves running pods to rebalance the zones after a scale-down"
+        explanation: "Nothing moves a running pod because of a spread constraint."
+      - id: d
+        text: "`maxSkew: 1` allows at most one pod in each zone"
+        explanation: "`maxSkew` limits the difference between the zones, not the pods in one zone."
+    correct_option: b
+    explanation: "`DoNotSchedule` is a filter. `ScheduleAnyway` is a score."
+
+  - id: ats017-final-q08
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Read 404 and 500 from a Gateway."
+    source_readings:
+      - sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+    prompt: "A request to a Gateway listener returns `500`. What does that tell you about the HTTPRoute?"
+    options:
+      - id: a
+        text: "A rule matched, but its backend is not usable, for example the Service does not exist"
+        explanation: "Correct. `ResolvedRefs` is the status condition to read next."
+      - id: b
+        text: "No rule matched the request"
+        explanation: "`404` means no rule matched."
+      - id: c
+        text: "The listener does not exist"
+        explanation: "`500` is a response from the proxy, so a listener exists and a rule matched."
+      - id: d
+        text: "The route is `Accepted` but has no `parentRefs`"
+        explanation: "A route without `parentRefs` attaches to no Gateway, so no request reaches it."
+    correct_option: a
+    explanation: "`404` means no rule matched. `500` means a rule matched but the backend is not usable."
+
+  - id: ats017-final-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Allow a cross-namespace backend with a ReferenceGrant."
+    source_readings:
+      - sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+    prompt: "An HTTPRoute in namespace `starfleet` points a `backendRef` at a Service in namespace `outpost`. The route status shows `ResolvedRefs False` with the reason `RefNotPermitted`. What fixes it?"
+    options:
+      - id: a
+        text: "Create a ReferenceGrant in `starfleet` that allows Services from `outpost`"
+        explanation: "The grant belongs in the namespace that owns the target, which is `outpost`."
+      - id: b
+        text: "Set `allowedRoutes.namespaces.from: All` on the Gateway listener"
+        explanation: "`allowedRoutes` controls attaching a route to a listener (`Accepted`), not the backend reference."
+      - id: c
+        text: "Add a weight of `100` to the `backendRef`"
+        explanation: "The weight does not change permissions."
+      - id: d
+        text: "Create a ReferenceGrant in `outpost` that allows HTTPRoutes from `starfleet` to reference Services"
+        explanation: "Correct. A ReferenceGrant lives in the namespace of the target."
+    correct_option: d
+    explanation: "The target namespace grants the permission."
+
+  - id: ats017-final-q10
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Describe a default-deny NetworkPolicy."
+    source_readings:
+      - sections/section-020/module-02/course-01-default-deny-and-how-policies-select-pods.md
+    prompt: "A namespace has no NetworkPolicy. An administrator applies a policy with `podSelector: {}`, `policyTypes: [Ingress]` and no `ingress` rules. A client sends a request to a pod in that namespace. What does the client see?"
+    options:
+      - id: a
+        text: "The request is refused at once with an error from the API server"
+        explanation: "The API server does not see pod-to-pod traffic. The network plugin drops it."
+      - id: b
+        text: "The request still works, because policies without rules do nothing"
+        explanation: "Once a pod is selected for a direction, only traffic that a policy allows gets through."
+      - id: c
+        text: "The request times out, because the network plugin drops the packets"
+        explanation: "Correct. An empty selector selects every pod, and no rule allows any ingress."
+      - id: d
+        text: "The request works only from pods in the same namespace"
+        explanation: "A `podSelector` source would be needed to allow even the same namespace."
+    correct_option: c
+    explanation: "A blocked request times out. It is not refused."
+
+  - id: ats017-final-q11
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Read AND versus OR in a from list."
+    source_readings:
+      - sections/section-020/module-02/course-02-allowing-flows-with-pod-and-namespace-selectors.md
+    prompt: "An ingress rule has one `from` item that holds both a `namespaceSelector` and a `podSelector`. A second policy writes the same two selectors as two separate `from` items. How do they differ?"
+    options:
+      - id: a
+        text: "One item means OR; two items mean AND"
+        explanation: "The two forms are the other way round."
+      - id: b
+        text: "One item means AND (the pod must match both); two items mean OR (the pod may match either)"
+        explanation: "Correct. Two items allow more traffic than one item."
+      - id: c
+        text: "Both forms mean AND, and the order of the items decides which wins"
+        explanation: "The order of items and policies does not matter."
+      - id: d
+        text: "Both forms mean OR, because policies only add allowed traffic"
+        explanation: "The AND form is narrower. It does not allow every pod from the namespace."
+    correct_option: b
+    explanation: "One `from` item with two selectors is AND. Two items are OR."
+
+  - id: ats017-final-q12
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Fix DNS after an egress default deny."
+    source_readings:
+      - sections/section-020/module-02/course-03-egress-rules-and-dns.md
+    prompt: "After an egress default-deny policy in a namespace, `curl probe` from the `shuttle` pod fails with `Resolving timed out`. What is the correct fix?"
+    options:
+      - id: a
+        text: "Add an egress rule to the `kube-dns` pods in `kube-system` on port 53 over UDP and TCP"
+        explanation: "Correct. DNS is the first thing an egress default deny breaks, and the rule must allow the lookup only."
+      - id: b
+        text: "Delete the default-deny policy"
+        explanation: "Deleting the policy opens all traffic and gives up the isolation the policy was written for."
+      - id: c
+        text: "Add an ingress rule on the `probe` pod for port 8080"
+        explanation: "The failure is a name lookup, which happens before any request reaches `probe`."
+      - id: d
+        text: "Restart the `shuttle` pod so it reads `/etc/resolv.conf` again"
+        explanation: "The pod reads the right resolver. The packets to it are dropped."
+    correct_option: a
+    explanation: "Allow egress to `kube-dns` on port 53."
+
+  - id: ats017-final-q13
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain a Pending claim with WaitForFirstConsumer."
+    source_readings:
+      - sections/section-020/module-03/course-01-storageclasses-and-dynamic-provisioning.md
+    prompt: "A PersistentVolumeClaim that uses the `standard` StorageClass stays `Pending` and no pod uses it yet. Is something wrong?"
+    options:
+      - id: a
+        text: "Yes. The provisioner is not installed"
+        explanation: "If the provisioner were missing, a claim with a consumer would still stay Pending, with events that say so."
+      - id: b
+        text: "Yes. The claim must be bound before a pod can use it"
+        explanation: "With this binding mode, a pod is what triggers the binding."
+      - id: c
+        text: "No. A claim stays `Pending` until an administrator creates a PersistentVolume by hand"
+        explanation: "Dynamic provisioning creates the volume. No manual step is needed."
+      - id: d
+        text: "No. `WaitForFirstConsumer` delays provisioning and binding until a pod that uses the claim is scheduled"
+        explanation: "Correct. The scheduler chooses a node first, and then the volume is created for it."
+    correct_option: d
+    explanation: "A claim waiting without a consumer is normal with `WaitForFirstConsumer`."
+
+  - id: ats017-final-q14
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read the Retain reclaim policy."
+    source_readings:
+      - sections/section-020/module-03/course-03-delete-and-retain-reclaim-policies.md
+    prompt: "A PersistentVolume has `persistentVolumeReclaimPolicy: Retain`. Its claim is deleted. What is the state of the volume?"
+    options:
+      - id: a
+        text: "`Available`; a new claim can bind to it at once"
+        explanation: "`Available` needs the old claim reference removed first."
+      - id: b
+        text: "The volume and its data are deleted"
+        explanation: "Deleting the volume is the `Delete` policy."
+      - id: c
+        text: "`Released`; the data stays, and the volume still holds its old claim reference, so it is not reused until cleaned up"
+        explanation: "Correct. Retention is not a backup, and a retained local volume is lost with its node."
+      - id: d
+        text: "`Pending`; the provisioner creates a new backing directory"
+        explanation: "`Pending` is a claim state, not the state of a retained volume."
+    correct_option: c
+    explanation: "`Retain` leaves a `Released` volume."
+
+  - id: ats017-final-q15
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Apply the HPA replica formula."
+    source_readings:
+      - sections/section-030/module-01/course-02-writing-an-hpa-and-its-replica-formula.md
+    prompt: "An HPA has a CPU `Utilization` target of 60 percent, `minReplicas: 2` and `maxReplicas: 10`. The Deployment runs 4 pods with an average utilisation of 90 percent of their CPU requests. What replica count does the HPA ask for?"
+    options:
+      - id: a
+        text: "4, because the average is below `maxReplicas`"
+        explanation: "The HPA acts when the ratio is more than 10 percent away from 1.0."
+      - id: b
+        text: "6, because ceil(4 x 90 / 60) = 6"
+        explanation: "Correct. The result is then limited by the minimum, the maximum and the `behavior` rules."
+      - id: c
+        text: "10, because the utilisation is above the target"
+        explanation: "The HPA does not jump to the maximum. It follows the formula."
+      - id: d
+        text: "3, because the HPA divides the replicas by the ratio"
+        explanation: "Utilisation above the target adds replicas."
+    correct_option: b
+    explanation: "`desiredReplicas = ceil(currentReplicas x currentUtilisation / targetUtilisation)`."
+
+  - id: ats017-final-q16
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Diagnose an HPA target of unknown."
+    source_readings:
+      - sections/section-030/module-01/course-03-unknown-targets-and-scaling-behavior.md
+    prompt: "`kubectl get hpa` shows `<unknown>/60%`, and the events say `missing request for cpu in container ...`. What fixes it?"
+    options:
+      - id: a
+        text: "Set a CPU request on the container in the Deployment"
+        explanation: "Correct. The HPA divides usage by the CPU request, so it needs one."
+      - id: b
+        text: "Raise `maxReplicas`"
+        explanation: "`maxReplicas` limits the result. It does not give the HPA a number."
+      - id: c
+        text: "Install the Kubernetes dashboard"
+        explanation: "The dashboard does not serve the Metrics API."
+      - id: d
+        text: "Set a CPU limit and remove the request"
+        explanation: "A limit does not replace the request for the utilisation target."
+    correct_option: a
+    explanation: "A pod without a CPU request cannot be scaled on CPU utilisation."
+
+  - id: ats017-final-q17
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Recognise a resize the node cannot fit."
+    source_readings:
+      - sections/section-030/module-02/course-04-resize-policy-and-resizes-that-do-not-finish.md
+    prompt: "You patch a running pod through the `resize` subresource and ask for more CPU than the node can give. What does the pod show?"
+    options:
+      - id: a
+        text: "The pod is recreated on another node"
+        explanation: "In-place resize never recreates the pod or moves it."
+      - id: b
+        text: "The pod is `OOMKilled`"
+        explanation: "`OOMKilled` is about memory use at run time."
+      - id: c
+        text: "The patch is rejected because a pod cannot be patched"
+        explanation: "A plain patch is rejected. A patch with `--subresource resize` is accepted."
+      - id: d
+        text: "The condition `PodResizePending` with the reason `Infeasible`"
+        explanation: "Correct. The request does not fit the node, so the kubelet cannot apply it."
+    correct_option: d
+    explanation: "An infeasible resize waits in `PodResizePending`."
+
+  - id: ats017-final-q18
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Make an in-place resize permanent."
+    source_readings:
+      - sections/section-030/module-02/course-05-making-the-change-permanent-and-hpa.md
+    prompt: "You resized one pod of a Deployment in place and the new values work. A week later a new pod from the same Deployment has the old values. Why, and what is the fix?"
+    options:
+      - id: a
+        text: "In-place resize expires after a week; apply the patch again"
+        explanation: "A resize does not expire."
+      - id: b
+        text: "The ReplicaSet ignores the pod's `resizePolicy`; set it to `NotRequired`"
+        explanation: "`resizePolicy` decides whether a container restarts. It does not copy values to new pods."
+      - id: c
+        text: "The resize changed only that pod; write the final values into the Deployment template, for example with `kubectl set resources`"
+        explanation: "Correct. New pods start from the template."
+      - id: d
+        text: "The HPA reverts every resize; delete the HPA"
+        explanation: "The HPA reads the CPU request. It does not revert it, and pods under an HPA are changed through the template."
+    correct_option: c
+    explanation: "The Deployment template keeps the final values."
+
+  - id: ats017-final-q19
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "State how OpenCost prices a container."
+    source_readings:
+      - sections/section-040/module-01/course-01-how-opencost-computes-cost-allocation.md
+    prompt: "A container requests 1 CPU core but uses 0.1 core on average. How does OpenCost compute its CPU cost?"
+    options:
+      - id: a
+        text: "It charges the average usage, 0.1 core"
+        explanation: "Usage is only used when it is larger than the request."
+      - id: b
+        text: "For each minute it takes the larger of the request and the usage, so it charges about 1 core"
+        explanation: "Correct. A request that is too high costs money even when the container is idle."
+      - id: c
+        text: "It charges the CPU limit"
+        explanation: "The limit is not an input to the allocation."
+      - id: d
+        text: "It charges nothing until the container uses more than it requests"
+        explanation: "Requests are charged from the first minute."
+    correct_option: b
+    explanation: "Cost is the larger of request and usage, multiplied by the price."
+
+  - id: ats017-final-q20
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Diagnose a cost of zero in OpenCost."
+    source_readings:
+      - sections/section-040/module-01/course-02-install-and-data-sources.md
+    prompt: "OpenCost runs and Prometheus is reachable, but every allocation shows a cost of 0. The OpenCost log says `No pricing found for key=default`. What is missing?"
+    options:
+      - id: a
+        text: "The price list; the chart creates it in the ConfigMap `custom-pricing-model` when `opencost.customPricing.enabled` is true"
+        explanation: "Correct. With no price list the cost is zero and there is no error."
+      - id: b
+        text: "A larger Prometheus retention period"
+        explanation: "Retention does not create prices."
+      - id: c
+        text: "A `team` label on every pod"
+        explanation: "Labels group costs. They do not create them."
+      - id: d
+        text: "A second replica of OpenCost"
+        explanation: "Replicas do not add a price list."
+    correct_option: a
+    explanation: "No price list means a cost of zero."
+
+  - id: ats017-final-q21
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Label pods so OpenCost can group by team."
+    source_readings:
+      - sections/section-040/module-02/course-01-labels-as-the-unit-of-showback.md
+    prompt: "You add `team: red` as a label on a Deployment object, wait ten minutes and query `aggregate=label:team`. The workload still sits in `__unallocated__`. Why?"
+    options:
+      - id: a
+        text: "The label needs a value in capital letters"
+        explanation: "Label values are not case-converted in this way."
+      - id: b
+        text: "OpenCost reads labels of Deployments only after a restart of Prometheus"
+        explanation: "Prometheus scrapes `kube_pod_labels`, which is a pod metric."
+      - id: c
+        text: "`__unallocated__` can never be empty"
+        explanation: "The entry holds cost of pods without the label. Labelled pods leave it."
+      - id: d
+        text: "OpenCost reads the labels of pods, so the label must be under `spec.template.metadata.labels`"
+        explanation: "Correct. A label on the Deployment object alone never reaches the pods."
+    correct_option: d
+    explanation: "OpenCost reads pod labels from `kube_pod_labels`."
+
+  - id: ats017-final-q22
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Tell idle cost from unallocated cost."
+    source_readings:
+      - sections/section-040/module-02/course-03-find-idle-and-shared-cost.md
+    prompt: "In an allocation result, what is the difference between `__idle__` and `__unallocated__`?"
+    options:
+      - id: a
+        text: "`__idle__` is the cost of stopped pods; `__unallocated__` is the cost of unbound volumes"
+        explanation: "`__idle__` is capacity that no pod requests, and `__unallocated__` is about labels."
+      - id: b
+        text: "They are two names for the same entry"
+        explanation: "They are separate buckets."
+      - id: c
+        text: "`__idle__` is node capacity that no pod requests; `__unallocated__` is the cost of pods without the grouping label"
+        explanation: "Correct. `__idle__` needs `includeIdle=true` to appear."
+      - id: d
+        text: "`__idle__` holds system namespaces; `__unallocated__` holds idle nodes"
+        explanation: "System pods without the label go to `__unallocated__`. Idle nodes are `__idle__`."
+    correct_option: c
+    explanation: "`__idle__` is capacity without a request. `__unallocated__` is cost without the label."
+
+  - id: ats017-final-q23
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Fix pods rejected with must specify."
+    source_readings:
+      - sections/section-050/module-01/course-02-limitrange-sets-defaults-and-maximums.md
+    prompt: "A namespace has a ResourceQuota that counts `requests.cpu` and `limits.memory`. A pod with no `resources` block is rejected with `must specify`. Which object fixes this for every new pod without editing the pods?"
+    options:
+      - id: a
+        text: "A larger `hard` value in the ResourceQuota"
+        explanation: "`must specify` is not about the amount. The pod declares nothing to count."
+      - id: b
+        text: "A LimitRange of `type: Container` with `defaultRequest` and `default`, which runs before the quota check"
+        explanation: "Correct. The defaults fill in the missing values so the quota can count them."
+      - id: c
+        text: "A PriorityClass with `globalDefault: true`"
+        explanation: "A PriorityClass sets priority and not resources."
+      - id: d
+        text: "A Kyverno `generate` rule that raises the quota"
+        explanation: "A `generate` rule creates objects. It does not change how the quota counts a pod."
+    correct_option: b
+    explanation: "A LimitRange default makes pods without resources acceptable to a compute quota."
+
+  - id: ats017-final-q24
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain preemption between pods of equal priority."
+    source_readings:
+      - sections/section-050/module-02/course-01-priorityclass-and-preemption.md
+    prompt: "A worker is full, and a new pod does not fit. All running pods and the new pod have priority `0`. What does the scheduler do?"
+    options:
+      - id: a
+        text: "It evicts nobody; the new pod stays `Pending` with the message `No preemption victims found`"
+        explanation: "Correct. Preemption needs a priority gap and a full node."
+      - id: b
+        text: "It evicts the oldest pod and writes a `Preempted` event"
+        explanation: "Only pods with a lower priority can be victims."
+      - id: c
+        text: "It raises the priority of the new pod and places it"
+        explanation: "The scheduler never changes a pod's priority."
+      - id: d
+        text: "It places the pod anyway and the node runs out of memory"
+        explanation: "The scheduler does not place a pod that does not fit."
+    correct_option: a
+    explanation: "Preemption needs a lower-priority victim."
+
+  - id: ats017-final-q25
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Order admission steps for a tenant pod."
+    source_readings:
+      - sections/section-050/module-03/course-01-validate-rules-enforce-and-audit.md
+    prompt: "A pod request reaches the API server in a namespace that has a LimitRange, a Kyverno `validate` policy with `Enforce`, and a ResourceQuota. In which order do they act, and what happens to the quota if Kyverno denies the pod?"
+    options:
+      - id: a
+        text: "The quota first, then the LimitRange, then Kyverno; the denied pod keeps its quota usage"
+        explanation: "The quota is the last step, not the first."
+      - id: b
+        text: "Kyverno first, then the LimitRange, then the quota; the denied pod keeps its quota usage"
+        explanation: "LimitRange defaults are applied before the webhook call."
+      - id: c
+        text: "All three act at the same time and the first answer wins"
+        explanation: "The steps run in a fixed order."
+      - id: d
+        text: "LimitRange defaults first, then the Kyverno webhook, then the quota; a request denied by Kyverno never counts against the quota"
+        explanation: "Correct. The quota is checked last."
+    correct_option: d
+    explanation: "LimitRange, then Kyverno, then ResourceQuota."
+
