@@ -159,21 +159,21 @@ The claim is now `Bound`. Its generated volume name will differ in your cluster.
 
 ```mermaid
 sequenceDiagram
-    participant U as "kubectl"
-    participant C as "Claim"
-    participant S as "Scheduler"
-    participant P as "Provisioner"
-    participant V as "Volume"
-    participant K as "Kubelet"
-    U->>C: "Create claim"
-    C-->>U: "Pending"
-    U->>S: "Create consuming pod"
-    S->>C: "Select node"
-    C->>P: "Request storage"
-    P->>V: "Create volume on node"
-    V->>C: "Bind"
-    S->>K: "Assign pod"
-    K->>V: "Mount storage"
+    participant U as kubectl
+    participant C as Claim
+    participant S as Scheduler
+    participant P as Provisioner
+    participant V as Volume
+    participant K as Kubelet
+    U->>C: Create claim
+    C-->>U: Pending
+    U->>S: Create consuming pod
+    S->>C: Select node
+    C->>P: Request storage
+    P->>V: Create volume on node
+    V->>C: Bind
+    S->>K: Assign pod
+    K->>V: Mount storage
 ```
 
 The diagram shows delayed provisioning followed by binding and mounting on the selected node.

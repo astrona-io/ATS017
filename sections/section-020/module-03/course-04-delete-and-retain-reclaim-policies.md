@@ -154,9 +154,9 @@ stateDiagram-v2
     state "Claim and volume Bound" as Bound
     state "Volume Released" as Released
     state "Volume and storage removed" as Removed
-    Pending --> Bound: "Consumer triggers provisioning"
-    Bound --> Removed: "Delete policy; claim deleted"
-    Bound --> Released: "Retain policy; claim deleted"
+    Pending --> Bound: Consumer triggers provisioning
+    Bound --> Removed: Delete policy, claim deleted
+    Bound --> Released: Retain policy, claim deleted
 ```
 
 The diagram shows how deleting a bound claim leads to removal or to a released volume, depending on the volume's policy.
