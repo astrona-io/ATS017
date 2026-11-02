@@ -53,7 +53,7 @@ questions:
     learning_objective: >-
       Mount a claim in a pod and prove that data survives a pod restart.
     source_readings:
-      - sections/section-020/module-03/course-02-persistent-data-and-access-modes.md
+      - sections/section-020/module-03/course-02-persistent-data-and-readwriteonce.md
     prompt: >-
       A pod mounts the claim `scout-data` at `/data`. It writes `/data/message.txt` and also `/tmp/note.txt` in the container's own file system. An engineer deletes the pod and creates it again from the same manifest. Which files can the new pod read?
     options:
@@ -87,7 +87,8 @@ questions:
     learning_objective: >-
       Choose an access mode (ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod) for a workload.
     source_readings:
-      - sections/section-020/module-03/course-02-persistent-data-and-access-modes.md
+      - sections/section-020/module-03/course-02-persistent-data-and-readwriteonce.md
+      - sections/section-020/module-03/course-03-unsupported-access-modes.md
     prompt: >-
       On a single-node `kind` cluster, a team mounts one `ReadWriteOnce` claim in two pods, and both start and read the same file. A second team requests `ReadWriteMany` from the `standard` class, which uses the `rancher.io/local-path` provisioner, and the claim never binds. Which statement is correct?
     options:
@@ -121,7 +122,7 @@ questions:
     learning_objective: >-
       Predict what happens to the volume when a claim is deleted under Delete and Retain reclaim policies.
     source_readings:
-      - sections/section-020/module-03/course-03-delete-and-retain-reclaim-policies.md
+      - sections/section-020/module-03/course-04-delete-and-retain-reclaim-policies.md
     prompt: >-
       Two claims are bound to volumes. The volume of claim `scout-data` has `persistentVolumeReclaimPolicy: Delete`. The volume of claim `probe-data` has `Retain`. An engineer deletes both claims. What does the engineer see?
     options:
@@ -155,7 +156,7 @@ questions:
     learning_objective: >-
       Set the default StorageClass with the is-default-class annotation.
     source_readings:
-      - sections/section-020/module-03/course-04-default-classes-and-statefulset-claims.md
+      - sections/section-020/module-03/course-05-default-classes-and-statefulset-claims.md
     prompt: >-
       A cluster has two classes, `standard` (default) and `standard-retain`. An administrator wants claims that omit `storageClassName` to use `standard-retain`. What should the administrator do?
     options:

@@ -1,4 +1,4 @@
-# Persistent Data And Access Modes
+# Persistent Data And ReadWriteOnce
 
 The `scout-storage` pod mounts the `scout-data` PersistentVolumeClaim (PVC), a namespaced storage request, at `/data`. Write a file there, replace the pod, and read it again. That test separates storage held by the claim from the container's own writable file system.
 
@@ -219,36 +219,11 @@ pod "scout-shared" deleted from starfleet namespace
 persistentvolumeclaim "scout-shared" deleted from starfleet namespace
 ```
 
-You have proved that files survive pod replacement and that `ReadWriteOnce` can serve two pods on one node. Access modes describe storage capabilities, and claim events reveal unsupported requests. Keeping a file through pod replacement is different from keeping it after the claim itself is deleted.
+You have proved that files survive pod replacement and that `ReadWriteOnce` can serve two pods on one node. An access mode describes what the storage can do, and the claim only states what the application wants. The open question is what happens when the claim asks for a mode the storage cannot provide.
 
 ## Common pitfalls
 
 > [!WARNING]
 > - **Reading `ReadWriteOnce` as one pod.** It means one node; use `ReadWriteOncePod` when exclusive pod access is required and supported.
 > - **Writing outside the mount.** Only files under `/data` use this claim; a file in the container's writable layer does not survive container replacement.
-> - **Taking successful claim creation as successful provisioning.** Check the phase and events after a consumer exists.
 > - **Treating local persistent storage as a backup.** Losing the node or destroying the playground loses its local data.
-
-## Your mission: Fix The Pending Claim
-
-You can now read a claim's events, tell an unsupported access mode from a normal wait, and prove that data survives pod replacement. The mission gives you a `scout` Deployment whose claim cannot be provisioned. You replace the claim with a supported access mode and prove that a file survives when the pod is replaced.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-020-03
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-03/labs/lab-01
-astrona submit -c sections/section-020/module-03/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-020-03
-astrona start ats-017-playground-020-03
-```

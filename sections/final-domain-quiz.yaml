@@ -179,7 +179,7 @@ questions:
     difficulty: beginner
     learning_objective: "Read 404 and 500 from a Gateway."
     source_readings:
-      - sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+      - sections/section-020/module-01/course-03-route-status-and-allowed-routes.md
     prompt: "A request to a Gateway listener returns `500`. What does that tell you about the HTTPRoute?"
     options:
       - id: a
@@ -202,7 +202,7 @@ questions:
     difficulty: intermediate
     learning_objective: "Allow a cross-namespace backend with a ReferenceGrant."
     source_readings:
-      - sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+      - sections/section-020/module-01/course-04-cross-namespace-backends-with-referencegrant.md
     prompt: "An HTTPRoute in namespace `starfleet` points a `backendRef` at a Service in namespace `outpost`. The route status shows `ResolvedRefs False` with the reason `RefNotPermitted`. What fixes it?"
     options:
       - id: a
@@ -317,7 +317,7 @@ questions:
     difficulty: intermediate
     learning_objective: "Read the Retain reclaim policy."
     source_readings:
-      - sections/section-020/module-03/course-03-delete-and-retain-reclaim-policies.md
+      - sections/section-020/module-03/course-04-delete-and-retain-reclaim-policies.md
     prompt: "A PersistentVolume has `persistentVolumeReclaimPolicy: Retain`. Its claim is deleted. What is the state of the volume?"
     options:
       - id: a
@@ -524,7 +524,7 @@ questions:
     difficulty: beginner
     learning_objective: "Fix pods rejected with must specify."
     source_readings:
-      - sections/section-050/module-01/course-02-limitrange-sets-defaults-and-maximums.md
+      - sections/section-050/module-01/course-03-limitrange-sets-defaults-and-maximums.md
     prompt: "A namespace has a ResourceQuota that counts `requests.cpu` and `limits.memory`. A pod with no `resources` block is rejected with `must specify`. Which object fixes this for every new pod without editing the pods?"
     options:
       - id: a

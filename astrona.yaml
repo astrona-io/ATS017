@@ -203,11 +203,14 @@ modules:
         title: "HTTPRoute Matches, Backends And Weights"
         path: sections/section-020/module-01/course-02-httproute-matches-backends-and-weights.md
       - type: reading
-        title: "Route Status And Cross-Namespace Routing"
-        path: sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+        title: "Route Status And Allowed Routes"
+        path: sections/section-020/module-01/course-03-route-status-and-allowed-routes.md
+      - type: reading
+        title: "Cross-Namespace Backends With ReferenceGrant"
+        path: sections/section-020/module-01/course-04-cross-namespace-backends-with-referencegrant.md
       - type: reading
         title: Summary
-        path: sections/section-020/module-01/course-04-summary.md
+        path: sections/section-020/module-01/course-05-summary.md
       - type: quiz
         title: "Knowledge Check: Route Traffic With The Gateway API"
         path: sections/section-020/module-01/quiz.yaml
@@ -238,8 +241,11 @@ modules:
         title: "StorageClasses And Dynamic Provisioning"
         path: sections/section-020/module-03/course-01-storageclasses-and-dynamic-provisioning.md
       - type: reading
-        title: "Persistent Data And Access Modes"
-        path: sections/section-020/module-03/course-02-persistent-data-and-access-modes.md
+        title: "Persistent Data And ReadWriteOnce"
+        path: sections/section-020/module-03/course-02-persistent-data-and-readwriteonce.md
+      - type: reading
+        title: "Unsupported Access Modes"
+        path: sections/section-020/module-03/course-03-unsupported-access-modes.md
       - type: reading
         title: Question
         path: sections/section-020/module-03/labs/lab-01/question.md
@@ -262,10 +268,10 @@ modules:
             url: https://kubernetes.io/docs/concepts/storage/storage-classes/
       - type: reading
         title: "Delete And Retain Reclaim Policies"
-        path: sections/section-020/module-03/course-03-delete-and-retain-reclaim-policies.md
+        path: sections/section-020/module-03/course-04-delete-and-retain-reclaim-policies.md
       - type: reading
         title: "Default Classes And StatefulSet Claims"
-        path: sections/section-020/module-03/course-04-default-classes-and-statefulset-claims.md
+        path: sections/section-020/module-03/course-05-default-classes-and-statefulset-claims.md
       - type: reading
         title: Question
         path: sections/section-020/module-03/labs/lab-02/question.md
@@ -288,7 +294,7 @@ modules:
             url: https://kubernetes.io/docs/tasks/administer-cluster/change-default-storage-class/
       - type: reading
         title: Summary
-        path: sections/section-020/module-03/course-05-summary.md
+        path: sections/section-020/module-03/course-06-summary.md
       - type: quiz
         title: "Knowledge Check: Provision Storage With StorageClasses"
         path: sections/section-020/module-03/quiz.yaml
@@ -664,8 +670,11 @@ modules:
           - name: "Resource Quotas"
             url: https://kubernetes.io/docs/concepts/policy/resource-quotas/
       - type: reading
+        title: "Quota Rejections For Requests, Counts And Storage"
+        path: sections/section-050/module-01/course-02-quota-rejections-for-requests-counts-and-storage.md
+      - type: reading
         title: "LimitRange Sets Defaults And Maximums"
-        path: sections/section-050/module-01/course-02-limitrange-sets-defaults-and-maximums.md
+        path: sections/section-050/module-01/course-03-limitrange-sets-defaults-and-maximums.md
       - type: reading
         title: Question
         path: sections/section-050/module-01/labs/lab-02/question.md
@@ -688,7 +697,7 @@ modules:
             url: https://kubernetes.io/docs/concepts/policy/resource-quotas/
       - type: reading
         title: Summary
-        path: sections/section-050/module-01/course-03-summary.md
+        path: sections/section-050/module-01/course-04-summary.md
       - type: quiz
         title: "Knowledge Check: Bound Tenants With ResourceQuota And LimitRange"
         path: sections/section-050/module-01/quiz.yaml

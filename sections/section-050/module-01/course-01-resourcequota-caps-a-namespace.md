@@ -109,70 +109,7 @@ Set the Deployment back to one replica before the next step:
 kubectl -n outpost scale deploy/scout --replicas=1
 ```
 
-## A compute quota needs requests on every pod
-
-Now restart `probe`. Its pod template declares no resources, and the quota counts `requests.cpu`, `requests.memory` and `limits.memory`:
-
-```sh
-kubectl -n outpost rollout restart deploy/probe
-kubectl -n outpost get deploy probe -o jsonpath='{.status.conditions[?(@.type=="ReplicaFailure")].message}{"\n"}'
-```
-
-You should see something like:
-
-```text
-deployment.apps/probe restarted
-pods "probe-655cdd5cb4-2cwh9" is forbidden: failed quota: outpost-quota: must specify limits.memory for: probe; requests.cpu for: probe; requests.memory for: probe
-```
-
-This is a different message: `failed quota` and `must specify`. The pod asks for nothing, so there is no number to add to `used`, and the API server cannot check it against `hard`. Kubernetes closes this gap with a rule: **when a quota counts a compute resource, every new pod must declare that resource, or the API server rejects the pod.** The old `probe` pod keeps running, because the quota never touches existing pods. Only the new pod is rejected, so the rollout does not finish. The next part shows the tool that fixes this without editing every Deployment.
-
-## Object counts and storage
-
-Counts and storage use the same check. Create three ConfigMaps. The namespace already has one, and the cap is three:
-
-```sh
-kubectl -n outpost create configmap notes-1 --from-literal=k=v
-kubectl -n outpost create configmap notes-2 --from-literal=k=v
-kubectl -n outpost create configmap notes-3 --from-literal=k=v
-```
-
-You should see something like:
-
-```text
-configmap/notes-1 created
-configmap/notes-2 created
-error: failed to create configmap: configmaps "notes-3" is forbidden: exceeded quota: outpost-quota, requested: count/configmaps=1, used: count/configmaps=3, limited: count/configmaps=3
-```
-
-Here the API server answers `kubectl` directly, because `kubectl` made the request itself. Storage works the same way. Save this as `pvc-big.yaml`. It asks for `3Gi`, and the quota allows `2Gi`:
-
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: data-big
-  namespace: outpost
-spec:
-  accessModes: ["ReadWriteOnce"]
-  resources:
-    requests:
-      storage: 3Gi
-```
-
-Apply it:
-
-```sh
-kubectl apply -f pvc-big.yaml
-```
-
-You should see:
-
-```text
-Error from server (Forbidden): error when creating "pvc-big.yaml": persistentvolumeclaims "data-big" is forbidden: exceeded quota: outpost-quota, requested: requests.storage=3Gi, used: requests.storage=0, limited: requests.storage=2Gi
-```
-
-You can now cap a namespace with a ResourceQuota, read used against hard, and tell the three rejection messages apart: `exceeded quota` for a full line, `must specify` for a pod that declares nothing the quota counts, and the `ReplicaFailure` condition that carries them for a Deployment. The open question is how a tenant's pods get requests when the team forgets to write them.
+You can now cap a namespace with a ResourceQuota, read used against hard, and find a quota rejection for a Deployment in its `ReplicaFailure` condition. The rejection you read was a full line: a new pod asked for more than the quota had left. A pod that asks for nothing is rejected too, and it gets a different message.
 
 ## Common pitfalls
 
@@ -180,7 +117,6 @@ You can now cap a namespace with a ResourceQuota, read used against hard, and te
 > - **Looking for the rejection in the wrong place.** A rejected Deployment pod never reaches your terminal. Read the `ReplicaFailure` condition of the Deployment or the events of its ReplicaSet.
 > - **Expecting a new quota to stop running pods.** A quota only decides about new objects. Existing pods count in `used` but keep running, even when `used` is above `hard`.
 > - **Lowering requests during a rolling update with a full quota.** A rolling update creates new pods before it removes old ones. When the quota is full, the new ReplicaSet cannot create more pods, and the old ReplicaSet cannot shrink below the minimum available count. In a test, a Deployment of four pods requesting `200m` under a `500m` quota stopped at `3/4` ready after its request was lowered to `100m`. Use the `Recreate` strategy, or delete old pods, to break the stall.
-> - **Forgetting the quota resource names.** `cpu` and `memory` are short for `requests.cpu` and `requests.memory`. Use the full names to avoid doubt. Object counts use `count/<resource>.<group>`, for example `count/deployments.apps`.
 
 ## Your mission: Fit A Deployment Inside A ResourceQuota
 

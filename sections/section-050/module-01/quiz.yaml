@@ -87,7 +87,7 @@ questions:
     learning_objective: >-
       Explain the must specify message.
     source_readings:
-      - sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+      - sections/section-050/module-01/course-02-quota-rejections-for-requests-counts-and-storage.md
     prompt: >-
       A namespace has a quota with `requests.cpu`. A new pod is rejected with `must specify requests.cpu`. What is the cause?
     options:
@@ -155,7 +155,7 @@ questions:
     learning_objective: >-
       Explain the order of LimitRange and ResourceQuota admission.
     source_readings:
-      - sections/section-050/module-01/course-02-limitrange-sets-defaults-and-maximums.md
+      - sections/section-050/module-01/course-03-limitrange-sets-defaults-and-maximums.md
     prompt: >-
       A namespace has a compute quota and a LimitRange with `defaultRequest` and `default`. A Deployment's pods declare no resources. What happens?
     options:

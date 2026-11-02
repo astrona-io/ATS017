@@ -6,7 +6,7 @@ A **PersistentVolumeClaim** (PVC) is a namespaced request for storage by size an
 
 Keep one sentence in mind for this module: **the application requests a claim, the provisioner creates a volume, and the kubelet mounts that volume into the pod.** The kubelet is the Kubernetes agent on each node. A claim can survive pod replacement, but whether its storage survives claim deletion depends on the volume's reclaim policy.
 
-The module has four parts. **StorageClasses And Dynamic Provisioning** reads the classes and binds a claim only when a pod needs it. **Persistent Data And Access Modes** replaces a pod, reads the saved file, and checks which sharing modes the storage supports. **Delete And Retain Reclaim Policies** deletes claims and compares the remaining volumes. **Default Classes And StatefulSet Claims** changes the default class and creates one claim per replica with a StatefulSet, a controller that gives pods stable names and storage.
+The module has five parts. **StorageClasses And Dynamic Provisioning** reads the classes and binds a claim only when a pod needs it. **Persistent Data And ReadWriteOnce** replaces a pod, reads the saved file, and mounts one claim in two pods on the same node. **Unsupported Access Modes** asks for a sharing mode the storage cannot provide and reads the event that says why. **Delete And Retain Reclaim Policies** deletes claims and compares the remaining volumes. **Default Classes And StatefulSet Claims** changes the default class and creates one claim per replica with a StatefulSet, a controller that gives pods stable names and storage.
 
 ## Learning objectives
 

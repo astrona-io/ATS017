@@ -6,7 +6,7 @@ A **ResourceQuota** is a namespaced object that caps the total amount of compute
 
 Keep one sentence in mind for this module: **a compute quota rejects every new pod that does not declare the resources it counts, and a LimitRange default is what lets pods without those values in.** The two objects work as a pair, and the exam tasks often need both.
 
-The module has two parts. **ResourceQuota Caps A Namespace** creates a quota, reads used against hard, and reads the rejection messages for compute, object counts and storage. **LimitRange Sets Defaults And Maximums** gives containers default requests and limits, rejects containers that are too large, and shows the order of the two admission steps.
+The module has three parts. **ResourceQuota Caps A Namespace** creates a quota, reads used against hard, and reads the rejection of a Deployment. **Quota Rejections For Requests, Counts And Storage** reads the messages for a pod without requests, too many objects and too much storage. **LimitRange Sets Defaults And Maximums** gives containers default requests and limits, rejects containers that are too large, and shows the order of the two admission steps.
 
 ## Learning objectives
 

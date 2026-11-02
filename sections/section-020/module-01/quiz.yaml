@@ -156,7 +156,7 @@ questions:
     learning_objective: >-
       Diagnose a route that does not attach from its status.parents conditions (Accepted, ResolvedRefs).
     source_readings:
-      - sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+      - sections/section-020/module-01/course-03-route-status-and-allowed-routes.md
     prompt: >-
       A route is applied without errors. Its `status.parents` shows `Accepted=True` and `ResolvedRefs=False` with the reason `BackendNotFound`. A request that matches the route gets `500 Internal Server Error`. What is wrong?
     options:
@@ -190,7 +190,7 @@ questions:
     learning_objective: >-
       Allow a route from another namespace with allowedRoutes and a ReferenceGrant where needed.
     source_readings:
-      - sections/section-020/module-01/course-03-route-status-and-cross-namespace-routing.md
+      - sections/section-020/module-01/course-03-route-status-and-allowed-routes.md
     prompt: >-
       The platform team changes the listener to `allowedRoutes.namespaces.from: Selector` with a selector that matches only the label `kubernetes.io/metadata.name: outpost`. The `outpost` team's route now attaches. The `bridge` route in the Gateway's own namespace `starfleet` now shows `Accepted=False` with `NotAllowedByListeners`. How do you fix it?
     options:

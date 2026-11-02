@@ -44,7 +44,7 @@ items:
   kind: course
   what: 'chapter for module 1: Route Traffic With The Gateway API'
   status: done
-  note: landing + 3 parts + summary; real output; Gateway ClusterIP address from status.addresses
+  note: landing + 4 parts + summary; real output; Gateway ClusterIP address from status.addresses
 - key: section-020/module-02/playground
   kind: playground
   what: 'playground for module 2: Isolate Traffic With NetworkPolicy'
@@ -65,7 +65,7 @@ items:
   kind: course
   what: 'chapter for module 3: Provision Storage With StorageClasses'
   status: done
-  note: Landing, four parts and summary; all shown commands run and output lines checked against saved
+  note: Landing, five parts and summary; all shown commands run and output lines checked against saved
     transcripts; corrected local ReadWriteOncePod support; all validators passed 2026-10-12
 - key: section-020/quiz
   kind: quiz
@@ -146,7 +146,7 @@ items:
   kind: course
   what: "chapter for module 1: Bound Tenants With ResourceQuota And LimitRange"
   status: done
-  note: "landing, two parts and summary, two labs (astrona test passed), quiz"
+  note: "landing, three parts and summary, two labs (astrona test passed), quiz"
 - key: section-050/module-02/playground
   kind: playground
   what: "playground for module 2: Share Capacity With PriorityClasses And Quota Scopes"
