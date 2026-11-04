@@ -6,7 +6,7 @@ kind: question_bank
 id: ats017-final-domain-quiz
 course_id: ATS017
 exam_code: CNPE
-status: alpha
+status: draft
 provenance: "Original practice material written for this course; not official exam questions."
 scope:
   type: domain
@@ -588,3 +588,52 @@ questions:
     correct_option: d
     explanation: "LimitRange, then Kyverno, then ResourceQuota."
 
+
+  - id: ats017-final-q26
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Use bounded Initial recommendations on a StatefulSet.
+    source_readings:
+    - sections/section-030/module-03/course-02-bound-statefulset-recommendations.md
+    prompt: StatefulSet probe has a VPA in Initial mode. Its memory target is bounded between 64Mi and 256Mi,
+      but its existing Pod still requests 512Mi. What should you do to apply the recommendation?
+    options:
+    - id: a
+      text: Restart the process inside probe-0.
+      explanation: A process restart does not trigger Pod creation-time admission.
+    - id: b
+      text: Wait for the updater to evict probe-0.
+      explanation: Initial does not evict running Pods.
+    - id: c
+      text: Replace probe-0 after the recommendation is available, then check the new UID and requests.
+      explanation: VPA admission can apply the bounded target during creation of the replacement.
+    - id: d
+      text: Edit the VPA status target to 512Mi.
+      explanation: Status is the recommender result, and this value would exceed the policy maximum.
+    correct_option: c
+    explanation: Initial applies a bounded recommendation only at Pod creation. A StatefulSet replacement
+      keeps its name but has a new UID.
+  - id: ats017-final-q27
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Separate VPA request updates from HPA CPU utilisation.
+    source_readings:
+    - sections/section-030/module-03/course-03-apply-at-pod-creation.md
+    prompt: You need VPA sizing advice and HPA CPU utilisation scaling for Deployment scout. Which layout
+      keeps the CPU requests stable for HPA?
+    options:
+    - id: a
+      text: Use VPA Off and fixed requests in the scout template.
+      explanation: Off computes recommendations without changing the requests used by HPA.
+    - id: b
+      text: Use VPA Initial so every new HPA replica gets the latest request.
+      explanation: Different requests can change CPU utilisation even if traffic stays steady.
+    - id: c
+      text: Use VPA Recreate to keep requests changing as load changes.
+      explanation: That makes the two controllers act on the same CPU utilisation relationship.
+    - id: d
+      text: Remove CPU requests and keep the HPA utilisation target.
+      explanation: CPU utilisation scaling needs a CPU request as its denominator.
+    correct_option: a
+    explanation: VPA Off provides advice; fixed template requests keep the HPA CPU utilisation denominator
+      stable.

@@ -20,6 +20,9 @@ The reader matches capacity to load: the HPA adds and removes replicas as utilis
 - Set resizePolicy so a memory change restarts the container while a CPU change does not, and read the pod's resize conditions
 - Apply the new requests to the Deployment template, and explain why an HPA on CPU and manual CPU right-sizing must not fight each other
 
+- Create bounded Vertical Pod Autoscaler (VPA) recommendations for Deployments and StatefulSets.
+- Apply requests only at Pod creation with Initial, and keep automatic VPA updates separate from HPA resource utilisation.
+
 ---
 
 ## The Learning Path
@@ -38,7 +41,17 @@ The reader matches capacity to load: the HPA adds and removes replicas as utilis
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-02/playground
     ```
 
-### Section Capstone Challenge
+### 3. Set Resource Requests With The Vertical Pod Autoscaler
+
+The Vertical Pod Autoscaler (VPA) recommends container requests from usage. Read recommendations in `Off`, bound them with container policies, then use `Initial` to apply them to replacement StatefulSet and Deployment Pods. Compare all update modes in VPA 1.7.3 and distinguish Pod creation from in-place resize. The playground has VPA components installed as plumbing; you write the policies.
+
+```sh
+astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/playground
+```
+
+The module lab takes about 20 minutes and proves that VPA admission applied bounded requests to new Pods.
+
+### Section Capstone Challenges
 *   **Comprehensive Challenge:** Right-Sizing And Autoscaling Capstone — `sections/section-030/capstone/labs/lab-01`
     ```bash
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-01
@@ -51,3 +64,10 @@ The reader matches capacity to load: the HPA adds and removes replicas as utilis
 ## Ready for Assessment?
 
 Each module ends with a knowledge check.
+
+The second capstone, **Combine VPA, Right-Sizing And HPA**, takes about 35 minutes. Use creation-time VPA updates on StatefulSet `probe`. Measure and reduce Deployment `scout` requests, keep its VPA in `Off`, then add a CPU Horizontal Pod Autoscaler (HPA) and prove scale-up under load.
+
+```sh
+astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-02
+astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-02
+```

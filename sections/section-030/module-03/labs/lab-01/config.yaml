@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-030-03-01
+  docs:
+    question: question.md
+    solution: solution.md
+    prerequisites: prerequisites.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      metricsServer: true
+    preloadImages:
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - registry.k8s.io/autoscaling/vpa-admission-controller:1.7.3
+      - registry.k8s.io/autoscaling/vpa-recommender:1.7.3
+      - registry.k8s.io/autoscaling/vpa-updater:1.7.3
+      - registry.k8s.io/ingress-nginx/kube-webhook-certgen:v20231011-8b53cabe0
+bootstrap:
+  init:
+    - name: prepare
+      description: Install VPA plumbing and seed the workloads without autoscalers
+      type: file
+      source: bootstrap/prepare.sh
+testing:
+  init:
+    - name: solution
+      type: file
+      source: solution/apply.sh
+validation:
+  scripts:
+    - name: policies
+      description: Check targets, update modes and resource bounds
+      type: file
+      source: validation/validate-policies.sh
+    - name: applied
+      description: Check replacement Pods and admission-applied resources
+      type: file
+      source: validation/validate-applied.sh
+teardown:
+  keepCluster: false

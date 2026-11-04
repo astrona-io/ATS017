@@ -20,12 +20,12 @@ training:
     requests, limits and QoS classes, pod placement with affinity, taints and
     topology spread, traffic routing with the Gateway API, NetworkPolicy,
     dynamic storage provisioning, horizontal autoscaling and right-sizing
-    with in-place pod resize, cost
+    with in-place pod resize and bounded Vertical Pod Autoscaler recommendations, cost
     allocation with OpenCost, and sharing a cluster between tenants with
     ResourceQuota, LimitRange and PriorityClass. Each module pairs a layered
     reader with an ungraded hands-on playground. Each section closes with an
     integration capstone.
-    Built and verified against Kubernetes 1.35.
+    Targets Kubernetes 1.35.
 
   certification:
     name: Certified Cloud Native Platform Engineer
@@ -333,7 +333,8 @@ modules:
       measured usage with built-in tools and in-place pod resize. It follows networking and storage because
       autoscaling acts on a complete, reachable workload, and it comes
       before cost because right-sizing is the main lever cost reports
-      point at.
+      point at. A compact Vertical Pod Autoscaler module adds bounded
+      recommendations and controlled Pod-creation updates.
 
     content:
       - type: reading
@@ -465,6 +466,48 @@ modules:
         path: sections/section-030/module-02/quiz.yaml
         question_count: 5
       - type: reading
+        title: Set Resource Requests With The Vertical Pod Autoscaler
+        path: sections/section-030/module-03/course.md
+      - type: reading
+        title: Read Recommendations Without Changing Pods
+        path: sections/section-030/module-03/course-01-read-recommendations.md
+      - type: reading
+        title: Bound Recommendations For A StatefulSet
+        path: sections/section-030/module-03/course-02-bound-statefulset-recommendations.md
+      - type: reading
+        title: Apply Recommendations At Pod Creation
+        path: sections/section-030/module-03/course-03-apply-at-pod-creation.md
+      - type: reading
+        title: Question
+        path: sections/section-030/module-03/labs/lab-01/question.md
+      - type: lab
+        title: Apply Bounded VPA Requests Lab
+        path: sections/section-030/module-03/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 20m
+        topic: autoscaling
+        task_kind: build
+        tags:
+        - vpa
+        - right-sizing
+        - requests-limits
+        - usage-vs-requests
+        learning_goals:
+        - Write bounded creation-time VPA policies for a StatefulSet and a Deployment
+        - Read recommendations and prove admission applied requests to replacement Pods
+        resources:
+        - name: VPA API (pinned release)
+          url: https://github.com/kubernetes/autoscaler/blob/vertical-pod-autoscaler-1.7.3/vertical-pod-autoscaler/docs/api.md
+        - name: VPA Update Modes (pinned release)
+          url: https://github.com/kubernetes/autoscaler/blob/vertical-pod-autoscaler-1.7.3/vertical-pod-autoscaler/docs/quickstart.md
+      - type: reading
+        title: Summary
+        path: sections/section-030/module-03/course-04-summary.md
+      - type: quiz
+        title: 'Knowledge Check: Set Resource Requests With The Vertical Pod Autoscaler'
+        path: sections/section-030/module-03/quiz.yaml
+        question_count: 10
+      - type: reading
         title: Question
         path: sections/section-030/capstone/labs/lab-01/question.md
       - type: lab
@@ -484,6 +527,35 @@ modules:
             url: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
           - name: "Resource Management for Pods and Containers"
             url: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+
+      - type: reading
+        title: Question
+        path: sections/section-030/capstone/labs/lab-02/question.md
+      - type: lab
+        title: Combine VPA, Right-Sizing And HPA Capstone
+        path: sections/section-030/capstone/labs/lab-02
+        difficulty: intermediate
+        estimated_duration: 35m
+        topic: autoscaling
+        task_kind: build
+        tags:
+        - vpa
+        - right-sizing
+        - requests-limits
+        - usage-vs-requests
+        - hpa
+        - scaling-behavior
+        learning_goals:
+        - Apply bounded VPA requests at creation to StatefulSet Pods
+        - Reduce Deployment requests from measured usage while keeping its VPA in Off
+        - Build a CPU HPA and prove it adds Ready replicas under load
+        resources:
+        - name: VPA API (pinned release)
+          url: https://github.com/kubernetes/autoscaler/blob/vertical-pod-autoscaler-1.7.3/vertical-pod-autoscaler/docs/api.md
+        - name: VPA Update Modes (pinned release)
+          url: https://github.com/kubernetes/autoscaler/blob/vertical-pod-autoscaler-1.7.3/vertical-pod-autoscaler/docs/quickstart.md
+        - name: Horizontal Pod Autoscaling
+          url: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
 
   - id: module-040
     title: "Cost Visibility With OpenCost"
@@ -846,4 +918,4 @@ modules:
       - type: quiz
         title: "Final Quiz: Platform Architecture and Infrastructure"
         path: sections/final-domain-quiz.yaml
-        question_count: 25
+        question_count: 27

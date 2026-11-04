@@ -1,0 +1,25 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: scout
+  namespace: starfleet
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: scout
+  updatePolicy:
+    updateMode: 'Off'
+  resourcePolicy:
+    containerPolicies:
+      - containerName: scout
+        controlledResources:
+          - cpu
+          - memory
+        controlledValues: RequestsOnly
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 300m
+          memory: 256Mi

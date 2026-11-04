@@ -181,4 +181,34 @@ items:
   kind: quiz
   what: final domain quiz across every section
   status: done
-  note: "sections/final-domain-quiz.yaml, 25 questions, listed last in astrona.yaml; stub final-domain-quiz.md removed"
+  note: "untested: built without booting 2026-11-04; 27 questions including two VPA questions; schema and source paths checked offline"
+- key: section-030/module-03/course
+  kind: course
+  what: Landing, three compact VPA parts and summary
+  status: done
+  note: 'untested: built without booting 2026-11-04; offline schemas, YAML, shell and Helm render passed; astrona validate
+    blocked by sandbox maintenance lock'
+- key: section-030/module-03/playground
+  kind: playground
+  what: VPA 1.7.3 plumbing and two workload kinds
+  status: done
+  note: 'untested: built without booting 2026-11-04; offline schemas, YAML, shell and Helm render passed; astrona validate
+    blocked by sandbox maintenance lock'
+- key: section-030/module-03/labs/lab-01
+  kind: lab
+  what: 20-minute bounded Initial VPA task for two controllers
+  status: done
+  note: 'untested: built without booting 2026-11-04; offline schemas, YAML, shell and Helm render passed; astrona validate
+    blocked by sandbox maintenance lock'
+- key: section-030/module-03/quiz
+  kind: quiz
+  what: 10 original VPA questions with source readings
+  status: done
+  note: 'untested: built without booting 2026-11-04; offline schemas, YAML, shell and Helm render passed; astrona validate
+    blocked by sandbox maintenance lock'
+- key: section-030/capstone/labs/lab-02
+  kind: capstone
+  what: 35-minute VPA, right-sizing and HPA integration; lab-01 unchanged
+  status: done
+  note: 'untested: built without booting 2026-11-04; offline schemas, YAML, shell and Helm render passed; astrona validate
+    blocked by sandbox maintenance lock'

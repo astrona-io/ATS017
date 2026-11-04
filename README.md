@@ -3,7 +3,7 @@
 
 [![Liberapay](https://img.shields.io/badge/Liberapay-Support_Astrona.io-F6C915?logo=liberapay&logoColor=black&style=for-the-badge)](https://liberapay.com/Astrona.io)
 
-Training for the Platform Architecture and Infrastructure domain (15%) of the Certified Cloud Native Platform Engineer (CNPE) exam. The reader sizes and places workloads, routes traffic with the Gateway API, isolates it with NetworkPolicy, provisions storage dynamically, scales workloads with the HPA and right-sizes them from measured usage with in-place pod resize, reads cost allocation with OpenCost, and shares a cluster between tenants with ResourceQuota, LimitRange and PriorityClass. Breadth over depth: each tool is taught for the job the exam asks of it, and every page shows where the fields live in the Kubernetes documentation, the only documentation allowed in the exam besides a per-task Quick Reference.
+Training for the Platform Architecture and Infrastructure domain (15%) of the Certified Cloud Native Platform Engineer (CNPE) exam. The reader sizes and places workloads, routes traffic with the Gateway API, isolates it with NetworkPolicy, provisions storage dynamically, scales workloads with the HPA and right-sizes them from measured usage with in-place pod resize and bounded Vertical Pod Autoscaler (VPA) recommendations, reads cost allocation with OpenCost, and shares a cluster between tenants with ResourceQuota, LimitRange and PriorityClass. Breadth over depth: each tool is taught for the job the exam asks of it, and every page shows where the fields live in the Kubernetes documentation, the only documentation allowed in the exam besides a per-task Quick Reference.
 
 This course covers the **Platform Architecture and Infrastructure** domain of the Certified Cloud Native Platform Engineer (CNPE) exam, **15% of the exam**.
 
@@ -12,11 +12,11 @@ Everything lives under `sections/`. Each section is a set of modules, and each m
 - a **landing page** (`course.md`) plus, where the subject needs it, ordered **deep-dive parts** (`course-0N-*.md`), woven with hands-on "Try it" checkpoints and Mermaid diagrams;
 - an ungraded **playground** — a throwaway environment to explore in;
 
-Each section ends with a **capstone lab** combining its modules and a knowledge-check quiz.
+Each section ends with **capstone labs** combining its modules and a knowledge-check quiz.
 
 [`astrona.yaml`](astrona.yaml) is the manifest: every section, module, reading, playground, lab and capstone in the order they are meant to be taken.
 
-Everything targets **kind v0.33.0**, **kubernetes v1.35.8**, **metrics-server v0.9.0**, **gateway-api v1.6.1 (experimental channel)**, **gateway-controller astrona gatewayAPI addon (envoy), plumbing only**, **opencost 1.121.3**, **kyverno chart 3.9.2 (v1.19.2)**, **prometheus pin at build (small prometheus-community/prometheus chart, not kube-prometheus-stack)**, **tool-scope official CNPE tool list plus built-in Kubernetes only; metrics-server, the gateway controller and Prometheus-for-OpenCost are plumbing**, **helm 4.3.0 (4.3.1 in use)**, **podinfo 6.15.0**, **go-httpbin v2.25.0** on `kind`.
+Everything targets **kind v0.33.0**, **kubernetes v1.35.8**, **metrics-server v0.9.0**, **gateway-api v1.6.1 (experimental channel)**, **gateway-controller astrona gatewayAPI addon (envoy), plumbing only**, **opencost 1.121.3**, **kyverno chart 3.9.2 (v1.19.2)**, **prometheus pin at build (small prometheus-community/prometheus chart, not kube-prometheus-stack)**, **tool-scope official CNPE tool list plus built-in Kubernetes and a compact VPA module; metrics-server, the gateway controller and Prometheus-for-OpenCost are plumbing**, **VPA 1.7.3 (official chart 0.12.0)**, **helm 4.3.0 (4.3.1 in use)**, **podinfo 6.15.0**, **go-httpbin v2.25.0** on `kind`.
 
 ---
 
@@ -26,7 +26,7 @@ Everything targets **kind v0.33.0**, **kubernetes v1.35.8**, **metrics-server v0
 | --- | --- | --- | --- |
 | [010](sections/section-010) | Compute Placement And Sizing | 2 | Applying Platform Architecture Best Practices for Networking, Storage, and Compute |
 | [020](sections/section-020) | Networking And Storage | 3 | Applying Platform Architecture Best Practices for Networking, Storage, and Compute |
-| [030](sections/section-030) | Right-Sizing And Autoscaling | 2 | Using Cost Management Solutions for Right-Sizing and Scaling |
+| [030](sections/section-030) | Right-Sizing And Autoscaling | 3 | Using Cost Management Solutions for Right-Sizing and Scaling |
 | [040](sections/section-040) | Cost Visibility With OpenCost | 2 | Using Cost Management Solutions for Right-Sizing and Scaling |
 | [050](sections/section-050) | Multi-Tenancy Resources | 3 | Optimizing Multi-Tenancy Resource Usage |
 

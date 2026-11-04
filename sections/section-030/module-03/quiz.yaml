@@ -1,0 +1,249 @@
+schema_version: 1
+kind: question_bank
+id: ats017-030-03
+course_id: ATS017
+exam_code: CNPE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: module
+  id: section-030/module-03
+  title: Set Resource Requests With The Vertical Pod Autoscaler
+questions:
+  - id: ats017-030-03-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: Read recommendations without applying changes.
+    source_readings:
+      - sections/section-030/module-03/course-01-read-recommendations.md
+    prompt: A VPA for Deployment scout has updateMode Off and a nonempty recommendation. What happens
+      to a newly created scout Pod?
+    options:
+      - id: a
+        text: It receives the target request from VPA.
+        explanation: Off does not permit VPA to apply its recommendations.
+      - id: b
+        text: It uses the workload template requests without a VPA resource update.
+        explanation: Off keeps recommendations as advice for both existing and new Pods.
+      - id: c
+        text: It cannot start until the mode changes.
+        explanation: Off does not block Pod creation.
+      - id: d
+        text: It receives the lowerBound as its request.
+        explanation: A recommendation bound is not an admission instruction in Off mode.
+    correct_option: b
+    explanation: Off computes recommendations but does not apply resource changes to Pods.
+  - id: ats017-030-03-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: Target a StatefulSet with the VPA API.
+    source_readings:
+      - sections/section-030/module-03/course-02-bound-statefulset-recommendations.md
+    prompt: You need recommendations for all Pods managed by StatefulSet probe in starfleet. Which targetRef
+      selects the right controller?
+    options:
+      - id: a
+        text: 'apiVersion: v1, kind: Pod, name: probe-0'
+        explanation: Select the workload controller rather than one Pod.
+      - id: b
+        text: 'apiVersion: autoscaling/v2, kind: HorizontalPodAutoscaler, name: probe'
+        explanation: HPA is not the controller managing these Pods.
+      - id: c
+        text: 'apiVersion: apps/v1, kind: Deployment, name: probe'
+        explanation: The kind must match the existing controller.
+      - id: d
+        text: 'apiVersion: apps/v1, kind: StatefulSet, name: probe'
+        explanation: This reference selects the StatefulSet and its Pod selector.
+    correct_option: d
+    explanation: VPA selects the StatefulSet through an apps/v1 controller reference in the same namespace.
+  - id: ats017-030-03-q03
+    type: single_choice
+    difficulty: beginner
+    learning_objective: Apply Initial recommendations at Pod creation.
+    source_readings:
+      - sections/section-030/module-03/course-03-apply-at-pod-creation.md
+    prompt: Deployment scout already has a running Pod when you set VPA updateMode to Initial. After a
+      recommendation appears, how do you apply it?
+    options:
+      - id: a
+        text: Replace the Pod and inspect the new Pod resources.
+        explanation: Initial applies recommendations during Pod creation.
+      - id: b
+        text: Wait for VPA to resize the existing Pod.
+        explanation: Initial does not resize an existing Pod.
+      - id: c
+        text: Restart the application process inside the existing Pod.
+        explanation: A process restart does not create a Pod or trigger creation-time admission.
+      - id: d
+        text: Copy the target into status.recommendation again.
+        explanation: Status records the controller result; it is not a command to apply it.
+    correct_option: a
+    explanation: The workload controller creates a replacement, and VPA admission changes its requests
+      during creation.
+  - id: ats017-030-03-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Bound recommended requests without confusing them with limits.
+    source_readings:
+      - sections/section-030/module-03/course-02-bound-statefulset-recommendations.md
+    prompt: A container policy sets minAllowed.memory to 64Mi and maxAllowed.memory to 256Mi. What do
+      these values bound?
+    options:
+      - id: a
+        text: The memory usage measured by metrics-server.
+        explanation: A policy does not change a usage measurement.
+      - id: b
+        text: The number of Pods that the controller creates.
+        explanation: Resource policy quantities do not control replica count.
+      - id: c
+        text: The container memory request recommended by VPA.
+        explanation: These fields constrain recommended resource requests.
+      - id: d
+        text: The amount of memory available on every node.
+        explanation: Node capacity is independent of the VPA policy.
+    correct_option: c
+    explanation: The bounds constrain recommendations. Container limits and actual usage are separate
+      values.
+  - id: ats017-030-03-q05
+    type: single_choice
+    difficulty: beginner
+    learning_objective: Preserve container limits while VPA sets requests.
+    source_readings:
+      - sections/section-030/module-03/course-02-bound-statefulset-recommendations.md
+    prompt: The team wants VPA to set CPU and memory requests but keep existing limits. Which container
+      policy setting expresses that?
+    options:
+      - id: a
+        text: 'controlledValues: RequestsOnly'
+        explanation: This selects requests and preserves limits.
+      - id: b
+        text: 'controlledValues: RequestsAndLimits'
+        explanation: This can change both requests and limits.
+      - id: c
+        text: 'updateMode: Off'
+        explanation: Off also prevents the requested automatic resource updates.
+      - id: d
+        text: 'containerName: "*"'
+        explanation: This selects containers by default; it does not select which values change.
+    correct_option: a
+    explanation: RequestsOnly separates request recommendations from the existing CPU and memory limits.
+  - id: ats017-030-03-q06
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Distinguish the raw estimate from the bounded target.
+    source_readings:
+      - sections/section-030/module-03/course-01-read-recommendations.md
+    prompt: The raw memory estimate for probe is below its policy minimum. Which status field lets you
+      inspect that estimate before the policy bounds are applied?
+    options:
+      - id: a
+        text: target
+        explanation: The target is the policy-adjusted recommendation.
+      - id: b
+        text: minAllowed
+        explanation: This is a policy field in spec, not the raw status estimate.
+      - id: c
+        text: resources.limits.memory
+        explanation: The limit is not the recommender raw estimate.
+      - id: d
+        text: uncappedTarget
+        explanation: This field reports the estimate before resource policy bounds.
+    correct_option: d
+    explanation: uncappedTarget exposes the usage-based estimate before the container resource policy
+      constrains it.
+  - id: ats017-030-03-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Prove replacement and applied resources for a StatefulSet Pod.
+    source_readings:
+      - sections/section-030/module-03/course-02-bound-statefulset-recommendations.md
+    prompt: After deleting probe-0, a Pod named probe-0 appears again. Which observation best proves that
+      a replacement received VPA requests?
+    options:
+      - id: a
+        text: The Pod name is unchanged.
+        explanation: StatefulSet names remain stable across replacement.
+      - id: b
+        text: The UID changed, vpaUpdates records the admission change, and the Ready container reports
+          the bounded requests.
+        explanation: These observations connect replacement with applied resources and readiness.
+      - id: c
+        text: The StatefulSet template contains the new VPA target.
+        explanation: VPA admission changes the Pod, not the template.
+      - id: d
+        text: kubectl top shows lower memory usage.
+        explanation: Usage alone does not establish replacement or request assignment.
+    correct_option: b
+    explanation: A new UID proves a new Pod; admission evidence and running resources establish that the
+      bounded requests were applied.
+  - id: ats017-030-03-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Recognize the deprecated update mode in VPA 1.7.3.
+    source_readings:
+      - sections/section-030/module-03/course-03-apply-at-pod-creation.md
+    prompt: Which update mode is deprecated in VPA 1.7.3 and should be replaced with an explicit update
+      strategy?
+    options:
+      - id: a
+        text: Initial
+        explanation: Initial is the supported creation-only strategy.
+      - id: b
+        text: Recreate
+        explanation: Recreate is the explicit replacement strategy.
+      - id: c
+        text: Auto
+        explanation: Auto is deprecated and is equivalent to Recreate in this version.
+      - id: d
+        text: 'Off'
+        explanation: Off is the supported recommendation-only mode.
+    correct_option: c
+    explanation: Use an explicit mode instead of deprecated Auto so the intended update behavior is clear.
+  - id: ats017-030-03-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Distinguish in-place modes from Initial.
+    source_readings:
+      - sections/section-030/module-03/course-03-apply-at-pod-creation.md
+    prompt: Kubernetes 1.35 supports in-place resize. Which VPA 1.7.3 mode uses that path without an eviction
+      fallback and requires its own gate on admission and updater?
+    options:
+      - id: a
+        text: Initial
+        explanation: Initial applies changes only when a Pod is created.
+      - id: b
+        text: InPlaceOrRecreate
+        explanation: This mode can fall back to eviction and replacement.
+      - id: c
+        text: Recreate
+        explanation: This mode replaces eligible Pods rather than using only resize.
+      - id: d
+        text: InPlace
+        explanation: This mode requires the VPA InPlace gate and does not fall back to eviction.
+    correct_option: d
+    explanation: InPlace needs the VPA-level InPlace gate as well as Kubernetes resize support. Initial
+      still uses Pod creation.
+  - id: ats017-030-03-q10
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Avoid VPA and HPA competing over resource utilisation.
+    source_readings:
+      - sections/section-030/module-03/course-03-apply-at-pod-creation.md
+    prompt: An HPA uses CPU utilisation on scout. Which arrangement keeps VPA advice without allowing
+      it to change the CPU request used by the HPA?
+    options:
+      - id: a
+        text: VPA Initial and HPA CPU utilisation on scout.
+        explanation: Initial can change the requests of new HPA replicas.
+      - id: b
+        text: VPA Off and manually maintained fixed scout requests.
+        explanation: VPA can advise while the template provides stable requests for HPA.
+      - id: c
+        text: VPA Recreate and HPA CPU utilisation on scout.
+        explanation: VPA request changes alter the denominator of HPA utilisation.
+      - id: d
+        text: VPA Auto and no CPU requests on scout.
+        explanation: Auto is deprecated, and the CPU utilisation target needs requests.
+    correct_option: b
+    explanation: HPA divides CPU usage by requests. Keep that denominator under one owner; VPA Off does
+      not apply its advice.

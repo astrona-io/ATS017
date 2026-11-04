@@ -1,0 +1,25 @@
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: probe
+  namespace: starfleet
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: probe
+  updatePolicy:
+    updateMode: Initial
+  resourcePolicy:
+    containerPolicies:
+      - containerName: probe
+        controlledResources:
+          - cpu
+          - memory
+        controlledValues: RequestsOnly
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 300m
+          memory: 256Mi

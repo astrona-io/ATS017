@@ -29,7 +29,7 @@ The third topic is **optimizing multi-tenancy resource usage**: sharing one clus
 - Cap a team's namespace with a ResourceQuota, and set default requests and limits with a LimitRange.
 - Decide which pods run first when the cluster is full, with PriorityClasses and quota scopes.
 
-Everything is built and checked on **Kubernetes 1.35**, the version the exam uses.
+The course targets **Kubernetes 1.35**, the version the exam uses.
 
 ## The words this course uses
 
@@ -48,7 +48,7 @@ A **tenant** is one team or customer that shares the cluster with others. In thi
 
 ## The example app in your playground
 
-Every playground and lab runs the same small app, and its names come from space. The `starfleet` namespace belongs to the main team, and the `outpost` namespace belongs to a second team. `scout` is an HTTP API (podinfo) on port `9898`. It has endpoints that use CPU or hold memory on demand, so you can create load for the autoscalers. `probe` is an HTTP echo server on port `8080`, used as a second backend. You send your test requests from `shuttle`, a client pod with `curl`. A few modules add `bridge`, an nginx front end.
+Every playground and lab runs the same small app, and its names come from space. The `starfleet` namespace belongs to the main team, and the `outpost` namespace belongs to a second team. `scout` is an HTTP API (podinfo) on port `9898`. It has endpoints that use CPU or hold memory on demand, so you can create load for the autoscalers. `probe` is usually an HTTP echo server on port `8080`, used as a second backend. The Vertical Pod Autoscaler practice uses a podinfo StatefulSet named `probe` on port `9898`. You send your test requests from `shuttle`, a client pod with `curl`. A few modules add `bridge`, an nginx front end.
 
 The names are only names. The pages always describe what each object really is, and they always tell you the namespace to use.
 
@@ -71,7 +71,7 @@ Each section has one or more **modules**, and each module teaches one skill. A m
 | **Reading** | A short landing page, a few chapters that teach one idea each, and a summary | No |
 | **Playground** | A small cluster on your own machine, to try everything you read | No |
 | **Lab** | A cluster in a given state, a task, and a grader that checks your work | Yes |
-| **Capstone** | The last lab in a section, with several tasks at once | Yes |
+| **Capstone** | A lab at the end of a section, with several tasks at once | Yes |
 
 The best order is simple: read the chapters with the playground open next to them, take each lab when a chapter sends you to it, and finish each section with its capstone. The next part of this page explains how a module's pages guide you through that order.
 

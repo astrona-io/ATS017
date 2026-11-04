@@ -1,0 +1,31 @@
+# Chart 0.12.0 belongs to the VPA 1.7 series; pin every controller to its current patch.
+admissionController:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  image:
+    tag: 1.7.3
+recommender:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      memory: 512Mi
+  image:
+    tag: 1.7.3
+updater:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      memory: 256Mi
+  image:
+    tag: 1.7.3

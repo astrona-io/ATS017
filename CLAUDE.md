@@ -257,7 +257,8 @@ section is only true for this one.
   teaches it. In this course that means metrics-server (behind `kubectl top`
   and the HPA), the Gateway API controller from the astrona `gatewayAPI`
   addon, and the small Prometheus behind OpenCost. Right-sizing uses
-  `kubectl top`, Prometheus queries and in-place pod resize, not the VPA.
+  `kubectl top`, Prometheus queries, in-place pod resize and bounded VPA
+  recommendations. VPA controller installation remains plumbing.
 - **The versions:** everything is built and checked on **Kubernetes 1.35**
   (the exam version, `kindest/node:v1.35.8`) with **kind v0.33.0**. Tool
   versions, pinned in each `prepare.sh` or `bootstrap/` script:
@@ -271,6 +272,8 @@ section is only true for this one.
   | OpenCost | 1.121.3 | 040 |
   | Prometheus (small chart; usage queries in 030, plumbing for OpenCost in 040) | pin at build | 030, 040 |
   | Kyverno (Helm chart `kyverno/kyverno` 3.9.2, Kyverno v1.19.2; validate and generate rules for tenants) | 3.9.2 | 050 |
+  | VPA (official Helm chart 0.12.0) | 1.7.3 | 030 |
+  | VPA certificate job (chart plumbing, kube-webhook-certgen) | v20231011-8b53cabe0 | 030 |
   | Helm | 4.3.0 | 020, 030, 040 (install only) |
   | podinfo | 6.15.0 | every section |
   | go-httpbin | 2.25.0 (image tag has no `v`) | every section |
@@ -393,7 +396,8 @@ page states them as fact, and remove the mark when checked.
   requests and limits without recreating the pod, through the pod's
   `resize` subresource (`kubectl patch --subresource resize`) *(verify the
   feature state in 1.35 and the exact status fields and conditions)*. This
-  is the right-sizing tool in section 030; the VPA is not taught.
+  is a right-sizing tool in section 030. The compact VPA module also teaches
+  bounded recommendations and creation-time updates with `Initial`.
 - **OpenCost needs Prometheus.** OpenCost reads usage from Prometheus. Section
   040 installs a small Prometheus (not the full kube-prometheus-stack) and
   OpenCost with its default on-premises price list, because a kind cluster
@@ -502,7 +506,7 @@ this order:
 - Storage: `storageclass`, `pvc`, `dynamic-provisioning`,
   `volume-binding-mode`, `reclaim-policy`, `access-modes`
 - Autoscaling: `hpa`, `metrics-server`, `scaling-behavior`,
-  `in-place-resize`, `usage-vs-requests`, `right-sizing`
+  `in-place-resize`, `usage-vs-requests`, `right-sizing`, `vpa`
 - Cost: `opencost`, `cost-allocation`, `idle-cost`, `cost-labels`,
   `prometheus`
 - Multi-tenancy: `resourcequota`, `limitrange`, `priorityclass`,
