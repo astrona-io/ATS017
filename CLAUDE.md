@@ -249,8 +249,10 @@ section is only true for this one.
   NetworkPolicy, StorageClass, HPA, ResourceQuota, LimitRange, PriorityClass,
   in-place pod resize, `kubectl top`). In this course the CNPE tools taught
   are OpenCost and Prometheus (sections 030 and 040) and Kyverno (section
-  050, only `validate` and `generate` rules for tenant resources). Any other
-  tool is plumbing: it may run
+  050, only `validate` and `generate` rules for tenant resources). The
+  Vertical Pod Autoscaler (VPA) is also taught, in one compact module in
+  section 030, because the CNPE simulator tests it (user decision,
+  2026-11-04). Any other tool is plumbing: it may run
   in a playground, but a page names it in one sentence at most and never
   teaches it. In this course that means metrics-server (behind `kubectl top`
   and the HPA), the Gateway API controller from the astrona `gatewayAPI`
