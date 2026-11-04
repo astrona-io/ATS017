@@ -4,6 +4,14 @@ A volume keeps its own `persistentVolumeReclaimPolicy` after it is created. Chan
 
 ---
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```sh
+astrona submit --watch -c sections/section-020/module-03/labs/lab-02
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Find the volume behind the claim
 
 ```sh
@@ -33,6 +41,8 @@ kubectl get storageclass
 Only `standard-retain` shows `(default)`.
 
 ## Step 4: Check the file and submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```sh
 kubectl -n starfleet exec probe-storage -- cat /data/message.txt

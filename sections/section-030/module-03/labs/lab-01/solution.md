@@ -11,13 +11,15 @@ Use the terminal to create Vertical Pod Autoscaler (VPA) objects and replace Pod
 
 ## The feedback loop
 
-Run grading from the host terminal where you started the lab:
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
 
 ```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/labs/lab-01
+astrona submit --watch --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/labs/lab-01
 ```
 
-Run it before making changes, then after each step. The `policies` and `applied` checks need your changes and should fail in the untouched environment. There is no sample grading output because this lab was built without booting.
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
+The `policies` and `applied` checks need your changes and should fail in the untouched environment. There is no sample grading output because this lab was built without booting.
 
 ## Step 1: Inspect the starting state
 
@@ -118,11 +120,7 @@ kubectl -n starfleet wait --for=condition=RecommendationProvided vpa/scout --tim
 kubectl -n starfleet get vpa probe scout -o yaml
 ```
 
-Look under `status.recommendation.containerRecommendations` for each named container's bounded target. Do not replace Pods until these recommendations exist. **Run the check**: `policies` should now pass.
-
-```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/labs/lab-01
-```
+Look under `status.recommendation.containerRecommendations` for each named container's bounded target. Do not replace Pods until these recommendations exist. The watch terminal now shows `policies` passing.
 
 ## Step 3: Replace Pods after the recommendation
 
@@ -147,15 +145,11 @@ kubectl -n starfleet get deployment scout -o yaml
 
 Look for a replacement UID and the same admission and readiness evidence. The Deployment template still requests `500m` CPU and `512Mi` memory. The Pod requests come from VPA admission, not a template edit.
 
-**Run the check**: `applied` should now pass.
-
-```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/labs/lab-01
-```
+The watch terminal now shows `applied` passing.
 
 ## Submit
 
-Submit from the host terminal after all checks pass:
+After all checks pass, press Ctrl-C to stop the watch, then run the plain command once from the host terminal:
 
 ```sh
 astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/labs/lab-01

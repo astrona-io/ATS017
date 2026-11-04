@@ -1,5 +1,13 @@
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-040/module-02/labs/lab-02
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Compare efficiency with usage
 
 The ConfigMap `report-window` holds the closed window of the task. Ask OpenCost for the cost and the efficiency of each Deployment in the namespace `starfleet`, with the lowest efficiency first. The parameter `aggregate=namespace,controller` groups the answer by namespace and Deployment:
@@ -44,6 +52,8 @@ kubectl -n starfleet exec deploy/shuttle -- curl -s -o /dev/null -w '%{http_code
 The pod is `Running`, and the second command prints `200`.
 
 ## Step 3: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-040/module-02/labs/lab-02

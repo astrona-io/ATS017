@@ -11,13 +11,15 @@ Use the terminal to create Vertical Pod Autoscaler (VPA) objects and replace Pod
 
 ## The feedback loop
 
-Run grading from the host terminal where you started the lab:
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
 
 ```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-02
+astrona submit --watch --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-02
 ```
 
-Run it before making changes, then after each step. The `policies` and `applied` checks need your changes and should fail in the untouched environment. The `sizing` and `hpa` checks also need changes; `hpa` generates its own temporary CPU load and can take several minutes.
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
+The `policies` and `applied` checks need your changes and should fail in the untouched environment. The `sizing` and `hpa` checks also need changes; `hpa` generates its own temporary CPU load and can take several minutes.
 
 ## Step 1: Inspect the starting state
 
@@ -118,11 +120,9 @@ kubectl -n starfleet wait --for=condition=RecommendationProvided vpa/scout --tim
 kubectl -n starfleet get vpa probe scout -o yaml
 ```
 
-Look under `status.recommendation.containerRecommendations` for each named container's bounded target. Do not replace Pods until these recommendations exist. **Run the check**: `policies` should now pass.
+Look under `status.recommendation.containerRecommendations` for each named container's bounded target. Do not replace Pods until these recommendations exist.
 
-```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-02
-```
+The watch terminal now shows `policies` passing.
 
 ## Step 3: Replace Pods after the recommendation
 
@@ -136,11 +136,7 @@ kubectl -n starfleet get pod probe-0 -o yaml
 
 Look for a new UID, a Ready container and `vpaUpdates` naming `probe`. Check that both requests fall inside the policy. Compare the Pod's requests with `status.containerStatuses[0].resources.requests`. Limits must remain unchanged.
 
-**Run the check**: `applied` should now pass.
-
-```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-02
-```
+The watch terminal now shows `applied` passing.
 
 ## Step 4: Reduce the Deployment template requests
 
@@ -156,11 +152,7 @@ kubectl -n starfleet get pods -l app=scout -o yaml
 
 Compare measured memory with `256Mi` and confirm that the new Pods use the budget. The command changes only requests and leaves the original limits. CPU usage under the later load can exceed the CPU request; a request is not a CPU limit. This practice budget is not a production sizing conclusion.
 
-**Run the check**: `sizing` should now pass.
-
-```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-02
-```
+The watch terminal now shows `sizing` passing.
 
 ## Step 5: Add the HPA and generate load
 
@@ -211,21 +203,17 @@ Wait for a resolved CPU target and `ScalingActive: True`. Generate temporary loa
 kubectl -n starfleet exec deploy/shuttle -- sh -c 'for worker in 1 2 3 4; do timeout 170 curl -s -o /dev/null -X POST "http://scout/token?[1-5000000]" & done; wait'
 ```
 
-While that command runs, use a second terminal to observe scaling:
+While that command runs, use another terminal to observe scaling:
 
 ```sh
 kubectl -n starfleet get hpa scout --watch
 ```
 
-Look for CPU utilisation above 60 percent and a replica count above one. End the watch with Ctrl+C. Read Ready replicas with `kubectl -n starfleet get deployment scout`. Keep VPA `scout` in `Off`: enabling resource updates would change the denominator HPA uses. **Run the check**: `hpa` generates fresh load and should pass when at least two replicas are Ready under that load.
-
-```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-02
-```
+Look for CPU utilisation above 60 percent and a replica count above one. End the watch with Ctrl+C. Read Ready replicas with `kubectl -n starfleet get deployment scout`. Keep VPA `scout` in `Off`: enabling resource updates would change the denominator HPA uses. The watch terminal shows `hpa` passing once the grader's own fresh load leaves at least two replicas Ready.
 
 ## Submit
 
-Submit from the host terminal after all checks pass:
+After all checks pass, press Ctrl-C to stop the watch, then run the plain command once from the host terminal:
 
 ```sh
 astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/capstone/labs/lab-02

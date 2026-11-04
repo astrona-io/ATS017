@@ -1,5 +1,13 @@
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-040/module-02/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Read the window
 
 The ConfigMap `report-window` holds the closed window the grader uses. Read its key `window`:
@@ -91,6 +99,8 @@ probe-6bb45869cf-rq2mw/research
 The old pod stays under `__unallocated__`, because a closed window keeps the attribution that the pods had when they ran. Your pod names are different from the ones shown here, and the pod names in this listing are examples.
 
 ## Step 6: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-040/module-02/labs/lab-01

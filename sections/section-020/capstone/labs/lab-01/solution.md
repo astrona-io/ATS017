@@ -4,6 +4,14 @@ You build four things in order: the Gateway and route, the claim for `scout`, th
 
 ---
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```sh
+astrona submit --watch -c sections/section-020/capstone/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Gateway and route
 
 Save this as `gateway-starfleet.yaml`:
@@ -175,6 +183,8 @@ kubectl apply -f networkpolicy-allow-from-gateway.yaml
 ```
 
 ## Step 4: Check and submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```sh
 kubectl -n outpost exec deploy/shuttle -- curl -s http://$GATEWAY/api/info

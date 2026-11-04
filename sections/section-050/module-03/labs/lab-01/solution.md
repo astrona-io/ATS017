@@ -4,6 +4,14 @@ estimated_duration: 25m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-050/module-03/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Look at the cluster
 
 ```bash
@@ -80,6 +88,8 @@ kubectl -n starfleet delete pod bare
 ```
 
 ## Step 4: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-050/module-03/labs/lab-01

@@ -4,6 +4,14 @@ estimated_duration: 25m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-030/module-02/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Read the current resources and the events
 
 Print the requests and limits of both pods, then find out why `scout-underprovisioned` restarts:
@@ -51,7 +59,7 @@ Print the resources and the restart counts again, and wait a minute:
 kubectl -n starfleet get pods -o custom-columns='POD:.metadata.name,CPU_REQ:.spec.containers[0].resources.requests.cpu,MEM_REQ:.spec.containers[0].resources.requests.memory,MEM_LIM:.spec.containers[0].resources.limits.memory,RESTARTS:.status.containerStatuses[0].restartCount'
 ```
 
-Both pods are `Running`, and `scout-underprovisioned` shows `0` restarts that keep at `0`. Submit the lab:
+Both pods are `Running`, and `scout-underprovisioned` shows `0` restarts that keep at `0`. Press Ctrl-C to stop the watch, then submit the lab once:
 
 ```bash
 astrona submit -c sections/section-030/module-02/labs/lab-01

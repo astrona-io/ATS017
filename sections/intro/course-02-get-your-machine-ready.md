@@ -65,7 +65,7 @@ Inside a lab, you send your work for grading with `astrona submit`. The grader c
 astrona submit -c sections/section-010/module-01/labs/lab-01
 ```
 
-You can submit as often as you like.
+A plain `astrona submit` is final: a pass or a fail finishes the attempt and deletes the lab. To watch your progress while you work, run `astrona submit --watch` with the same arguments in a second terminal. It grades every few seconds, records nothing and stops with Ctrl-C.
 
 When you are done with a playground or a lab, remove it:
 

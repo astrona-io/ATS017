@@ -14,15 +14,17 @@ Kubernetes Application Programming Interface (API).
 
 ## The feedback loop
 
-Run grading from the host terminal where you launched the lab:
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
 
 ```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-01/labs/lab-03
+astrona submit --watch --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-01/labs/lab-03
 ```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
 
 The five checks are `pricing-model`, `pricing-active`, `cost-report`,
 `pod-query` and `scrape-error`. Before any changes, the old prices and the
-missing files should cause all five to fail. Run grading after each step.
+missing files should cause all five to fail.
 
 ## Step 1: Inspect the starting state
 
@@ -88,7 +90,7 @@ equal to `0.006`, and `CPU` equal to `0.009` under `default,spot`. The network
 metric should have value `0.09`; repeat the checks while OpenCost reloads.
 This confirms a rate, not measured Internet traffic or a network bill.
 
-**Run the check.** `pricing-model` and `pricing-active` should now pass.
+The watch terminal now shows `pricing-model` and `pricing-active` passing.
 
 ## Step 3: Save the cost table
 
@@ -116,7 +118,7 @@ exclude the idle row and hide efficiency columns. Look for rows for
 The stored window is in the past. Its cost uses the price samples from that
 period; changing today's price does not rewrite old Prometheus samples.
 
-**Run the check.** `cost-report` should now pass.
+The watch terminal now shows `cost-report` passing.
 
 ## Step 4: Save the pod query
 
@@ -135,7 +137,7 @@ nonempty result and only the namespace `starfleet`. Save the full JavaScript
 Object Notation (JSON) response, including the evaluation timestamps. The
 grader repeats the query at that time and compares the series and values.
 
-**Run the check.** `pod-query` should now pass.
+The watch terminal now shows `pod-query` passing.
 
 ## Step 5: Save the failing target's error
 
@@ -152,7 +154,7 @@ cat /tmp/cnpe-cost-review/target-error.txt
 Look for the `probe-broken` job and an HTTP scrape error. `jq -r` writes the
 text without JSON quotation marks. Leave the failing job in place.
 
-**Run the check.** `scrape-error` should now pass. Submit the completed task:
+The watch terminal now shows `scrape-error` passing. Press Ctrl-C to stop the watch, then submit the completed task once:
 
 ```sh
 astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-01/labs/lab-03

@@ -4,6 +4,14 @@ The claim asks for `ReadWriteMany`. The `standard` StorageClass uses the `ranche
 
 ---
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```sh
+astrona submit --watch -c sections/section-020/module-03/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Read why the pod and claim are not ready
 
 List the pod and the claim:
@@ -75,6 +83,8 @@ kubectl -n starfleet exec deploy/scout -- cat /data/message.txt
 The last command prints `saved-by-scout`.
 
 ## Step 4: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```sh
 astrona submit -c sections/section-020/module-03/labs/lab-01

@@ -4,6 +4,14 @@ estimated_duration: 15m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-030/module-02/labs/lab-02
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Record the starting state
 
 Store the pod name and print its UID, restart count and resources:
@@ -31,7 +39,7 @@ The request and the limit move together. A request of `500m` is above the old li
 kubectl -n starfleet get pod $POD -o jsonpath='uid={.metadata.uid} restarts={.status.containerStatuses[0].restartCount}{"\n"}status={.status.containerStatuses[0].resources}{"\n"}conditions={.status.conditions[*].type}{"\n"}'
 ```
 
-The UID is the one you wrote down, `restarts` is `0`, and the status shows `500m` and `1` for CPU and `64Mi` and `128Mi` for memory. The condition list has no `PodResizePending` and no `PodResizeInProgress`. If a resize condition is still there, wait a few seconds and run the command again. Submit the lab:
+The UID is the one you wrote down, `restarts` is `0`, and the status shows `500m` and `1` for CPU and `64Mi` and `128Mi` for memory. The condition list has no `PodResizePending` and no `PodResizeInProgress`. If a resize condition is still there, wait a few seconds and run the command again. Press Ctrl-C to stop the watch, then submit the lab once:
 
 ```bash
 astrona submit -c sections/section-030/module-02/labs/lab-02

@@ -4,6 +4,14 @@ estimated_duration: 20m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```sh
+astrona submit --watch -c sections/section-030/module-01/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Read the HPA status
 
 Look at the target column and then at the conditions and events:
@@ -52,7 +60,7 @@ Start a steady load from `shuttle`. The command waits for 100 seconds:
 kubectl -n starfleet exec deploy/shuttle -- sh -c 'for i in 1 2 3 4; do timeout 100 curl -s -o /dev/null -X POST "http://scout/token?[1-5000000]" & done; wait'
 ```
 
-In a second terminal, watch the HPA:
+In another terminal, watch the HPA:
 
 ```bash
 kubectl -n starfleet get hpa scout --watch
@@ -61,6 +69,8 @@ kubectl -n starfleet get hpa scout --watch
 The CPU target rises far above `50%` and the replica count grows within about a minute.
 
 ## Step 6: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-030/module-01/labs/lab-01

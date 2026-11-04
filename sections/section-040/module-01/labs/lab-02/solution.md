@@ -4,6 +4,14 @@ estimated_duration: 25m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-040/module-01/labs/lab-02
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Read the window
 
 The ConfigMap `report-window` holds the closed window the grader uses:
@@ -66,6 +74,8 @@ kubectl -n default create configmap least-efficient --from-literal=controller=re
 ```text
 configmap/least-efficient created
 ```
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-040/module-01/labs/lab-02

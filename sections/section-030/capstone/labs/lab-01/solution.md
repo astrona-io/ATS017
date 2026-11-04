@@ -4,6 +4,14 @@ estimated_duration: 40m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-030/capstone/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Measure the usage
 
 Read the requests and the usage of `scout`:
@@ -69,6 +77,8 @@ kubectl -n starfleet get hpa scout
 The `TARGETS` column shows a percentage of `50%`. The HPA needs about a minute after it starts to read the first usage.
 
 ## Step 4: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-030/capstone/labs/lab-01

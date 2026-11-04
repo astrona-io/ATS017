@@ -4,6 +4,14 @@ estimated_duration: 15m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-010/module-02/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Read why the pods are Pending
 
 ```bash
@@ -36,6 +44,8 @@ kubectl -n starfleet exec deploy/shuttle -- curl -s -o /dev/null -w '%{http_code
 Both `probe` pods show the `zone-b` node in the `NODE` column and the request returns `200`.
 
 ## Step 4: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-010/module-02/labs/lab-01

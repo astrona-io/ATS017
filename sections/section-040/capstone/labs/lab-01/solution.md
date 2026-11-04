@@ -1,5 +1,13 @@
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-040/capstone/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Ask OpenCost for the cost of each Deployment
 
 The ConfigMap `report-window` holds the closed window of the task. The labels did not exist in that window, so group by namespace and controller, not by the label. The `%22` is the URL encoding of a quote character:
@@ -83,6 +91,8 @@ kubectl -n starfleet exec deploy/shuttle -- curl -s -o /dev/null -w '%{http_code
 Every pod shows its team, and the second command prints `200`.
 
 ## Step 5: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-040/capstone/labs/lab-01

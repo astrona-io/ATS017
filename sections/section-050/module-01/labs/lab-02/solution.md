@@ -4,6 +4,14 @@ estimated_duration: 25m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-050/module-01/labs/lab-02
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Read the rejection
 
 The Deployment shows `0/3`. Read why the ReplicaSet cannot create a pod, and look at the resources in the pod template:
@@ -91,6 +99,8 @@ Container   cpu       -    -      50m              -              -
 ```
 
 ## Step 6: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-050/module-01/labs/lab-02

@@ -4,6 +4,14 @@ estimated_duration: 30m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-010/capstone/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Read the starting state
 
 ```bash
@@ -66,6 +74,8 @@ kubectl -n starfleet exec deploy/shuttle -- curl -s -o /dev/null -w '%{http_code
 Two `scout` pods show each worker in `NODE`, every QoS class is `Guaranteed`, both `probe` pods run on the `ssd` node and both requests return `200`.
 
 ## Step 5: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-010/capstone/labs/lab-01

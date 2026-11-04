@@ -15,16 +15,18 @@ requests storage; reducing a quota does not remove a claim that already exists.
 | Stop the storage consumer | Deployment | `kubectl scale` |
 | Limit total requested storage | Namespace quota | `requests.storage` |
 
-Run `astrona submit` from the host terminal where you launched the lab:
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
 
 ```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-01/labs/lab-03
+astrona submit --watch --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-01/labs/lab-03
 ```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
 
 The checks are `storage-block`, `planned-limits-1` for `pipeline-scout` and
 `planned-limits-2` for `pipeline-probe`. The starting state has no quotas, so
-none should pass yet. Run the command after each change
-to read the remaining failures. No command output is recorded here; use the
+none should pass yet. The watch terminal shows the remaining failures after
+each change. No command output is recorded here; use the
 results from your own cluster.
 
 ## Step 1: Inspect the historical request
@@ -94,7 +96,7 @@ The PVC protection controller delays deletion while a pod object still uses
 the claim. Scaling the Deployment down first removes that consumer. The quota
 itself does not evict pods or remove storage.
 
-Run the check. `storage-block` should now pass; it also attempts a real `1Mi`
+The watch terminal now shows `storage-block` passing; it also attempts a real `1Mi`
 PVC create and requires a quota rejection.
 
 ## Step 3: Limit count and total storage in the other namespaces
@@ -130,8 +132,8 @@ Then check the result:
 kubectl -n pipeline-scout describe resourcequota pipeline-storage
 ```
 
-Look for both resources under used and hard. Run the check. `planned-limits-1`
-should now pass. Its new `1Mi` claim fits, a second extra claim exceeds the
+Look for both resources under used and hard. The watch terminal now shows
+`planned-limits-1` passing. Its new `1Mi` claim fits, a second extra claim exceeds the
 count, and a new `4Gi` claim exceeds the total while there is room in the count.
 
 Save this as `resourcequota-pipeline-probe.yaml`:
@@ -165,9 +167,11 @@ kubectl -n pipeline-probe describe resourcequota pipeline-storage
 kubectl -n pipeline-probe get deployment,pvc
 ```
 
-Keep the original claim and the one-replica Deployment. Run the check.
-`planned-limits-2` should now pass: two new `1Mi` claims fit, another exceeds the
+Keep the original claim and the one-replica Deployment. The watch terminal now
+shows `planned-limits-2` passing: two new `1Mi` claims fit, another exceeds the
 count, and a new `6Gi` claim exceeds the total requested storage.
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```sh
 astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-01/labs/lab-03
@@ -185,7 +189,7 @@ removes its temporary claims after the checks.
   Do not remove PVC protection finalizers.
 - **`planned-limits-1` or `planned-limits-2`: wrong quota.** Read `spec.hard` and
   `status.hard`. Confirm both count and storage, and allow the quota controller
-  to update status before submitting again.
+  to update status before you submit.
 - **An allowed claim is rejected.** Remove your own extra test claims. Keep
   only the original `1Gi` claim in each bounded namespace. The validator needs
   free capacity to prove that small claims are allowed.

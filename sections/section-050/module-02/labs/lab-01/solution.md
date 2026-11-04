@@ -4,6 +4,14 @@ estimated_duration: 20m
 
 # Solution
 
+Keep this command running in a second host terminal. It grades the lab every few seconds and records nothing:
+
+```bash
+astrona submit --watch -c sections/section-050/module-02/labs/lab-01
+```
+
+Use `--watch` until the end, because a plain `astrona submit` finishes the attempt and deletes the lab. Run the plain command once, in the last step.
+
 ## Step 1: Read why the pod is Pending
 
 ```bash
@@ -79,6 +87,8 @@ outpost     13s         Normal   Preempted   pod/probe-7cbdf54c48-j7nfh   Preemp
 The output comes from the playground, which uses the same layout. The scheduler evicted one `probe` pod, and its replacement stays `Pending`.
 
 ## Step 5: Submit
+
+Press Ctrl-C to stop the watch, then run the plain command once:
 
 ```bash
 astrona submit -c sections/section-050/module-02/labs/lab-01
