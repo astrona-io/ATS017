@@ -776,6 +776,26 @@ modules:
         title: "Quota Rejections For Requests, Counts And Storage"
         path: sections/section-050/module-01/course-02-quota-rejections-for-requests-counts-and-storage.md
       - type: reading
+        title: Question
+        path: sections/section-050/module-01/labs/lab-03/question.md
+      - type: lab
+        title: "Limit Pipeline Storage With ResourceQuota Lab"
+        path: sections/section-050/module-01/labs/lab-03
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: multi-tenancy
+        task_kind: build
+        tags: [resourcequota, pvc, namespace-isolation, requests-limits]
+        learning_goals:
+          - Inspect a reverted Git commit to identify the pipeline namespace that must lose storage access
+          - Block new claims with a zero-count quota and remove the existing claim after stopping its consumer
+          - Limit PVC count and total requested storage in two namespaces and prove allowed and denied creates
+        resources:
+          - name: "Resource Quotas"
+            url: https://kubernetes.io/docs/concepts/policy/resource-quotas/
+          - name: "Storage Object In Use Protection"
+            url: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#storage-object-in-use-protection
+      - type: reading
         title: "LimitRange Sets Defaults And Maximums"
         path: sections/section-050/module-01/course-03-limitrange-sets-defaults-and-maximums.md
       - type: reading

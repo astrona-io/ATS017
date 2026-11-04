@@ -146,7 +146,7 @@ items:
   kind: course
   what: "chapter for module 1: Bound Tenants With ResourceQuota And LimitRange"
   status: done
-  note: "landing, three parts and summary, two labs (astrona test passed), quiz"
+  note: "untested: built without booting 2026-11-04 for the storage quota lab-03 pointer, landing and summary additions; earlier landing, three parts, summary, two labs (astrona test passed) and quiz otherwise unchanged"
 - key: section-050/module-02/playground
   kind: playground
   what: "playground for module 2: Share Capacity With PriorityClasses And Quota Scopes"
@@ -218,3 +218,9 @@ items:
   what: Update custom prices and save plugin, pod-query and scrape-error evidence
   status: done
   note: 'untested: built without booting 2026-11-04; pinned sources, released plugin flags, official lab schema, YAML, shell and Helm renders checked; live startup and graders untested; astrona validate blocked by sandbox maintenance lock'
+
+- key: section-050/module-01/labs/lab-03
+  kind: lab
+  what: "Limit Pipeline Storage With ResourceQuota"
+  status: done
+  note: "untested: built without booting 2026-11-04; local reverted Git history, three namespaces, zero-count block and bounded storage quotas; static checks and astrona validate only"

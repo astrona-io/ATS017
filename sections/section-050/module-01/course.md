@@ -13,6 +13,7 @@ The module has three parts. **ResourceQuota Caps A Namespace** creates a quota, 
 After this module you can:
 
 - Cap a namespace's total CPU and memory requests and limits, and its object counts, with a ResourceQuota.
+- Identify a pipeline from a reverted Git storage request, block new claims there, and limit claim count and total requested storage in other namespaces.
 - Read used against hard in `kubectl describe resourcequota`.
 - Diagnose a pod or ReplicaSet that a quota rejects, from the `Forbidden` message and the events of the ReplicaSet.
 - Set default requests and limits, and a minimum and a maximum for each container, with a LimitRange.

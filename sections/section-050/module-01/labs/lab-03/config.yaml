@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Limit Pipeline Storage With ResourceQuota (ats-017-lab-050-01-03)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-050-01-03
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - mccutchen/go-httpbin:2.25.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Checks for Git, seeds a reverted storage request, and creates three pipeline namespaces with PVC consumers
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-storage-block
+      description: Checks the zero PVC quota in the namespace from Git history, consumer removal, and a real denied PVC create
+      type: file
+      source: validation/validate-storage-block.sh
+    - name: verify-planned-limits-1
+      description: Checks planned count and total storage caps in one bounded namespace with allowed and denied PVC creates
+      type: file
+      source: validation/validate-planned-limits-1.sh
+    - name: verify-planned-limits-2
+      description: Checks planned count and total storage caps in the other bounded namespace with allowed and denied PVC creates
+      type: file
+      source: validation/validate-planned-limits-2.sh
+
+teardown:
+  keepCluster: false

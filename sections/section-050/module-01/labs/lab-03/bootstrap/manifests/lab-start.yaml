@@ -1,0 +1,146 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pipeline-scout
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pipeline-cache
+  namespace: pipeline-scout
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cache-reader
+  namespace: pipeline-scout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cache-reader
+  template:
+    metadata:
+      labels:
+        app: cache-reader
+    spec:
+      containers:
+        - name: probe
+          image: mccutchen/go-httpbin:2.25.0
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: cache
+              mountPath: /pipeline-cache
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: pipeline-cache
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pipeline-probe
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pipeline-cache
+  namespace: pipeline-probe
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cache-reader
+  namespace: pipeline-probe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cache-reader
+  template:
+    metadata:
+      labels:
+        app: cache-reader
+    spec:
+      containers:
+        - name: probe
+          image: mccutchen/go-httpbin:2.25.0
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: cache
+              mountPath: /pipeline-cache
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: pipeline-cache
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pipeline-shuttle
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pipeline-cache
+  namespace: pipeline-shuttle
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cache-reader
+  namespace: pipeline-shuttle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cache-reader
+  template:
+    metadata:
+      labels:
+        app: cache-reader
+    spec:
+      containers:
+        - name: probe
+          image: mccutchen/go-httpbin:2.25.0
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          volumeMounts:
+            - name: cache
+              mountPath: /pipeline-cache
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: pipeline-cache

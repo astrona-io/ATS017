@@ -30,6 +30,8 @@ This section shows how to share one cluster between teams. Each tenant namespace
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-01/playground
     ```
 
+*   **Graded Lab:** Limit Pipeline Storage With ResourceQuota — `sections/section-050/module-01/labs/lab-03`. Inspect a reverted Git request to identify a pipeline namespace, block new claims and remove its existing storage, then cap claim count and total requested storage in two other namespaces. The task takes about 25 minutes.
+
 ### 2. Share Capacity With PriorityClasses And Quota Scopes
 *   **Hands-on Playground:** `sections/section-050/module-02/playground` — Single-node kind cluster. `outpost` runs `probe` replicas that request almost all the free CPU, so a new pod cannot fit. A `scout-critical` Deployment manifest is ready to apply. Only the built-in system PriorityClasses exist, and there is no ResourceQuota.
     ```bash

@@ -280,6 +280,7 @@ section is only true for this one.
   | Kyverno (Helm chart `kyverno/kyverno` 3.9.2, Kyverno v1.19.2; validate and generate rules for tenants) | 3.9.2 | 050 |
   | VPA (official Helm chart 0.12.0) | 1.7.3 | 030 |
   | VPA certificate job (chart plumbing, kube-webhook-certgen) | v20231011-8b53cabe0 | 030 |
+  | Git (local history inspection; built only when the terminal has no working Git) | 2.56.0 | 050 module 01 lab 03 |
   | Helm | 4.3.0 | 020, 030, 040 (install only) |
   | podinfo | 6.15.0 | every section |
   | go-httpbin | 2.25.0 (image tag has no `v`) | every section |
