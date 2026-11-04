@@ -6,7 +6,7 @@ kind: question_bank
 id: ats017-050-03
 course_id: ATS017
 exam_code: CNPE
-status: draft
+status: alpha
 provenance: Original practice material written for this course; not official exam questions.
 scope:
   type: module
