@@ -10,7 +10,9 @@ The reader makes cost visible: OpenCost splits node, storage and network cost ac
 ## What You Will Master
 
 - Name the data OpenCost needs (Prometheus metrics, node prices) and where each comes from on a cluster without cloud billing
-- Query cost allocation by namespace and by controller with the OpenCost API and the kubectl cost style output
+- Query cost allocation by namespace and by controller with the OpenCost API and `kubectl cost namespace --opencost`
+- Change the custom pricing model and confirm the active rates through OpenCost
+- Save namespace-filtered pod information and a failed target's `lastError` from Prometheus
 - Read the CPU, memory and storage parts of a workload's cost and the efficiency figure
 - Explain how OpenCost allocates cost from the larger of requests and usage
 - Aggregate cost by a team label and by namespace in the OpenCost API
@@ -24,7 +26,7 @@ The reader makes cost visible: OpenCost splits node, storage and network cost ac
 
 ### 1. Read Cost Allocation With OpenCost
 *   **Module Reader:** **[Module 1: Read Cost Allocation With OpenCost](./module-01/course.md)**
-*   **Hands-on Playground:** `sections/section-040/module-01/playground` — Single-node kind cluster with metrics-server, a small Prometheus (prometheus-community/prometheus chart) and OpenCost 1.121.3 with its default on-premises price list. Namespaces `starfleet` (`scout`, `probe`, `shuttle` with load) and `outpost` (`probe`), running long enough before the reader arrives for allocation data to be non-zero. The OpenCost UI is reachable through kubectl port-forward.
+*   **Hands-on Playground:** `sections/section-040/module-01/playground` — Single-node kind cluster with metrics-server, a small Prometheus (prometheus-community/prometheus chart) and OpenCost 1.121.3 with its default on-premises price list. Namespaces `starfleet` (`scout`, `probe`, `shuttle` with load) and `outpost` (`probe`), running long enough before the reader arrives for allocation data to be non-zero. The OpenCost UI is reachable through kubectl port-forward. The terminal includes `kubectl-cost` v0.6.6. A `probe-broken` scrape job fails deliberately. The fifth reading and `module-01/labs/lab-03` cover price changes, the plugin table and saved Prometheus evidence.
     ```bash
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-01/playground
     ```

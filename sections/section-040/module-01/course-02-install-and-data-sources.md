@@ -73,7 +73,9 @@ Prometheus must scrape three sources: the kubelet cAdvisor endpoint for containe
 kubectl -n starfleet exec deploy/shuttle -- curl -s http://prometheus-server.monitoring.svc/api/v1/targets | jq -c '.data.activeTargets[] | {job: .labels.job, health}' | sort | uniq -c
 ```
 
-You should see something like:
+The recorded result below predates the deliberate `probe-broken` job. It
+shows the healthy data sources. Your list also includes `probe-broken` with
+`health` set to `down`:
 
 ```text
    1 {"job":"kubernetes-api-servers","health":"up"}
@@ -84,7 +86,7 @@ You should see something like:
    1 {"job":"prometheus","health":"up"}
 ```
 
-The job `kubernetes-nodes-cadvisor` carries the usage metrics. The job `kubernetes-service-endpoints` includes kube-state-metrics, which carries the requests. The job `opencost` is an extra scrape job that the playground adds in `prometheus-values.yaml`, with the address `opencost.opencost:9003`. Every target has `health` `up`. A target that is `down` leaves a gap in the cost.
+The job `kubernetes-nodes-cadvisor` carries the usage metrics. The job `kubernetes-service-endpoints` includes kube-state-metrics, which carries the requests. The job `opencost` is an extra scrape job that the playground adds in `prometheus-values.yaml`, with the address `opencost.opencost:9003`. The data-source jobs shown have `health` `up`. A failed scrape of one of these inputs can leave a gap in the cost. The extra `probe-broken` job fails on purpose; it supplies none of these inputs.
 
 ## Give OpenCost a price list
 

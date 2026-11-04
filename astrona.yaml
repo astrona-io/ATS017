@@ -625,8 +625,33 @@ modules:
           - name: "OpenCost API"
             url: https://opencost.io/docs/integrations/api
       - type: reading
+        title: "Change Prices And Check Metrics"
+        path: sections/section-040/module-01/course-05-change-prices-and-check-metrics.md
+      - type: reading
+        title: Question
+        path: sections/section-040/module-01/labs/lab-03/question.md
+      - type: lab
+        title: "Update OpenCost Pricing And Inspect Its Data Lab"
+        path: sections/section-040/module-01/labs/lab-03
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: cost
+        task_kind: troubleshooting
+        tags: [opencost, cost-allocation, prometheus, cost-pricing, scrape-errors]
+        learning_goals:
+          - Update the custom price model and prove that OpenCost uses the new rates
+          - Save a namespace cost table with the OpenCost plugin endpoint and the stored window
+          - Save namespace-filtered pod information and a scrape error from the live Prometheus API
+        resources:
+          - name: "OpenCost On-Premises Pricing"
+            url: https://opencost.io/docs/configuration/on-prem/
+          - name: "kubectl-cost v0.6.6"
+            url: https://github.com/kubecost/kubectl-cost/tree/v0.6.6
+          - name: "Prometheus HTTP API"
+            url: https://prometheus.io/docs/prometheus/latest/querying/api/
+      - type: reading
         title: Summary
-        path: sections/section-040/module-01/course-05-summary.md
+        path: sections/section-040/module-01/course-06-summary.md
       - type: quiz
         title: "Knowledge Check: Read Cost Allocation With OpenCost"
         path: sections/section-040/module-01/quiz.yaml

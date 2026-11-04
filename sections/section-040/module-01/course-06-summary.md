@@ -18,4 +18,15 @@ Efficiency compares usage with the request. `cpuEfficiency` is the CPU usage div
 - `aggregate=namespace,controller` keeps controllers of different namespaces apart.
 - Costs on `kind` come from a price list and are not a bill.
 
+The custom pricing model sets internal rates, including spot CPU and Internet
+egress. OpenCost's active node prices and network metric confirm that the
+model reached the running service. The `kubectl cost` plugin reads allocation
+from OpenCost; `--opencost` selects its endpoint and `--historical` reports
+the cost inside the selected window. New rates do not rewrite old samples.
+
+Prometheus pod information and scrape status answer different questions.
+A namespace selector limits `kube_pod_info` to the team's pods. The targets
+API identifies failed scrapes through `health` and `lastError`. Saving the
+complete query response or the exact error preserves evidence for review.
+
 <!-- astrona:playground:destroy -->

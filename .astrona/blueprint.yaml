@@ -345,7 +345,9 @@ sections:
         title: Read Cost Allocation With OpenCost
         objectives:
           - Name the data OpenCost needs (Prometheus metrics, node prices) and where each comes from on a cluster without cloud billing
-          - Query cost allocation by namespace and by controller with the OpenCost API and the kubectl cost style output
+          - Query cost allocation by namespace and by controller with the OpenCost API and kubectl cost namespace --opencost
+          - Change the custom pricing model and read active rates from OpenCost
+          - Save namespace-filtered pod information and a failing target's lastError from Prometheus
           - Read the CPU, memory and storage parts of a workload's cost and the efficiency figure
           - Explain how OpenCost allocates cost from the larger of requests and usage
         outline:
@@ -353,6 +355,7 @@ sections:
           - Installing OpenCost with Prometheus and the default on-premises price list
           - Querying the allocation API by window and aggregate, and the user interface
           - Reading cost efficiency
+          - Changing custom prices and checking active rates; kubectl cost --opencost; saving pod information and scrape errors from Prometheus
         diagrams:
           - type: flowchart
             shows: Prometheus metrics and the price list flowing into OpenCost allocation by namespace and workload
@@ -363,6 +366,8 @@ sections:
           `probe`, `shuttle` with load) and `outpost` (`probe`), running long
           enough before the reader arrives for allocation data to be non-zero.
           The OpenCost UI is reachable through kubectl port-forward.
+          The terminal includes kubectl-cost v0.6.6, and probe-broken is a
+          deliberate failing scrape for error inspection.
       - id: module-02
         title: Attribute Cost By Label And Find Idle Spend
         objectives:

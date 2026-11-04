@@ -6,7 +6,7 @@ A cluster has one bill, and many teams share it. A team that wants to spend less
 
 Keep one sentence in mind for this module: **OpenCost charges each container for the larger of what it requests and what it uses, so a request that is too high costs money even when the container is idle.** Everything in the parts below either explains where the numbers come from, shows how to ask for them, or shows how to read them.
 
-The module has four parts. **How OpenCost Computes Cost Allocation** follows a cost from the three inputs (prices, requests and usage) to dollars. **Install OpenCost And Check Its Data Sources** shows what OpenCost depends on and how to prove that each dependency works. **Query The Allocation API** asks for the cost of a window of time, grouped by namespace, controller, pod or label. **Read Efficiency And Find Waste** reads the efficiency fields and finds the workload that wastes the most of its request.
+The module has five parts. **How OpenCost Computes Cost Allocation** follows a cost from the three inputs (prices, requests and usage) to dollars. **Install OpenCost And Check Its Data Sources** shows what OpenCost depends on and how to prove that each dependency works. **Query The Allocation API** asks for the cost of a window of time, grouped by namespace, controller, pod or label. **Read Efficiency And Find Waste** reads the efficiency fields and finds the workload that wastes the most of its request. **Change Prices And Check Metrics** changes the custom rates, uses `kubectl cost --opencost`, and saves pod information and a scrape error from Prometheus.
 
 ## Learning objectives
 
@@ -18,11 +18,14 @@ After this module you can:
 - Explain how OpenCost uses the larger of the request and the usage, and read `cpuEfficiency`, `ramEfficiency` and `totalEfficiency`.
 - Find the workload that wastes the most of its request, which is not always the workload that costs the most.
 
+- Change the custom price model and check the active rates through OpenCost.
+- Use `kubectl cost` with `--opencost` and save namespace-filtered pod metrics and a scrape error.
+
 ## Before you start
 
 You need Kubernetes basics: pods, Deployments, Services, namespaces, and the commands `kubectl get`, `kubectl exec` and `kubectl logs`. You should know that CPU is written in millicores (`100m` is one tenth of a CPU core), that memory is written in bytes with a suffix such as `Mi`, and what a request is. You should also know how to read JSON with `jq`.
 
-Your playground is a single-node `kind` cluster running Kubernetes 1.35. A `kind` cluster has no cloud bill, so OpenCost uses its default on-premises price list. The costs in this module are small dollar amounts from that list, not real money. The playground installs a small Prometheus and OpenCost 1.121.3 with Helm. Prometheus is plumbing here: it stores the usage and the requests that OpenCost reads. The workloads in the namespace `starfleet` and `outpost` are these:
+Your playground is a single-node `kind` cluster running Kubernetes 1.35. A `kind` cluster has no cloud bill, so OpenCost uses its default on-premises price list. The costs in this module are small dollar amounts from that list, not real money. The playground installs a small Prometheus and OpenCost 1.121.3 with Helm. Prometheus stores the usage and requests that OpenCost reads. You also query pod information and inspect scrape errors. The terminal has `kubectl-cost` v0.6.6; its `--opencost` flag selects the OpenCost endpoint. One extra scrape job, `probe-broken`, fails on purpose and stays down. The workloads in the namespace `starfleet` and `outpost` are these:
 
 | Workload | What it is |
 | --- | --- |

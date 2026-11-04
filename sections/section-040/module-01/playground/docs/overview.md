@@ -7,6 +7,8 @@ This is a **playground**, not a lab. It starts a fresh cluster with a small Prom
 - A single-node `kind` cluster running Kubernetes 1.35. `kubectl` is already pointed at it. A `kind` cluster has no cloud bill, so every cost here comes from a fixed price list, not from real invoices.
 - **metrics-server**, which serves `kubectl top`.
 - **Prometheus**, installed with Helm, in the namespace `monitoring`. It scrapes the kubelet's cAdvisor endpoint, kube-state-metrics and OpenCost every minute and keeps 6 hours of data. Its Service is `prometheus-server` on port `80`.
+- **kubectl-cost** v0.6.6 on the terminal, with `--opencost` to select the OpenCost endpoint.
+- An extra scrape job, `probe-broken`, requests `/status/503` from `probe` every 15 seconds and fails on purpose.
 - **OpenCost** `1.121.3`, installed with Helm, in the namespace `opencost`. It reads from Prometheus and uses the default on-premises price list: `0.031611` dollars per CPU core hour, `0.004237` dollars per GiB hour of memory and `0.00005479452` dollars per GiB hour of storage. Its allocation API listens on port `9003` and its UI on port `9090`.
 - Namespace **`starfleet`**:
 
@@ -44,4 +46,8 @@ query_opencost() {
 - Compare the `cpuCores` charged to `scout-busy` with its request, and explain why they differ.
 - Find the storage cost of the `archive` volume in `outpost`.
 - Add `includeIdle=true` to a query and read the `__idle__` entry.
+- Change the custom pricing model and check regular and spot rates through `/allNodePricing`, and the Internet egress rate through `/metrics`.
+- Run `kubectl cost namespace --opencost --use-proxy --historical --window 10m` and read the namespace costs.
+- Save the full response for `kube_pod_info{namespace="starfleet"}` from the Prometheus instant-query API.
+- Save the `probe-broken` target's `lastError` from the Prometheus targets API.
 - Forward port `9090` of the `opencost` Service and open the UI.

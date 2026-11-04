@@ -1,14 +1,9 @@
 # yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
-#
-# Read Cost Allocation With OpenCost (PLAYGROUND).
-# OpenCost reads usage from a small Prometheus (plumbing) and prices it with
-# its default on-premises price list, because kind has no cloud bill.
 apiVersion: astrona.io/v1
 metadata:
   name: ats-017-playground-040-01
   docs:
     guide: docs/overview.md
-
 runtime:
   type: kind
   kind:
@@ -16,16 +11,20 @@ runtime:
     addons:
       metricsServer: true
     preloadImages:
-      - curlimages/curl:8.22.0
-      - ghcr.io/stefanprodan/podinfo:6.15.0
-      - mccutchen/go-httpbin:2.25.0
-
+    - curlimages/curl:8.22.0
+    - ghcr.io/opencost/opencost-ui:1.121.3@sha256:99ee2db766a074fcbc321bbddfae1851c159339f463a3c32a9ba87727576a3ed
+    - ghcr.io/opencost/opencost:1.121.3@sha256:4cdd173253e5abba048dfe2cfa968707a5b59d774157d5356940d0d923a6c281
+    - ghcr.io/stefanprodan/podinfo:6.15.0
+    - mccutchen/go-httpbin:2.25.0
+    - quay.io/prometheus-operator/prometheus-config-reloader:v0.94.2
+    - quay.io/prometheus/prometheus:v3.15.1
+    - registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.20.0
 bootstrap:
   init:
-    - name: prepare
-      description: Creates the starfleet and outpost workloads, then installs a small Prometheus and OpenCost with Helm
-      type: file
-      source: bootstrap/prepare.sh
-
+  - name: prepare
+    description: Creates the starfleet and outpost workloads, then installs a small
+      Prometheus and OpenCost with Helm
+    type: file
+    source: bootstrap/prepare.sh
 teardown:
   keepCluster: false

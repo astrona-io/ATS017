@@ -11,6 +11,8 @@ cd "$(dirname "$0")"
 PROMETHEUS_CHART_VERSION="29.40.3"
 OPENCOST_CHART_VERSION="2.5.33"
 
+bash ./install-cost-plugin.sh
+
 echo "==> Workloads"
 kubectl apply -f ../manifests/lab-start.yaml
 

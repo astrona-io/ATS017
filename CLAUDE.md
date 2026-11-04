@@ -256,7 +256,10 @@ section is only true for this one.
   in a playground, but a page names it in one sentence at most and never
   teaches it. In this course that means metrics-server (behind `kubectl top`
   and the HPA), the Gateway API controller from the astrona `gatewayAPI`
-  addon, and the small Prometheus behind OpenCost. Right-sizing uses
+  addon, and installing the small Prometheus behind OpenCost. The
+  2026-11-04 exception also teaches namespace-filtered pod information and
+  scrape-error inspection in section 040, plus the `kubectl cost` frontend
+  to OpenCost. Right-sizing uses
   `kubectl top`, Prometheus queries, in-place pod resize and bounded VPA
   recommendations. VPA controller installation remains plumbing.
 - **The versions:** everything is built and checked on **Kubernetes 1.35**
@@ -269,8 +272,11 @@ section is only true for this one.
   | metrics-server | v0.9.0 | 010, 030, 040 |
   | Gateway API CRDs (installed by the astrona addon, experimental channel) | v1.6.1 | 020 |
   | Gateway API controller (astrona `gatewayAPI: envoy` addon, plumbing) | set by astrona | 020 |
-  | OpenCost | 1.121.3 | 040 |
-  | Prometheus (small chart; usage queries in 030, plumbing for OpenCost in 040) | pin at build | 030, 040 |
+  | OpenCost (Helm chart 2.5.33) | 1.121.3 | 040 |
+  | kubectl-cost plugin | v0.6.6 | 040 module 01 |
+  | Prometheus (Helm chart 29.40.3; usage queries in 030, pod information and scrape errors in 040) | v3.15.1 | 030, 040 |
+  | kube-state-metrics (Prometheus chart dependency 8.8.0) | v2.20.0 | 040 module 01 |
+  | Prometheus configuration reloader (chart plumbing) | v0.94.2 | 040 module 01 |
   | Kyverno (Helm chart `kyverno/kyverno` 3.9.2, Kyverno v1.19.2; validate and generate rules for tenants) | 3.9.2 | 050 |
   | VPA (official Helm chart 0.12.0) | 1.7.3 | 030 |
   | VPA certificate job (chart plumbing, kube-webhook-certgen) | v20231011-8b53cabe0 | 030 |
@@ -508,7 +514,7 @@ this order:
 - Autoscaling: `hpa`, `metrics-server`, `scaling-behavior`,
   `in-place-resize`, `usage-vs-requests`, `right-sizing`, `vpa`
 - Cost: `opencost`, `cost-allocation`, `idle-cost`, `cost-labels`,
-  `prometheus`
+  `prometheus`, `cost-pricing`, `scrape-errors`
 - Multi-tenancy: `resourcequota`, `limitrange`, `priorityclass`,
   `quota-scopes`, `namespace-isolation`
 

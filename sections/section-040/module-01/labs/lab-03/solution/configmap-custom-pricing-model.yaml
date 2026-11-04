@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-pricing-model
+  namespace: opencost
+data:
+  provider: custom
+  description: Starfleet internal rates
+  CPU: '0.045'
+  RAM: '0.006'
+  spotCPU: '0.009'
+  spotRAM: '0.000892'
+  GPU: '0.95'
+  storage: '0.00005479452'
+  zoneNetworkEgress: '0.01'
+  regionNetworkEgress: '0.01'
+  internetNetworkEgress: '0.09'

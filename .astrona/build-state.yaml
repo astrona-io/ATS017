@@ -111,12 +111,12 @@ items:
   kind: playground
   what: 'playground for module 1: Read Cost Allocation With OpenCost'
   status: done
-  note: 'Helm-installed Prometheus 29.40.3 and OpenCost 2.5.33 (1.121.3) with customPricing enabled; booted and verified on Kubernetes 1.35.8 2026-11-02'
+  note: 'untested: built without booting 2026-11-04; added kubectl-cost v0.6.6, monitoring image preloads and a deliberate failing scrape to the previously verified playground'
 - key: section-040/module-01/course
   kind: course
   what: 'chapter for module 1: Read Cost Allocation With OpenCost'
   status: done
-  note: 'landing, four parts and summary, two labs (astrona test passed), quiz; outputs from real runs; data needs about 15 minutes'
+  note: 'untested: built without booting 2026-11-04; five parts, renumbered summary and third lab; previous four parts and first two labs retain their earlier live verification'
 - key: section-040/module-02/playground
   kind: playground
   what: 'playground for module 2: Attribute Cost By Label And Find Idle Spend'
@@ -212,3 +212,9 @@ items:
   status: done
   note: 'untested: built without booting 2026-11-04; offline schemas, YAML, shell and Helm render passed; astrona validate
     blocked by sandbox maintenance lock'
+
+- key: section-040/module-01/labs/lab-03
+  kind: lab
+  what: Update custom prices and save plugin, pod-query and scrape-error evidence
+  status: done
+  note: 'untested: built without booting 2026-11-04; pinned sources, released plugin flags, official lab schema, YAML, shell and Helm renders checked; live startup and graders untested; astrona validate blocked by sandbox maintenance lock'

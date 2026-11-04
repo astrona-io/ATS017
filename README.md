@@ -16,7 +16,7 @@ Each section ends with **capstone labs** combining its modules and a knowledge-c
 
 [`astrona.yaml`](astrona.yaml) is the manifest: every section, module, reading, playground, lab and capstone in the order they are meant to be taken.
 
-Everything targets **kind v0.33.0**, **kubernetes v1.35.8**, **metrics-server v0.9.0**, **gateway-api v1.6.1 (experimental channel)**, **gateway-controller astrona gatewayAPI addon (envoy), plumbing only**, **opencost 1.121.3**, **kyverno chart 3.9.2 (v1.19.2)**, **prometheus pin at build (small prometheus-community/prometheus chart, not kube-prometheus-stack)**, **tool-scope official CNPE tool list plus built-in Kubernetes and a compact VPA module; metrics-server, the gateway controller and Prometheus-for-OpenCost are plumbing**, **VPA 1.7.3 (official chart 0.12.0)**, **helm 4.3.0 (4.3.1 in use)**, **podinfo 6.15.0**, **go-httpbin v2.25.0** on `kind`.
+Everything targets **kind v0.33.0**, **kubernetes v1.35.8**, **metrics-server v0.9.0**, **gateway-api v1.6.1 (experimental channel)**, **gateway-controller astrona gatewayAPI addon (envoy), plumbing only**, **opencost 1.121.3**, **kyverno chart 3.9.2 (v1.19.2)**, **prometheus v3.15.1 (small prometheus-community/prometheus chart 29.40.3)**, **kubectl-cost v0.6.6 (OpenCost frontend)**, **tool-scope official CNPE tool list plus built-in Kubernetes and a compact VPA module; metrics-server and the gateway controller are plumbing; Prometheus-for-OpenCost also teaches pod queries and scrape errors**, **VPA 1.7.3 (official chart 0.12.0)**, **helm 4.3.0 (4.3.1 in use)**, **podinfo 6.15.0**, **go-httpbin v2.25.0** on `kind`.
 
 ---
 
