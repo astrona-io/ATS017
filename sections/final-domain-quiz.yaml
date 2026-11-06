@@ -179,7 +179,7 @@ questions:
     difficulty: beginner
     learning_objective: "Read 404 and 500 from a Gateway."
     source_readings:
-      - sections/section-020/module-01/course-03-route-status-and-allowed-routes.md
+      - sections/section-020/module-01/course-04-diagnosing-gateway-and-route-status.md
     prompt: "A request to a Gateway listener returns `500`. What does that tell you about the HTTPRoute?"
     options:
       - id: a
@@ -202,7 +202,7 @@ questions:
     difficulty: intermediate
     learning_objective: "Allow a cross-namespace backend with a ReferenceGrant."
     source_readings:
-      - sections/section-020/module-01/course-04-cross-namespace-backends-with-referencegrant.md
+      - sections/section-020/module-01/course-06-cross-namespace-backends-with-referencegrant.md
     prompt: "An HTTPRoute in namespace `starfleet` points a `backendRef` at a Service in namespace `outpost`. The route status shows `ResolvedRefs False` with the reason `RefNotPermitted`. What fixes it?"
     options:
       - id: a
@@ -271,7 +271,7 @@ questions:
     difficulty: intermediate
     learning_objective: "Fix DNS after an egress default deny."
     source_readings:
-      - sections/section-020/module-02/course-03-egress-rules-and-dns.md
+      - sections/section-020/module-02/course-04-egress-rules-and-dns.md
     prompt: "After an egress default-deny policy in a namespace, `curl probe` from the `shuttle` pod fails with `Resolving timed out`. What is the correct fix?"
     options:
       - id: a

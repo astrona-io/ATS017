@@ -1,6 +1,18 @@
 # Prove A Policy With Connection Tests
 
-A timeout alone does not prove isolation. A wrong Service selector, a missing listener or a failed DNS query can also prevent a response. A NetworkPolicy lists the allowed traffic for selected Pods. Prove it with a working allowed connection and a denied connection to the same live listener, using a client inside the cluster.
+A timeout alone does not prove isolation. A wrong Service selector, a missing listener or a failed DNS query can also prevent a response. Prove a policy with a working allowed connection and a denied connection to the same live listener, from a client inside the cluster, and climb the request path one stage at a time: pod address, then Service address, then name. This part sets up one narrow boundary and walks that ladder.
+
+```mermaid
+flowchart TB
+    A["curl to the pod IP and port"] -->|"fails"| F1["Policy or server not ready"]
+    A -->|"works"| B["curl to the ClusterIP and Service port"]
+    B -->|"fails"| F2["Service selector, targetPort or EndpointSlice"]
+    B -->|"works"| C["curl to the Service name"]
+    C -->|"fails"| F3["DNS: resolv.conf, kube-dns, egress port 53"]
+    C -->|"works"| OK["Path proven"]
+```
+
+The diagram is the order of the tests below: each stage adds one thing that can fail, so the first failing stage names the cause.
 
 <!-- astrona:playground:renew -->
 
@@ -102,6 +114,15 @@ kubectl -n starfleet describe networkpolicy probe-test-boundary
 Look for ready containers and a listening application. Kubernetes readiness or scheduling events can explain a missing backend. NetworkPolicy has no Kubernetes 1.35 enforcement condition, and no standard Event proves each dropped connection. The network plugin applies filtering asynchronously, so repeat fresh connections after a rule or label change.
 
 Use a small test matrix: the intended source and port must work, a wrong source must fail, and a wrong port with a known live listener must fail. Test each namespace involved. A failed request to a port where nothing listens proves nothing about the policy.
+
+```mermaid
+flowchart LR
+    T["Test matrix"] --> S1["Intended source and port: must answer"]
+    T --> S2["Wrong source, same port: must time out"]
+    T --> S3["Right source, wrong live port: must time out"]
+```
+
+The diagram lists the three requests that together prove one rule: one that shows the server is alive, and two that show the policy is the thing blocking.
 
 You can now locate a failure among name resolution, Service forwarding, server readiness and policy filtering. The strongest proof pairs allowed and denied requests to a live target while checking both endpoints' policy directions.
 

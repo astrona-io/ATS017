@@ -203,20 +203,17 @@ modules:
         title: "HTTPRoute Matches, Backends And Weights"
         path: sections/section-020/module-01/course-02-httproute-matches-backends-and-weights.md
       - type: reading
-        title: "Route Status And Allowed Routes"
-        path: sections/section-020/module-01/course-03-route-status-and-allowed-routes.md
-      - type: reading
-        title: "Cross-Namespace Backends With ReferenceGrant"
-        path: sections/section-020/module-01/course-04-cross-namespace-backends-with-referencegrant.md
-      - type: reading
         title: "Request Matching And Precedence"
-        path: sections/section-020/module-01/course-05-request-matching-and-precedence.md
+        path: sections/section-020/module-01/course-03-request-matching-and-precedence.md
       - type: reading
         title: "Diagnosing Gateway And Route Status"
-        path: sections/section-020/module-01/course-06-diagnosing-gateway-and-route-status.md
+        path: sections/section-020/module-01/course-04-diagnosing-gateway-and-route-status.md
       - type: reading
-        title: "Cross-Namespace Permission Boundaries"
-        path: sections/section-020/module-01/course-07-cross-namespace-permission-boundaries.md
+        title: "Allowed Routes On A Shared Gateway"
+        path: sections/section-020/module-01/course-05-allowed-routes-on-a-shared-gateway.md
+      - type: reading
+        title: "Cross-Namespace Backends With ReferenceGrant"
+        path: sections/section-020/module-01/course-06-cross-namespace-backends-with-referencegrant.md
       - type: reading
         title: Question
         path: sections/section-020/module-01/labs/lab-01/question.md
@@ -238,11 +235,11 @@ modules:
           - name: "Gateway API ReferenceGrant"
             url: https://gateway-api.sigs.k8s.io/reference/api-types/referencegrant/
       - type: reading
-        title: "Filters And Weighted Forwarding"
-        path: sections/section-020/module-01/course-08-filters-and-weighted-forwarding.md
+        title: "Filters: Headers, Rewrites And Redirects"
+        path: sections/section-020/module-01/course-07-filters-headers-rewrites-and-redirects.md
       - type: reading
         title: "Summary"
-        path: sections/section-020/module-01/course-09-summary.md
+        path: sections/section-020/module-01/course-08-summary.md
       - type: quiz
         title: "Knowledge Check: Route Traffic With The Gateway API"
         path: sections/section-020/module-01/quiz.yaml
@@ -257,17 +254,17 @@ modules:
         title: "Allowing Flows With Pod And Namespace Selectors"
         path: sections/section-020/module-02/course-02-allowing-flows-with-pod-and-namespace-selectors.md
       - type: reading
+        title: "One Peer Or Two: Selector Scope"
+        path: sections/section-020/module-02/course-03-one-peer-or-two-selector-scope.md
+      - type: reading
         title: "Egress Rules And DNS"
-        path: sections/section-020/module-02/course-03-egress-rules-and-dns.md
+        path: sections/section-020/module-02/course-04-egress-rules-and-dns.md
+      - type: reading
+        title: "Named Ports And Address Ranges"
+        path: sections/section-020/module-02/course-05-named-ports-and-address-ranges.md
       - type: reading
         title: "How Policies Combine"
-        path: sections/section-020/module-02/course-04-how-policies-combine.md
-      - type: reading
-        title: "Selector And Port Boundaries"
-        path: sections/section-020/module-02/course-05-selector-and-port-boundaries.md
-      - type: reading
-        title: "DNS And Reply Traffic"
-        path: sections/section-020/module-02/course-06-dns-and-reply-traffic.md
+        path: sections/section-020/module-02/course-06-how-policies-combine.md
       - type: reading
         title: "Prove A Policy With Connection Tests"
         path: sections/section-020/module-02/course-07-prove-a-policy-with-connection-tests.md

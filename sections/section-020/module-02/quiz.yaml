@@ -87,7 +87,7 @@ questions:
     learning_objective: >-
       Allow traffic from another namespace with namespaceSelector, and tell apart AND versus OR selector combinations.
     source_readings:
-      - sections/section-020/module-02/course-02-allowing-flows-with-pod-and-namespace-selectors.md
+      - sections/section-020/module-02/course-03-one-peer-or-two-selector-scope.md
     prompt: >-
       The goal is to let only the `shuttle` pods in `outpost` reach `probe` in `starfleet`. A rule has two list items under `from`. The first item is a `namespaceSelector` for `kubernetes.io/metadata.name: outpost`. The second item, with its own dash, is a `podSelector` for `app: shuttle`. What does this rule allow?
     options:
@@ -121,7 +121,7 @@ questions:
     learning_objective: >-
       Restore DNS for selected pods with an egress rule to kube-dns on port 53 UDP and TCP.
     source_readings:
-      - sections/section-020/module-02/course-03-egress-rules-and-dns.md
+      - sections/section-020/module-02/course-04-egress-rules-and-dns.md
     prompt: >-
       A team adds a default-deny egress policy to a namespace. At once, `curl http://scout/version` from a pod fails with `Resolving timed out`. Which rule restores name resolution without opening more traffic than needed?
     options:
@@ -156,7 +156,7 @@ questions:
       Diagnose which policy blocks a request by listing the policies that select a pod.
     source_readings:
       - sections/section-020/module-02/course-01-default-deny-and-how-policies-select-pods.md
-      - sections/section-020/module-02/course-03-egress-rules-and-dns.md
+      - sections/section-020/module-02/course-04-egress-rules-and-dns.md
     prompt: >-
       In a namespace, `kubectl get networkpolicy` lists `default-deny-ingress` (selector `<none>`, Ingress), `scout-allow-shuttle` (selector `app=scout`, Ingress) and `shuttle-egress` (selector `app=shuttle`, Egress). A request from `shuttle` to `scout` times out. Which policies decide whether this request passes?
     options:
@@ -191,8 +191,8 @@ questions:
     learning_objective: Evaluate the union of policy permissions and the scope of ipBlock
       exclusions.
     source_readings:
-      - sections/section-020/module-02/course-04-how-policies-combine.md
-      - sections/section-020/module-02/course-05-selector-and-port-boundaries.md
+      - sections/section-020/module-02/course-05-named-ports-and-address-ranges.md
+      - sections/section-020/module-02/course-06-how-policies-combine.md
     prompt: >-
       The shuttle Pod is egress-isolated. One policy allows TCP 443 to 192.0.2.0/24 except
       192.0.2.128/25. Another selecting policy allows TCP 443 to all of 192.0.2.0/24. What
@@ -220,7 +220,8 @@ questions:
     difficulty: intermediate
     learning_objective: Interpret an empty namespace selector and a named destination port.
     source_readings:
-      - sections/section-020/module-02/course-05-selector-and-port-boundaries.md
+      - sections/section-020/module-02/course-03-one-peer-or-two-selector-scope.md
+      - sections/section-020/module-02/course-05-named-ports-and-address-ranges.md
     prompt: >-
       A policy in starfleet selects app: scout. Its ingress peer is namespaceSelector:
       {} with no podSelector, and its port is TCP http. The scout Pod declares container
@@ -251,7 +252,7 @@ questions:
     learning_objective: Distinguish DNS failure from a policy drop with bounded connection
       tests.
     source_readings:
-      - sections/section-020/module-02/course-06-dns-and-reply-traffic.md
+      - sections/section-020/module-02/course-04-egress-rules-and-dns.md
       - sections/section-020/module-02/course-07-prove-a-policy-with-connection-tests.md
     prompt: >-
       An allowed client reaches the backend by both Pod IP and Service ClusterIP with a

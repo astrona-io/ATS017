@@ -44,7 +44,7 @@ items:
   kind: course
   what: 'chapter for module 1: Route Traffic With The Gateway API'
   status: done
-  note: "untested: built without booting 2026-11-06; kept four foundations, added four deeper parts, moved summary to 09; verified against Gateway API v1.6.1 definitions"
+  note: "untested: built without booting 2026-11-06; deep-dive review 2026-11-06 merged the eight parts into seven in teaching order (precedence moved to 03, status diagnosis merged into 04, allowedRoutes split into 05, both ReferenceGrant directions merged into 06 with the lab, filters 07 without the weights section now in 02 and 03), summary moved to 08, added Gateway lifecycle, weight, tie-break, status level, allowedRoutes, grant and filter diagrams; condition reasons and filter rules verified against Gateway API v1.6.1 gateway_types.go, httproute_types.go and shared_types.go; quiz readings repointed"
 - key: section-020/module-02/playground
   kind: playground
   what: 'playground for module 2: Isolate Traffic With NetworkPolicy'
@@ -54,7 +54,7 @@ items:
   kind: course
   what: 'chapter for module 2: Isolate Traffic With NetworkPolicy'
   status: done
-  note: "untested: built without booting 2026-11-06; kept three foundations, added four deeper parts and decision diagram; summary moved to 08; kindnet and Kubernetes 1.35 API checked against official sources"
+  note: "untested: deep-dive review 2026-11-06 without booting; AND-versus-OR moved out of part 02 into new part 03 with the empty-selector scope table; old DNS part merged into part 04 (resolver inspection, node-local note, duplicate tenant-allow-dns YAML dropped); old selector-and-port part split into part 05 (named port, ipBlock); old how-policies-combine became part 06 with the replies section and ends by deleting scout-observers; part 07 got test-ladder and test-matrix diagrams; isolation, policyTypes derivation, named-port, except and reply diagrams added; quiz repointed; NetworkPolicy semantics checked against Kubernetes 1.35 API"
 - key: section-020/module-03/playground
   kind: playground
   what: 'playground for module 3: Provision Storage With StorageClasses'

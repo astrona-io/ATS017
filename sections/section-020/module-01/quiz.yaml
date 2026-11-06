@@ -156,7 +156,7 @@ questions:
     learning_objective: >-
       Diagnose a route that does not attach from its status.parents conditions (Accepted, ResolvedRefs).
     source_readings:
-      - sections/section-020/module-01/course-03-route-status-and-allowed-routes.md
+      - sections/section-020/module-01/course-04-diagnosing-gateway-and-route-status.md
     prompt: >-
       A route is applied without errors. Its `status.parents` shows `Accepted=True` and `ResolvedRefs=False` with the reason `BackendNotFound`. A request that matches the route gets `500 Internal Server Error`. What is wrong?
     options:
@@ -190,7 +190,7 @@ questions:
     learning_objective: >-
       Allow a route from another namespace with allowedRoutes and a ReferenceGrant where needed.
     source_readings:
-      - sections/section-020/module-01/course-03-route-status-and-allowed-routes.md
+      - sections/section-020/module-01/course-05-allowed-routes-on-a-shared-gateway.md
     prompt: >-
       The platform team changes the listener to `allowedRoutes.namespaces.from: Selector` with a selector that matches only the label `kubernetes.io/metadata.name: outpost`. The `outpost` team's route now attaches. The `bridge` route in the Gateway's own namespace `starfleet` now shows `Accepted=False` with `NotAllowedByListeners`. How do you fix it?
     options:
@@ -224,7 +224,7 @@ questions:
     learning_objective: Resolve overlapping HTTPRoute rules using method and header
       precedence.
     source_readings:
-    - sections/section-020/module-01/course-05-request-matching-and-precedence.md
+    - sections/section-020/module-01/course-03-request-matching-and-precedence.md
     prompt: Two attached routes have the same hostname and PathPrefix /api. One matches
       method GET and forwards to scout. The other matches two headers and forwards to
       probe, without a method match. A GET request matches both headers. Which backend
@@ -253,7 +253,7 @@ questions:
     difficulty: intermediate
     learning_objective: Read current route conditions after changing a parent reference.
     source_readings:
-    - sections/section-020/module-01/course-06-diagnosing-gateway-and-route-status.md
+    - sections/section-020/module-01/course-04-diagnosing-gateway-and-route-status.md
     prompt: You change an HTTPRoute parent reference. Its metadata.generation is now
       4. The intended parent entry still has Accepted=True and ResolvedRefs=True with
       observedGeneration 3. The Gateway is Programmed=True. What should you do before
@@ -283,7 +283,7 @@ questions:
     difficulty: intermediate
     learning_objective: Choose an upstream rewrite rather than a client redirect.
     source_readings:
-    - sections/section-020/module-01/course-08-filters-and-weighted-forwarding.md
+    - sections/section-020/module-01/course-07-filters-headers-rewrites-and-redirects.md
     prompt: Clients must keep using /inspect/headers, while probe must receive /headers.
       The rule has one PathPrefix match for /inspect. Which configuration changes the
       upstream path without asking the client to make another request?

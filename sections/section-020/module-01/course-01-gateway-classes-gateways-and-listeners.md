@@ -128,6 +128,19 @@ Programmed=True Programmed
 
 `Accepted` means the controller accepted the Gateway's configuration, and `Programmed` means the proxy received it. The listener named `http` has its own conditions, a list of route kinds it supports, and `attachedRoutes: 0`. That counter is the quickest check of whether your routes reached this listener.
 
+```mermaid
+flowchart TB
+    C["Gateway applied"] --> P["Accepted=False Pending: controller has not reconciled yet"]
+    P --> A{"Class and listeners valid?"}
+    A -->|"no"| NA["Accepted=False: ListenersNotValid, InvalidParameters or UnsupportedAddress"]
+    A -->|"yes"| AC["Accepted=True"]
+    AC --> D{"Proxy configured and address assigned?"}
+    D -->|"no"| NP["Programmed=False: Invalid, NoResources, AddressNotAssigned or AddressNotUsable"]
+    D -->|"yes"| PR["Programmed=True, status.addresses set"]
+```
+
+The diagram shows the two steps a Gateway goes through, and that a Gateway can be accepted without being programmed, for example while it waits for an address.
+
 ## Sending the first request
 
 Store the Gateway's address in a variable, then send a request to it from the `shuttle` pod:

@@ -6,7 +6,7 @@ The Gateway now accepts requests on port 80 but answers every one with `404`. An
 
 An HTTPRoute has three main fields. `parentRefs` names the Gateway (and optionally the listener) the route wants to attach to. `hostnames` limits the route to requests for certain host names; without it, the route matches every host. `rules` is a list, and each rule has `matches` (the conditions), optional `filters` (changes to the request) and `backendRefs` (the Services that receive matching requests).
 
-A match can test the path, headers, query parameters and the HTTP method. Inside one match all conditions must be true. Between several matches of one rule, any one is enough. A path match has a `type`: `PathPrefix` matches the path and everything below it, `Exact` matches only that path. When several rules match one request, the controller picks the most specific one: an exact path before a prefix, a longer prefix before a shorter one, and then the rule with more header matches.
+A match can test the path, headers, query parameters and the HTTP method. Inside one match all conditions must be true. Between several matches of one rule, any one is enough. A path match has a `type`: `PathPrefix` matches the path and everything below it, `Exact` matches only that path. When several rules match one request, the proxy does not take the first one in the file; it takes the most specific one, by a fixed precedence order with its own tie-breaks.
 
 ## Routing by path and by header
 
@@ -185,9 +185,21 @@ You should see something like:
   15 scout
 ```
 
-About 80 percent of the requests reached `scout` and about 20 percent reached `probe`. The split is random per request, so a small sample is never exact; 50 requests in the same playground gave 41 and 9. A weight of `0` sends no traffic to that backend, which is a quick way to drain it without deleting the reference.
+About 80 percent of the requests reached `scout` and about 20 percent reached `probe`. The split is random per request, so a small sample is never exact; 50 requests in the same playground gave 41 and 9.
 
-You can now attach an HTTPRoute to a Gateway, choose a backend by path, header and host name, and split traffic by weight. So far every route attached at once. The open question is what a route looks like when it does not attach, and how a route in another namespace gets in.
+The rules for weights are short. Each backend's share is its weight divided by the sum of the weights in the rule, so `3` and `1` express the same split as `75` and `25`. An omitted `weight` defaults to `1`, so two backends without weights split evenly. A weight of `0` sends no traffic to that backend, which is a quick way to drain it without deleting the reference. A weight is a share, not a fallback order: when one backend in the rule is invalid (its Service is missing or the reference is not permitted), the proxy answers `500` for the share that backend would have received instead of sending it to the healthy one, and when every backend is invalid every request to the rule gets `500`. A valid Service with no ready endpoints should answer `503`.
+
+```mermaid
+flowchart LR
+    R["Winning rule"] --> W["Pick one backendRef at random, weight / sum"]
+    W -->|"valid backend"| B["Forward to the Service"]
+    W -->|"invalid backend"| E["500 for that share"]
+    B -->|"no ready endpoints"| U["503"]
+```
+
+The diagram shows that the choice between backends happens per request, and that an invalid backend keeps its share and fails it.
+
+You can now attach an HTTPRoute to a Gateway, choose a backend by path, header and host name, and split traffic by weight. So far every rule matched a different request. The open question is which rule wins when two of them match the same one.
 
 ## Common pitfalls
 
@@ -196,3 +208,4 @@ You can now attach an HTTPRoute to a Gateway, choose a backend by path, header a
 > - **Forgetting `port` in a `backendRef`.** A Service backend needs the Service port, not the container port.
 > - **Expecting an exact split in a small sample.** Weights are probabilities per request; count many requests.
 > - **Adding a catch-all rule and expecting it to win.** The most specific match wins, whatever the order of the rules in the file.
+> - **Treating weights as fallback order.** An invalid backend fails its share with `500` instead of passing it to another backend.

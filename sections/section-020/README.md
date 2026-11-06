@@ -38,7 +38,7 @@ The reader connects workloads safely and gives them storage: traffic enters thro
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-01/playground
     ```
 
-*   **Deeper reading:** Listener selection and rule precedence; Gateway, listener and route conditions; cross-namespace permission boundaries; header filters, redirects, rewrites and weighted forwarding.
+*   **Deeper reading:** Seven parts in order: Gateway Classes, Gateways And Listeners; HTTPRoute Matches, Backends And Weights; Request Matching And Precedence; Diagnosing Gateway And Route Status; Allowed Routes On A Shared Gateway; Cross-Namespace Backends With ReferenceGrant; Filters: Headers, Rewrites And Redirects; then a summary.
 *   **Graded lab (25 minutes):** Repair Gateway Route Attachment — `sections/section-020/module-01/labs/lab-01`. Repair listener permissions and `sectionName`, add path and canary-header rules, and permit a cross-namespace backend. Prove the result through the Gateway.
 
 ### 2. Isolate Traffic With NetworkPolicy
@@ -48,7 +48,7 @@ The reader connects workloads safely and gives them storage: traffic enters thro
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-02/playground
     ```
 
-*   **Deeper reading:** Additive policy permissions and isolation by direction; combined and empty selectors; address exclusions and named ports; DNS and replies; bounded tests that distinguish policy, Service and DNS failures. Includes a connection decision diagram.
+*   **Deeper reading:** Seven parts in order: Default Deny And How Policies Select Pods; Allowing Flows With Pod And Namespace Selectors; One Peer Or Two: Selector Scope; Egress Rules And DNS; Named Ports And Address Ranges; How Policies Combine; Prove A Policy With Connection Tests; then a summary.
 *   **Graded lab (20 minutes):** Lock Down A Tenant Namespace — `sections/section-020/module-02/labs/lab-01`. Repair the monitoring selector mistake, default-deny both directions, preserve DNS and allow one frontend-to-backend port. Test allowed and denied connections from three namespaces.
 
 ### 3. Provision Storage With StorageClasses

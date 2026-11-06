@@ -178,92 +178,22 @@ Spec:
 
 The `shuttle` in `outpost` gets `200`, and the `shuttle` in `starfleet` is blocked. `kubectl describe` shows one `From:` block with both selectors in it: the source must be in `outpost` **and** carry `app: shuttle`.
 
-## AND versus OR in the from list
-
-Now move the pod selector into its own item. The only change is one dash in front of `podSelector`, which makes it a second item of the `from` list.
-
-Save this as `networkpolicy-probe-allow-outpost-or.yaml`:
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: probe-allow-outpost
-  namespace: starfleet
-spec:
-  podSelector:
-    matchLabels:
-      app: probe
-  policyTypes:
-    - Ingress
-  ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: outpost
-        - podSelector:
-            matchLabels:
-              app: shuttle
-      ports:
-        - protocol: TCP
-          port: 8080
-```
-
-Apply it. It has the same name, so it replaces the policy you applied before:
-
-```sh
-kubectl apply -f networkpolicy-probe-allow-outpost-or.yaml
-```
-
-Then send the same two requests and read the policy back:
-
-```sh
-kubectl -n outpost exec deploy/shuttle -- curl -sS -m 3 -o /dev/null -w '%{http_code}\n' http://probe.starfleet/get
-kubectl -n starfleet exec deploy/shuttle -- curl -sS -m 3 -o /dev/null -w '%{http_code}\n' http://probe/get
-kubectl -n starfleet describe networkpolicy probe-allow-outpost | sed -n '/^Spec:/,$p'
-```
-
-You should see something like:
-
-```text
-200
-200
-Spec:
-  PodSelector:     app=probe
-  Allowing ingress traffic:
-    To Port: 8080/TCP
-    From:
-      NamespaceSelector: kubernetes.io/metadata.name=outpost
-    From:
-      PodSelector: app=shuttle
-  Not affecting egress traffic
-  Policy Types: Ingress
-```
-
-Now both requests succeed, and `kubectl describe` shows two `From:` blocks. Two items are ORed: **any** pod in `outpost`, **or** any pod with `app: shuttle` in `starfleet`. That is much more than the task asked for. On the exam, read the indentation of every `from` list twice, and confirm with `kubectl describe`.
-
 ```mermaid
-flowchart TB
-    SS["shuttle (starfleet)"] -->|"9898: allowed"| SC["scout (starfleet)"]
-    OS["shuttle (outpost)"] -->|"8080: allowed"| PR["probe (starfleet)"]
-    OS -->|"blocked"| SC
-    SS -->|"blocked with AND, allowed with OR"| PR
+flowchart LR
+    C["Packet to a selected pod"] --> F{"Matches any source in from?"}
+    F -->|"no"| D["Dropped"]
+    F -->|"yes"| P{"Matches any port in ports?"}
+    P -->|"no"| D
+    P -->|"yes"| A["Allowed by this rule"]
 ```
 
-The diagram shows the flows in `starfleet` after these policies: one item with both selectors keeps the `starfleet` client away from `probe`, two items let it in.
+The diagram shows that inside one rule the source and the port must both match, and that the port is the one the pod listens on.
 
-Put the AND form back before you go on:
-
-```sh
-kubectl apply -f networkpolicy-probe-allow-outpost.yaml
-```
-
-You can now allow one flow by pod labels, by namespace, and by pod port, and you can tell an AND rule from an OR rule by its indentation and by `kubectl describe`. All of this controlled traffic coming in. The open question is the other direction: what happens when a namespace also blocks traffic going out.
+You can now allow one flow by pod labels, by namespace, and by pod port, and you have seen that two selectors under one dash describe one source. All of this controlled traffic coming in. The open question is what one extra dash does to that rule, and how far an empty selector reaches.
 
 ## Common pitfalls
 
 > [!WARNING]
 > - **Using the Service port.** NetworkPolicy ports are the pod's container ports (`9898`), not the Service port (`80`).
 > - **Expecting `podSelector` to match other namespaces.** Without `namespaceSelector`, it only selects pods in the policy's own namespace.
-> - **One dash too many.** `namespaceSelector` and `podSelector` in one item mean AND; as two items they mean OR.
 > - **Inventing namespace labels.** Use `kubernetes.io/metadata.name`, which every namespace already has.

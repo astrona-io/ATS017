@@ -28,7 +28,21 @@ A NetworkPolicy has three parts. `spec.podSelector` chooses the pods in its name
 
 The rules are short but strict. A pod that no policy selects for a direction is **non-isolated** in that direction: all traffic is allowed. As soon as at least one policy selects the pod for a direction, the pod is **isolated** in that direction: only traffic that some selecting policy allows gets through. Policies add up; there is no deny rule and no order. The reply to an allowed connection is always allowed, so you never write a rule for return traffic.
 
-The policy is enforced by the network plugin on each node, not by the API server. In this playground the plugin is kindnet, the default plugin of `kind`, which enforces NetworkPolicy. A cluster whose plugin does not enforce policies accepts the objects without error and then ignores them, so always prove a policy with a real request.
+`policyTypes` deserves care. When you leave it out, Kubernetes derives it: every policy is taken to cover `Ingress`, and a policy covers `Egress` only if it has an `egress` list. A policy meant to isolate a pod for egress with no rules at all must therefore say `policyTypes: [Egress]` explicitly, or it isolates ingress instead.
+
+```mermaid
+flowchart TB
+    P["Pod and one direction"] --> S{"Does any policy select the pod for this direction?"}
+    S -->|"no"| N["Non-isolated: all traffic allowed"]
+    S -->|"yes"| I["Isolated: default deny"]
+    I --> R{"Does any rule of any selecting policy match the traffic?"}
+    R -->|"yes"| A["Allowed"]
+    R -->|"no"| D["Dropped"]
+```
+
+The diagram is the whole decision for one direction: selection switches the default from allow to deny, and only matching rules switch single flows back.
+
+The policy is enforced by the network plugin on each node, not by the API server. In this playground the plugin is kindnet, the default plugin of `kind`, which enforces NetworkPolicy. A cluster whose plugin does not enforce policies accepts the objects without error and then ignores them, so always prove a policy with a real request. A NetworkPolicy in Kubernetes 1.35 has no `status` conditions that report enforcement, and no Event records a dropped packet: a successful `kubectl apply` proves API acceptance only, and `kubectl describe networkpolicy` explains the stored rules without proving that the nodes have applied them. The plugin updates its packet filters after it sees the change, so send a fresh request after each edit and repeat it once if the first result looks stale.
 
 ## A default deny for incoming traffic
 
@@ -112,3 +126,4 @@ You can now prove what is open, isolate every pod in a namespace for incoming tr
 > - **Reading a timeout as a broken server.** Blocked packets are dropped, so `curl` times out; check the policies before the application.
 > - **Expecting an ingress policy to block egress.** `policyTypes` decides the direction; a policy with only `Ingress` leaves outgoing traffic open.
 > - **Trusting a policy without a test.** A network plugin that does not enforce policies accepts them silently; prove each one with a request.
+> - **Omitting `policyTypes` on an empty egress policy.** Without an `egress` list the derived type is `Ingress`; list both directions when you intend isolation in both.

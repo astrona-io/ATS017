@@ -6,14 +6,16 @@ The Gateway API splits the job into three objects, and each one belongs to a dif
 
 Keep one sentence in mind for this module: **an HTTPRoute does nothing until a Gateway accepts it, and its status tells you whether it did.** Most routing problems on the exam are not wrong rules but routes that never attached, or that point at a Service they may not use.
 
-Read the four foundations first: **Gateway Classes, Gateways And Listeners**,
-**HTTPRoute Matches, Backends And Weights**, **Route Status And Allowed
-Routes**, and **Cross-Namespace Backends With ReferenceGrant**. Then work
-through **Request Matching And Precedence**, **Diagnosing Gateway And Route
-Status**, **Cross-Namespace Permission Boundaries**, and **Filters And
-Weighted Forwarding**. These explain overlapping rules, fresh status,
-independent permissions, and request changes. A repair lab follows the
-permission exercise, and a summary closes the reading.
+The module has seven parts and a summary. Read them in order; each part builds on the objects the previous one created:
+
+- **Gateway Classes, Gateways And Listeners** reads the installed GatewayClass, creates a Gateway with one listener, and reads its conditions and address.
+- **HTTPRoute Matches, Backends And Weights** attaches a route that picks a backend by path and header, and splits traffic between two Services by weight.
+- **Request Matching And Precedence** states the order from listener to rule and the tie-breaks that decide which of two overlapping rules wins.
+- **Diagnosing Gateway And Route Status** breaks a backend and a parent reference on purpose and reads the conditions at Gateway, listener and route level.
+- **Allowed Routes On A Shared Gateway** lets a route from another namespace attach with `allowedRoutes` without locking out the Gateway's own team.
+- **Cross-Namespace Backends With ReferenceGrant** permits a backend in another namespace in both directions, and ends with the repair lab.
+- **Filters: Headers, Rewrites And Redirects** changes a request after it matched and returns a redirect to the client.
+- **Summary** collects the rules to remember.
 
 ## Learning objectives
 
@@ -22,12 +24,11 @@ After this module you can:
 - Name the roles of GatewayClass, Gateway and HTTPRoute and which team owns each.
 - Create a Gateway listener and attach an HTTPRoute to it with `parentRefs`.
 - Route requests by path and by header to two backend Services.
-- Split traffic between two backends with `backendRefs` weights.
+- Split traffic between two backends with `backendRefs` weights and say what an invalid backend does to its share.
+- Resolve overlapping matches by hostname, path, method and header precedence.
+- Distinguish Gateway programming from route acceptance and reference resolution, and tell a stale condition from a fresh one.
 - Diagnose a route that does not attach from its `status.parents` conditions (`Accepted`, `ResolvedRefs`).
 - Allow a route from another namespace with `allowedRoutes`, and a backend in another namespace with a ReferenceGrant.
-
-- Resolve overlapping matches by hostname, path, method and header precedence.
-- Distinguish Gateway programming from route acceptance and reference resolution.
 - Modify request headers, return redirects and rewrite upstream paths.
 
 ## Before you start

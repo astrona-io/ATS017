@@ -6,9 +6,16 @@ A **NetworkPolicy** is a namespaced Kubernetes object that selects pods and list
 
 Keep one sentence in mind for this module: **as soon as one policy selects a pod for a direction, everything in that direction is denied except what some policy allows.** Policies only ever add allowed traffic. There is no "deny" rule, and the order of policies does not matter.
 
-The module starts with three foundation parts. **Default Deny And How Policies Select Pods** proves that every request works at the start, then blocks all incoming traffic in a namespace and finds the policies that select a pod. **Allowing Flows With Pod And Namespace Selectors** opens single flows with `podSelector`, `namespaceSelector` and ports, and shows the difference between one `from` item with two selectors and two items. **Egress Rules And DNS** blocks outgoing traffic, shows that name lookups break first, and restores DNS with an egress rule to `kube-dns`.
+The module has seven parts and a summary. Read them in order; each part builds on the policies the previous one applied:
 
-Four deeper readings follow: **How Policies Combine**, **Selector And Port Boundaries**, **DNS And Reply Traffic**, and **Prove A Policy With Connection Tests**. They explain the union of allows, empty selectors, address exclusions, named ports, reply traffic and a test method that separates policy drops from Service and DNS failures. A 20-minute lab asks you to lock down a tenant namespace and repair a monitoring selector mistake. A summary closes the reading.
+- **Default Deny And How Policies Select Pods** proves that every request works at the start, blocks all incoming traffic in a namespace, and finds the policies that select a pod.
+- **Allowing Flows With Pod And Namespace Selectors** opens single flows with `podSelector`, `namespaceSelector` and container ports.
+- **One Peer Or Two: Selector Scope** shows what one extra dash does to a `from` list and how far each empty selector reaches.
+- **Egress Rules And DNS** blocks outgoing traffic, shows that name lookups break first, and restores DNS with an egress rule to `kube-dns`.
+- **Named Ports And Address Ranges** uses a port by its container name and an `ipBlock` with an exclusion, and says where each resolves.
+- **How Policies Combine** adds a broad policy beside a narrow one, states the union rule, and explains why replies need no rule.
+- **Prove A Policy With Connection Tests** climbs from pod address to Service address to name to find which stage blocks a request, and ends with the lab that locks down a tenant namespace.
+- **Summary** collects the rules to remember.
 
 ## Learning objectives
 
@@ -17,10 +24,11 @@ After this module you can:
 - Apply a default-deny ingress and egress policy to a namespace and prove that requests now time out.
 - Allow one flow between two workloads with `podSelector` and `ports`.
 - Allow traffic from another namespace with `namespaceSelector`, and tell apart AND and OR selector combinations.
-- Restore DNS for selected pods with an egress rule to `kube-dns` on port 53, UDP and TCP.
-- Diagnose which policies affect a connection by listing the policies that select each endpoint.
-- Use empty selectors, address exclusions and named destination ports with the correct scope.
-- Prove allowed and denied connections with bounded tests from Pods.
+- State the scope of an empty selector and the difference between `ingress: [{}]` and `ingress: []`.
+- Restore DNS for selected pods with an egress rule to `kube-dns` on port 53, UDP and TCP, and say which pods the rule must select.
+- Use named destination ports and `ipBlock` exclusions with the correct scope.
+- Diagnose which policies affect a connection by listing the policies that select each endpoint, and explain the union of allows.
+- Prove allowed and denied connections with bounded tests from pods, in the order pod address, Service address, name.
 
 ## Before you start
 
