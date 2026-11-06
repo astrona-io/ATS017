@@ -349,6 +349,11 @@ or a `probe` in `outpost`) and must name it in the module.
   `gatewayAPI: envoy`, `cni: calico`); see `astrona schema`. Prefer an addon
   over a hand-written install when it fits. It does not expose
   `kubeadmConfigPatches` or `extraMounts`.
+- **Never preload a digest-pinned image.** A `preloadImages` entry with
+  `@sha256:` (with or without a tag) is imported under a wrong name, and
+  kind then fails the Pod with `CreateContainerError` (seen 2026-11-06 with
+  the OpenCost images in the section 040 module 01 playground). Leave those
+  images out of `preloadImages`; the cluster pulls them itself.
 
 Facts marked *(verify)* were not run on a cluster yet. Check them before a
 page states them as fact, and remove the mark when checked.
