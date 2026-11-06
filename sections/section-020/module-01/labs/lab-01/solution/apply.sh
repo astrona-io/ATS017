@@ -92,7 +92,15 @@ spec:
       name: bridge
 YAML
 kubectl -n starfleet wait --for=condition=Programmed gateway/starfleet-gateway --timeout=180s
+# kubectl wait cannot take a filter expression inside --for=jsonpath, so poll.
 for route in team-route relay; do
-  kubectl -n outpost wait --for=jsonpath='{.status.parents[0].conditions[?(@.type=="Accepted")].status}'=True httproute/"$route" --timeout=180s
-  kubectl -n outpost wait --for=jsonpath='{.status.parents[0].conditions[?(@.type=="ResolvedRefs")].status}'=True httproute/"$route" --timeout=180s
+  for attempt in $(seq 1 36); do
+    conditions=$(kubectl -n outpost get httproute "$route" \
+      -o jsonpath='{range .status.parents[0].conditions[*]}{.type}={.status}{" "}{end}')
+    case "$conditions" in
+      *"Accepted=True "*"ResolvedRefs=True "*|*"ResolvedRefs=True "*"Accepted=True "*) break ;;
+    esac
+    [ "$attempt" -eq 36 ] && { echo "httproute/$route is not Accepted and ResolvedRefs: $conditions" >&2; exit 1; }
+    sleep 5
+  done
 done
