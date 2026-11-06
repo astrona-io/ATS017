@@ -44,7 +44,9 @@ def original_container(workload):
     container = containers[0]
     require(container['image'] == 'ghcr.io/stefanprodan/podinfo:6.15.0', 'Keep the original podinfo image')
     require(not container.get('command') and not container.get('args'), 'Keep the original application process')
-    require(container.get('readinessProbe', {}).get('httpGet') == {'path': '/readyz', 'port': 'http'}, 'Keep the HTTP readiness probe')
+    # The API server adds defaults (scheme: HTTP) to the stored probe, so compare only the fields the lab sets.
+    http_get = container.get('readinessProbe', {}).get('httpGet') or {}
+    require(http_get.get('path') == '/readyz' and http_get.get('port') == 'http', 'Keep the HTTP readiness probe')
     return container
 
 def policies():
