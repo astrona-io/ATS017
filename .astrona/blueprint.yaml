@@ -36,7 +36,7 @@ course:
     kind: "v0.33.0"
     kubernetes: "v1.35.8"
     metrics-server: "v0.9.0"
-    gateway-api: "v1.6.3"
+    gateway-api: "v1.6.1 (experimental channel, astrona addon)"
     gateway-controller: "astrona gatewayAPI addon (envoy), plumbing only"
     opencost: "1.121.3"
     prometheus: "pin at build (small prometheus-community/prometheus chart, not kube-prometheus-stack)"
@@ -160,13 +160,18 @@ sections:
           - Gateway listeners and HTTPRoute matches, filters and backendRefs
           - Reading route and gateway status conditions to find attachment errors
           - Cross-namespace routing with allowedRoutes and ReferenceGrant
+          - Listener and route hostname selection; exact path, prefix, method and header precedence; route tie breakers
+          - Fresh Gateway, listener and route conditions and failure reasons
+          - Independent attachment and backend permissions; additive and revocable ReferenceGrants
+          - Request header modification, redirect versus rewrite, and weights within a winning rule
+          - Repair lab (25m) with attachment, path, canary-header and cross-namespace backend checks
         diagrams:
           - type: flowchart
             shows: GatewayClass to Gateway to HTTPRoute to Services, with owning roles
           - type: sequence
             shows: Request from shuttle through the gateway's data plane proxy to the matched backend
         playground_env: >
-          Single-node kind cluster with the Gateway API standard CRDs and a
+          Single-node kind cluster with the Gateway API v1.6.1 experimental CRDs and a
           Gateway API controller from the astrona `gatewayAPI` addon (plumbing;
           read the GatewayClass name from the cluster). Namespace `starfleet` with
           `bridge` (nginx), `scout` and `probe` Services and `shuttle`.

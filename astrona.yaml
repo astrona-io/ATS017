@@ -209,12 +209,44 @@ modules:
         title: "Cross-Namespace Backends With ReferenceGrant"
         path: sections/section-020/module-01/course-04-cross-namespace-backends-with-referencegrant.md
       - type: reading
-        title: Summary
-        path: sections/section-020/module-01/course-05-summary.md
+        title: "Request Matching And Precedence"
+        path: sections/section-020/module-01/course-05-request-matching-and-precedence.md
+      - type: reading
+        title: "Diagnosing Gateway And Route Status"
+        path: sections/section-020/module-01/course-06-diagnosing-gateway-and-route-status.md
+      - type: reading
+        title: "Cross-Namespace Permission Boundaries"
+        path: sections/section-020/module-01/course-07-cross-namespace-permission-boundaries.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-01/labs/lab-01/question.md
+      - type: lab
+        title: "Repair Gateway Route Attachment Lab"
+        path: sections/section-020/module-01/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: networking
+        task_kind: troubleshooting
+        tags: [gateway-api, httproute, gateway, namespace-isolation]
+        learning_goals:
+          - Repair listener permission and parent selection using current route conditions
+          - Route requests by path and canary header and prove precedence through the Gateway
+          - Permit one cross-namespace backend with a ReferenceGrant in the target namespace
+        resources:
+          - name: "Gateway API HTTP Routing"
+            url: https://gateway-api.sigs.k8s.io/guides/user-guides/http-routing/
+          - name: "Gateway API ReferenceGrant"
+            url: https://gateway-api.sigs.k8s.io/reference/api-types/referencegrant/
+      - type: reading
+        title: "Filters And Weighted Forwarding"
+        path: sections/section-020/module-01/course-08-filters-and-weighted-forwarding.md
+      - type: reading
+        title: "Summary"
+        path: sections/section-020/module-01/course-09-summary.md
       - type: quiz
         title: "Knowledge Check: Route Traffic With The Gateway API"
         path: sections/section-020/module-01/quiz.yaml
-        question_count: 6
+        question_count: 9
       - type: reading
         title: "Isolate Traffic With NetworkPolicy"
         path: sections/section-020/module-02/course.md

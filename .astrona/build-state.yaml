@@ -44,7 +44,7 @@ items:
   kind: course
   what: 'chapter for module 1: Route Traffic With The Gateway API'
   status: done
-  note: landing + 4 parts + summary; real output; Gateway ClusterIP address from status.addresses
+  note: "untested: built without booting 2026-11-06; kept four foundations, added four deeper parts, moved summary to 09; verified against Gateway API v1.6.1 definitions"
 - key: section-020/module-02/playground
   kind: playground
   what: 'playground for module 2: Isolate Traffic With NetworkPolicy'
@@ -71,7 +71,7 @@ items:
   kind: quiz
   what: 'knowledge check for section-020: Networking And Storage'
   status: done
-  note: 'per-module quiz.yaml (6+5+5 questions) in astrona.yaml'
+  note: "untested: built without booting 2026-11-06; Gateway quiz now 9 questions, including precedence, fresh status and filters"
 - key: section-020/capstone
   kind: capstone
   what: 'capstone lab: Networking And Storage Capstone'
@@ -224,3 +224,9 @@ items:
   what: "Limit Pipeline Storage With ResourceQuota"
   status: done
   note: "untested: built without booting 2026-11-04; local reverted Git history, three namespaces, zero-count block and bounded storage quotas; static checks and astrona validate only"
+
+- key: section-020/module-01/labs/lab-01
+  kind: lab
+  what: Repair Gateway Route Attachment (25m)
+  status: done
+  note: "untested: built without booting 2026-11-06; YAML, official config and CRD schemas, shell syntax and manifest checks passed; astrona validate blocked by sandbox access to ~/.astrona/.maintenance.lock; four live-condition and Gateway-request checks; runtime behavior remains untested"

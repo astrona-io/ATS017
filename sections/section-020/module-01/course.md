@@ -6,7 +6,14 @@ The Gateway API splits the job into three objects, and each one belongs to a dif
 
 Keep one sentence in mind for this module: **an HTTPRoute does nothing until a Gateway accepts it, and its status tells you whether it did.** Most routing problems on the exam are not wrong rules but routes that never attached, or that point at a Service they may not use.
 
-The module has four parts. **Gateway Classes, Gateways And Listeners** reads the GatewayClass in the playground, creates a Gateway and reads its status and address. **HTTPRoute Matches, Backends And Weights** sends requests to different Services by path and by header, and splits traffic between two Services by weight. **Route Status And Allowed Routes** breaks a route on purpose, reads its conditions, and lets a route from another namespace in with `allowedRoutes`. **Cross-Namespace Backends With ReferenceGrant** sends a route to a Service in another namespace, reads the refusal, and gives the permission with a ReferenceGrant.
+Read the four foundations first: **Gateway Classes, Gateways And Listeners**,
+**HTTPRoute Matches, Backends And Weights**, **Route Status And Allowed
+Routes**, and **Cross-Namespace Backends With ReferenceGrant**. Then work
+through **Request Matching And Precedence**, **Diagnosing Gateway And Route
+Status**, **Cross-Namespace Permission Boundaries**, and **Filters And
+Weighted Forwarding**. These explain overlapping rules, fresh status,
+independent permissions, and request changes. A repair lab follows the
+permission exercise, and a summary closes the reading.
 
 ## Learning objectives
 
@@ -18,6 +25,10 @@ After this module you can:
 - Split traffic between two backends with `backendRefs` weights.
 - Diagnose a route that does not attach from its `status.parents` conditions (`Accepted`, `ResolvedRefs`).
 - Allow a route from another namespace with `allowedRoutes`, and a backend in another namespace with a ReferenceGrant.
+
+- Resolve overlapping matches by hostname, path, method and header precedence.
+- Distinguish Gateway programming from route acceptance and reference resolution.
+- Modify request headers, return redirects and rewrite upstream paths.
 
 ## Before you start
 

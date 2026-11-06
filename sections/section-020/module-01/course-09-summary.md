@@ -8,7 +8,11 @@ The Gateway API splits the job between three objects and three roles. The cluste
 
 An HTTPRoute rule has `matches`, optional `filters` and `backendRefs`. Conditions inside one match must all be true, while separate matches are alternatives, and the most specific matching rule wins. A rule with no `matches` catches every request. Several `backendRefs` with a `weight` each split requests at random in proportion to the weights, which is how a share of traffic goes to a new version.
 
-The API server accepts any valid route, so the proof is in `status.parents`. `Accepted` says whether the Gateway let the route attach; `NotAllowedByListeners` means the listener's `allowedRoutes` does not include the route's namespace. `ResolvedRefs` says whether the backends are usable; `BackendNotFound` means a missing Service, and `RefNotPermitted` means a Service in another namespace without a ReferenceGrant. The key facts to remember are these:
+The API server accepts any valid route, so the proof is in `status.parents`. `Accepted` says whether the Gateway let the route attach; `NotAllowedByListeners` means the listener's `allowedRoutes` does not include the route's namespace. `ResolvedRefs` says whether the backends are usable; `BackendNotFound` means a missing Service, and `RefNotPermitted` means a Service in another namespace without a ReferenceGrant. Match precedence first narrows the listener and route hostnames, then compares exact paths, prefix length, method, header counts and query parameter counts. Remaining ties across routes use creation time and then namespace/name; ties inside one route use rule order. A canary header does not override a longer prefix.
+
+Gateway programming and route acceptance are separate. Read the selected parent's conditions and compare observed generations with the current specification. Request filters run after matching. A redirect returns a new address to the client, while a rewrite changes what the backend receives. Weights split traffic only inside the winning rule.
+
+The key facts to remember are these:
 
 - `allowedRoutes.namespaces.from` is `Same` by default; with `Selector`, the Gateway's own namespace must match too.
 - A ReferenceGrant lives in the namespace of the target and lists the allowed `from` kinds and namespaces.

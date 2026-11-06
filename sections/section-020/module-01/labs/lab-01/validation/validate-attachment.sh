@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Read live conditions and send requests through the Gateway, never directly to a backend.
+set -euo pipefail
+fail() { echo "FAIL: $*"; exit 1; }
+route_ready() {
+  local route="$1" parents
+  parents=$(kubectl -n outpost get httproute "$route" -o jsonpath='{range .status.parents[*]}{.parentRef.namespace}/{.parentRef.name}/{.parentRef.sectionName}{" "}{.controllerName}{" "}{range .conditions[*]}{.type}={.status}:{.observedGeneration}{" "}{end}{"\n"}{end}') || return 1
+  local generation
+  generation=$(kubectl -n outpost get httproute "$route" -o jsonpath='{.metadata.generation}')
+  # Accept only the intended parent and fresh conditions, on the same status entry.
+  while IFS= read -r parent; do
+    case "$parent" in
+      "starfleet/starfleet-gateway/http $gateway_controller "*)
+        case "$parent" in *"Accepted=True:$generation "*) ;; *) continue ;; esac
+        case "$parent" in *"ResolvedRefs=True:$generation "*) return 0 ;; esac ;;
+    esac
+  done <<< "$parents"
+  return 1
+}
+request() {
+  local hostname="$1" path="$2"
+  shift 2
+  kubectl -n starfleet exec deploy/shuttle -- curl --fail --silent --show-error --max-time 8 \
+    -H "Host: $hostname" "$@" "http://$gateway_address$path"
+}
+gateway_controller=$(kubectl get gatewayclass eg -o jsonpath='{.spec.controllerName}')
+[ -n "$gateway_controller" ] || fail "GatewayClass eg has no controller"
+gateway_address=$(kubectl -n starfleet get gateway starfleet-gateway -o jsonpath='{.status.addresses[0].value}')
+[ -n "$gateway_address" ] || fail "Gateway has no address"
+listener=$(kubectl -n starfleet get gateway starfleet-gateway -o jsonpath='{range .spec.listeners[?(@.name=="http")]}{.protocol}:{.port}{end}')
+[ "$listener" = HTTP:80 ] || fail "keep listener http on HTTP port 80"
+route_ready team-route || fail "team-route needs current Accepted=True and ResolvedRefs=True on listener http"
+section=$(kubectl -n outpost get httproute team-route -o jsonpath='{.spec.parentRefs[?(@.name=="starfleet-gateway")].sectionName}')
+[ "$section" = http ] || fail "team-route must select sectionName http"
+# A successful attachment and response also prove that allowedRoutes permits outpost.
+body=$(request team.starfleet.example /) || fail "default request failed"
+[ "$body" = "outpost front end" ] || fail "default request must reach outpost/bridge"
+echo "PASS: attachment"

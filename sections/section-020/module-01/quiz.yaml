@@ -6,7 +6,7 @@ kind: question_bank
 id: ats017-020-01
 course_id: ATS017
 exam_code: CNPE
-status: alpha
+status: draft
 provenance: Original practice material written for this course; not official exam questions.
 scope:
   type: module
@@ -217,3 +217,90 @@ questions:
     correct_option: d
     explanation: >-
       With `Selector`, the Gateway's own namespace is allowed only if the selector matches it. One `matchLabels` key cannot hold two values, so use `matchExpressions` with `In`. A ReferenceGrant controls backends in other namespaces, not route attachment.
+
+  - id: ats017-020-01-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: Resolve overlapping HTTPRoute rules using method and header
+      precedence.
+    source_readings:
+    - sections/section-020/module-01/course-05-request-matching-and-precedence.md
+    prompt: Two attached routes have the same hostname and PathPrefix /api. One matches
+      method GET and forwards to scout. The other matches two headers and forwards to
+      probe, without a method match. A GET request matches both headers. Which backend
+      wins?
+    options:
+    - id: a
+      text: scout, because a method match takes precedence before header count when
+        paths tie
+      explanation: Correct. Compare method specificity before the number of header matches.
+    - id: b
+      text: probe, because two headers always make a match more specific than a method
+      explanation: Header count is considered only after path and method specificity
+        tie.
+    - id: c
+      text: Whichever route has the oldest creation timestamp, before comparing the
+        matches
+      explanation: Creation time breaks ties only after matching specificity.
+    - id: d
+      text: Both backends, with equal weights inferred from the two matching routes
+      explanation: Overlapping routes do not create a weighted backend group.
+    correct_option: a
+    explanation: With hostname and path tied, a method match wins before header count
+      is compared. Route age and namespace/name break later ties.
+  - id: ats017-020-01-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Read current route conditions after changing a parent reference.
+    source_readings:
+    - sections/section-020/module-01/course-06-diagnosing-gateway-and-route-status.md
+    prompt: You change an HTTPRoute parent reference. Its metadata.generation is now
+      4. The intended parent entry still has Accepted=True and ResolvedRefs=True with
+      observedGeneration 3. The Gateway is Programmed=True. What should you do before
+      calling the attachment repaired?
+    options:
+    - id: a
+      text: Treat Gateway Programmed=True as proof that the new route specification
+        works
+      explanation: Gateway programming does not prove acceptance of this route generation.
+    - id: b
+      text: Wait for a Programmed=True condition on the HTTPRoute itself
+      explanation: The portable route parent conditions are Accepted and ResolvedRefs.
+    - id: c
+      text: Wait for conditions that observe generation 4, then send the matching request
+        through the Gateway
+      explanation: Correct. The old success describes the previous specification; a
+        request proves the data path.
+    - id: d
+      text: Change observedGeneration to 4 by editing the route status
+      explanation: The controller owns status. Changing it does not program the new
+        route.
+    correct_option: c
+    explanation: Read conditions for the intended parent and current generation. Then
+      use a real request to confirm that the configuration serves traffic.
+  - id: ats017-020-01-q09
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Choose an upstream rewrite rather than a client redirect.
+    source_readings:
+    - sections/section-020/module-01/course-08-filters-and-weighted-forwarding.md
+    prompt: Clients must keep using /inspect/headers, while probe must receive /headers.
+      The rule has one PathPrefix match for /inspect. Which configuration changes the
+      upstream path without asking the client to make another request?
+    options:
+    - id: a
+      text: RequestRedirect with ReplaceFullPath /headers and statusCode 302
+      explanation: A redirect returns Location and asks the client to use another address.
+    - id: b
+      text: RequestHeaderModifier that adds a path header with value /headers
+      explanation: Adding a regular header does not change the upstream request path.
+    - id: c
+      text: Two backend references with weights 3 and 1
+      explanation: Weights choose backends within a rule; they do not change paths.
+    - id: d
+      text: URLRewrite with ReplacePrefixMatch and replacePrefixMatch set to /
+      explanation: Correct. The proxy removes the matched /inspect prefix and preserves
+        the suffix.
+    correct_option: d
+    explanation: URLRewrite changes the forwarded request. ReplacePrefixMatch is compatible
+      with the single PathPrefix match and keeps the client address unchanged.

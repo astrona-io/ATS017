@@ -33,10 +33,13 @@ The reader connects workloads safely and gives them storage: traffic enters thro
 
 ### 1. Route Traffic With The Gateway API
 *   **Module Reader:** **[Module 1: Route Traffic With The Gateway API](./module-01/course.md)**
-*   **Hands-on Playground:** `sections/section-020/module-01/playground` — Single-node kind cluster with the Gateway API standard CRDs and a Gateway API controller from the astrona `gatewayAPI` addon (plumbing; read the GatewayClass name from the cluster). Namespace `starfleet` with `bridge` (nginx), `scout` and `probe` Services and `shuttle`. Namespace `outpost` with its own `probe`. No Gateway or HTTPRoute yet. Requests are sent from `shuttle` to the Gateway's in-cluster Service address, or through kubectl port-forward, because kind has no load balancer.
+*   **Hands-on Playground:** `sections/section-020/module-01/playground` — Single-node kind cluster with the Gateway API v1.6.1 experimental CRDs and a Gateway API controller from the astrona `gatewayAPI` addon (plumbing; read the GatewayClass name from the cluster). Namespace `starfleet` with `bridge` (nginx), `scout` and `probe` Services and `shuttle`. Namespace `outpost` with its own `probe`. No Gateway or HTTPRoute yet. Requests are sent from `shuttle` to the Gateway's in-cluster Service address, or through kubectl port-forward, because kind has no load balancer.
     ```bash
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-01/playground
     ```
+
+*   **Deeper reading:** Listener selection and rule precedence; Gateway, listener and route conditions; cross-namespace permission boundaries; header filters, redirects, rewrites and weighted forwarding.
+*   **Graded lab (25 minutes):** Repair Gateway Route Attachment — `sections/section-020/module-01/labs/lab-01`. Repair listener permissions and `sectionName`, add path and canary-header rules, and permit a cross-namespace backend. Prove the result through the Gateway.
 
 ### 2. Isolate Traffic With NetworkPolicy
 *   **Module Reader:** **[Module 2: Isolate Traffic With NetworkPolicy](./module-02/course.md)**

@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-020-01
+  docs:
+    solution: solution.md
+    question: question.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      gatewayAPI: envoy
+      gatewayPorts:
+        http: 18080
+        https: 18443
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - nginx:1.31.6-alpine
+      - mccutchen/go-httpbin:2.25.0
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Creates ready workloads and two HTTPRoutes blocked by listener
+        permissions; team-route also names the wrong listener
+      type: file
+      source: bootstrap/seed-workloads.sh
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+validation:
+  scripts:
+    - name: attachment
+      description: Checks listener permission, current route conditions and the default
+        response
+      type: file
+      source: validation/validate-attachment.sh
+    - name: path
+      description: Checks /api reaches scout through the Gateway
+      type: file
+      source: validation/validate-path.sh
+    - name: header
+      description: Checks the canary header selects probe and the longer path still
+        selects scout
+      type: file
+      source: validation/validate-header.sh
+    - name: reference
+      description: Checks the target namespace grant and relay response through the
+        Gateway
+      type: file
+      source: validation/validate-reference.sh
+teardown:
+  keepCluster: false
