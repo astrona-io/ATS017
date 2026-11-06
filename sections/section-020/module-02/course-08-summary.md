@@ -1,6 +1,6 @@
 # Summary
 
-A NetworkPolicy turns the open network of a Kubernetes cluster into a list of allowed flows. This module closed one namespace in both directions on a `kind` cluster whose network plugin enforces policies, and then opened each needed flow again by pod labels, namespace and port.
+A NetworkPolicy turns the open network of a Kubernetes cluster into a list of allowed flows. The exercises closed one namespace in both directions on a `kind` cluster whose network plugin enforces policies, and then opened each needed flow again by pod labels, namespace and port.
 
 ## What you learned
 
@@ -8,7 +8,11 @@ Without any policy, every pod reaches every pod in every namespace. A NetworkPol
 
 A default-deny policy has an empty pod selector and no rules. An ingress rule lists sources in `from` and pod ports in `ports`; an egress rule lists destinations in `to`. A `podSelector` source only matches pods in the policy's own namespace, a `namespaceSelector` matches whole namespaces by label, and `ipBlock` matches address ranges. Ports are the pod's container ports, because the Service has already changed the destination before the plugin checks the packet.
 
-An egress default deny breaks DNS first, which shows as `Resolving timed out`. Every such namespace needs an egress rule to the `kube-dns` pods in `kube-system` on port 53 over UDP and TCP. The key facts to remember are these:
+An egress default deny breaks DNS first, which shows as `Resolving timed out`. Every such namespace needs an egress rule to the `kube-dns` pods in `kube-system` on port 53 over UDP and TCP. DNS replies and application replies do not require reverse connection permissions. Named ports refer to destination Pod declarations; an empty namespace selector matches every namespace. An `ipBlock.except` removes addresses only from that peer, so another allow can still admit them.
+
+A useful test compares direct Pod, Service address and Service name access. Pair a successful request to a live listener with a timed-out request from an unauthorized source. NetworkPolicy has no enforcement status condition, so object creation alone proves no traffic boundary.
+
+The key facts to remember are these:
 
 - One `from` or `to` item with a namespace selector and a pod selector means AND; two items mean OR.
 - Every namespace carries `kubernetes.io/metadata.name`; select namespaces by it.

@@ -260,12 +260,44 @@ modules:
         title: "Egress Rules And DNS"
         path: sections/section-020/module-02/course-03-egress-rules-and-dns.md
       - type: reading
+        title: "How Policies Combine"
+        path: sections/section-020/module-02/course-04-how-policies-combine.md
+      - type: reading
+        title: "Selector And Port Boundaries"
+        path: sections/section-020/module-02/course-05-selector-and-port-boundaries.md
+      - type: reading
+        title: "DNS And Reply Traffic"
+        path: sections/section-020/module-02/course-06-dns-and-reply-traffic.md
+      - type: reading
+        title: "Prove A Policy With Connection Tests"
+        path: sections/section-020/module-02/course-07-prove-a-policy-with-connection-tests.md
+      - type: reading
+        title: Question
+        path: sections/section-020/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Lock Down A Tenant Namespace Lab"
+        path: sections/section-020/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 20m
+        topic: networking
+        task_kind: troubleshooting
+        tags: [network-policy, default-deny, egress, dns, namespace-isolation]
+        learning_goals:
+          - Isolate every tenant Pod in both directions while preserving DNS and one application flow
+          - Repair the monitoring peer so namespace and Pod labels must match together
+          - Prove allowed and denied traffic with real connection tests from three namespaces
+        resources:
+          - name: "Network Policies"
+            url: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+          - name: "Debugging DNS Resolution"
+            url: https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/
+      - type: reading
         title: Summary
-        path: sections/section-020/module-02/course-04-summary.md
+        path: sections/section-020/module-02/course-08-summary.md
       - type: quiz
         title: "Knowledge Check: Isolate Traffic With NetworkPolicy"
         path: sections/section-020/module-02/quiz.yaml
-        question_count: 5
+        question_count: 8
       - type: reading
         title: "Provision Storage With StorageClasses"
         path: sections/section-020/module-03/course.md

@@ -54,7 +54,7 @@ items:
   kind: course
   what: 'chapter for module 2: Isolate Traffic With NetworkPolicy'
   status: done
-  note: landing + 3 parts + summary; real output
+  note: "untested: built without booting 2026-11-06; kept three foundations, added four deeper parts and decision diagram; summary moved to 08; kindnet and Kubernetes 1.35 API checked against official sources"
 - key: section-020/module-03/playground
   kind: playground
   what: 'playground for module 3: Provision Storage With StorageClasses'
@@ -71,7 +71,7 @@ items:
   kind: quiz
   what: 'knowledge check for section-020: Networking And Storage'
   status: done
-  note: "untested: built without booting 2026-11-06; Gateway quiz now 9 questions, including precedence, fresh status and filters"
+  note: "untested: built without booting 2026-11-06; Gateway quiz now 9 questions; NetworkPolicy quiz now 8 including additive exclusions, empty selectors, named ports and DNS diagnosis"
 - key: section-020/capstone
   kind: capstone
   what: 'capstone lab: Networking And Storage Capstone'
@@ -230,3 +230,14 @@ items:
   what: Repair Gateway Route Attachment (25m)
   status: done
   note: "untested: built without booting 2026-11-06; YAML, official config and CRD schemas, shell syntax and manifest checks passed; astrona validate blocked by sandbox access to ~/.astrona/.maintenance.lock; four live-condition and Gateway-request checks; runtime behavior remains untested"
+
+- key: section-020/module-02/labs/lab-01
+  kind: lab
+  what: Lock Down A Tenant Namespace (20m)
+  status: done
+  note: "untested: built without booting 2026-11-06; default kindnet matches capstone; preloaded listeners and curl clients in three namespaces; four live connection validators; YAML, exact Kubernetes 1.35.8 API schema, CLI lab schema and shell syntax passed; astrona validate blocked before config load by sandbox access to ~/.astrona/.maintenance.lock; live startup and grading remain untested"
+- key: section-020/module-02/quiz
+  kind: quiz
+  what: Eight original questions with source readings
+  status: done
+  note: "untested: built without booting 2026-11-06; added three questions; schema, source paths and manifest count checked offline"

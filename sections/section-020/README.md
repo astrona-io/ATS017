@@ -48,6 +48,9 @@ The reader connects workloads safely and gives them storage: traffic enters thro
     astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-02/playground
     ```
 
+*   **Deeper reading:** Additive policy permissions and isolation by direction; combined and empty selectors; address exclusions and named ports; DNS and replies; bounded tests that distinguish policy, Service and DNS failures. Includes a connection decision diagram.
+*   **Graded lab (20 minutes):** Lock Down A Tenant Namespace — `sections/section-020/module-02/labs/lab-01`. Repair the monitoring selector mistake, default-deny both directions, preserve DNS and allow one frontend-to-backend port. Test allowed and denied connections from three namespaces.
+
 ### 3. Provision Storage With StorageClasses
 *   **Module Reader:** **[Module 3: Provision Storage With StorageClasses](./module-03/course.md)**
 *   **Hands-on Playground:** `sections/section-020/module-03/playground` — Single-node kind cluster with kind's default StorageClass `standard` (rancher.io/local-path, WaitForFirstConsumer). A second StorageClass `standard-retain` with reclaimPolicy Retain. Namespace `starfleet` with `shuttle` and no PersistentVolumeClaims. A `probe` StatefulSet manifest with volumeClaimTemplates is ready to apply.

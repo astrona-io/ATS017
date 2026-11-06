@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-020-02
+  docs:
+    solution: solution.md
+    question: question.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+      - mccutchen/go-httpbin:2.25.0
+bootstrap:
+  init:
+    - name: seed-workloads
+      description: Creates three namespaces, ready listeners and one overly broad ingress
+        policy
+      type: file
+      source: bootstrap/seed-workloads.sh
+testing:
+  init:
+    - name: solution
+      description: Applies the reference NetworkPolicies
+      type: file
+      source: solution/apply.sh
+validation:
+  scripts:
+    - name: isolation
+      description: Checks namespace-wide default deny and real blocked ingress and egress
+      type: file
+      source: validation/validate-isolation.sh
+    - name: dns
+      description: >-
+        Checks the scoped UDP and TCP DNS rule and real name resolution from every tenant
+        workload
+      type: file
+      source: validation/validate-dns.sh
+    - name: frontend
+      description: Checks frontend access on 8080 and denied metrics and third-workload access
+      type: file
+      source: validation/validate-frontend.sh
+    - name: monitoring
+      description: >-
+        Checks allowed metrics on every tenant Pod and denied traffic from wrong Pods and
+        namespaces
+      type: file
+      source: validation/validate-monitoring.sh
+teardown:
+  keepCluster: false

@@ -6,7 +6,7 @@ kind: question_bank
 id: ats017-020-02
 course_id: ATS017
 exam_code: CNPE
-status: alpha
+status: draft
 provenance: Original practice material written for this course; not official exam questions.
 scope:
   type: module
@@ -183,3 +183,100 @@ questions:
     correct_option: b
     explanation: >-
       Take every policy whose selector is empty or matches the pod, and split them by direction. Policies add up, there is no order, and a deny does not override an allow. A flow between two isolated pods needs an egress rule on the sender and an ingress rule on the receiver.
+
+
+  - id: ats017-020-02-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: Evaluate the union of policy permissions and the scope of ipBlock
+      exclusions.
+    source_readings:
+      - sections/section-020/module-02/course-04-how-policies-combine.md
+      - sections/section-020/module-02/course-05-selector-and-port-boundaries.md
+    prompt: >-
+      The shuttle Pod is egress-isolated. One policy allows TCP 443 to 192.0.2.0/24 except
+      192.0.2.128/25. Another selecting policy allows TCP 443 to all of 192.0.2.0/24. What
+      does NetworkPolicy permit to 192.0.2.200 on TCP 443?
+    options:
+      - id: a
+        text: It denies the connection because except overrides other policies.
+        explanation: The exclusion applies only to the first ipBlock peer.
+      - id: b
+        text: It permits the connection because the second policy allows the address.
+        explanation: Correct. The second permission remains in the union of allows.
+      - id: c
+        text: It uses whichever of the policies was created most recently.
+        explanation: Policy creation order does not affect the decision.
+      - id: d
+        text: It denies the connection until both policies list the address.
+        explanation: One matching allow in the isolated direction is sufficient.
+    correct_option: b
+    explanation: >-
+      An ipBlock exclusion removes addresses from that peer only. Policies combine additively,
+      so a second allow still permits the connection. Destination ingress must also permit
+      it if that endpoint is isolated.
+  - id: ats017-020-02-q07
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Interpret an empty namespace selector and a named destination port.
+    source_readings:
+      - sections/section-020/module-02/course-05-selector-and-port-boundaries.md
+    prompt: >-
+      A policy in starfleet selects app: scout. Its ingress peer is namespaceSelector:
+      {} with no podSelector, and its port is TCP http. The scout Pod declares container
+      port http as 9898; its Service exposes port 80. Which traffic does this rule allow?
+    options:
+      - id: a
+        text: Pods in starfleet only, to destination port 80.
+        explanation: The namespace selector is cluster-wide, and the name resolves on the
+          Pod.
+      - id: b
+        text: Pods in namespaces without labels, to destination port 9898.
+        explanation: An empty selector matches all objects in its scope, including labelled
+          namespaces.
+      - id: c
+        text: Pods in every namespace, to the selected Pods on destination port 9898.
+        explanation: Correct. The empty namespace selector matches all namespaces; http
+          resolves on scout.
+      - id: d
+        text: Pods in every namespace, to every destination port on scout.
+        explanation: The named port restricts the rule to its declared destination port.
+    correct_option: c
+    explanation: >-
+      An empty namespace selector includes every namespace. A named NetworkPolicy port
+      resolves against the destination Pod declaration, independently of the Service port.
+  - id: ats017-020-02-q08
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: Distinguish DNS failure from a policy drop with bounded connection
+      tests.
+    source_readings:
+      - sections/section-020/module-02/course-06-dns-and-reply-traffic.md
+      - sections/section-020/module-02/course-07-prove-a-policy-with-connection-tests.md
+    prompt: >-
+      An allowed client reaches the backend by both Pod IP and Service ClusterIP with a
+      three-second curl timeout. The same client cannot resolve the Service name. Which
+      next action best targets the failed stage?
+    options:
+      - id: a
+        text: Allow all ingress to the client so DNS replies can return.
+        explanation: Replies to allowed DNS connections are implicitly permitted.
+      - id: b
+        text: Replace the Service selector because direct Pod traffic succeeds.
+        explanation: The working Service address already provides evidence for its forwarding
+          path.
+      - id: c
+        text: Open every backend port because a timeout always proves a policy drop.
+        explanation: A timeout does not identify the failing stage, and name resolution
+          happens first.
+      - id: d
+        text: >-
+          Inspect the client resolver and DNS endpoints, then its UDP and TCP 53 egress
+          permission.
+        explanation: Correct. Only the name path fails; inspect DNS and its separate egress
+          permission.
+    correct_option: d
+    explanation: >-
+      A working Service address with a failing name isolates the DNS stage. Check the resolver
+      and DNS endpoints, plus the scoped egress allow on both protocols. Do not open reverse
+      ingress for DNS replies.

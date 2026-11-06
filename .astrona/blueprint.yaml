@@ -192,6 +192,15 @@ sections:
           - Default-deny policies and the DNS egress rule every namespace needs
           - Ingress and egress rules with podSelector, namespaceSelector and ipBlock
           - The from-list pitfall, one item with two selectors versus two items
+          - Additive permissions and direction-specific isolation, with a connection decision diagram
+          - Empty selectors, ipBlock exclusions and named destination ports
+          - DNS egress, reply traffic and bounded Pod-IP, Service-IP and name tests
+        notes: >
+          Expanded 2026-11-06 with four deeper parts and a 20-minute lab at
+          module-02/labs/lab-01. The lab uses default kindnet like the section
+          capstone, not the Calico addon. Start with one OR-form monitoring
+          policy; repair it, isolate both directions, and prove allowed and
+          denied traffic from three namespaces. Built without booting.
         diagrams:
           - type: flowchart
             shows: Allowed and denied flows between shuttle, scout and probe across starfleet and outpost
