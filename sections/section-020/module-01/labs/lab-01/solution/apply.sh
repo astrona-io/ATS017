@@ -93,10 +93,12 @@ spec:
 YAML
 kubectl -n starfleet wait --for=condition=Programmed gateway/starfleet-gateway --timeout=180s
 # kubectl wait cannot take a filter expression inside --for=jsonpath, so poll.
+# Envoy Gateway keeps the status entry of the old parentRef (listener web,
+# Accepted=False) next to the new one, so read only the entry for listener http.
 for route in team-route relay; do
   for attempt in $(seq 1 36); do
     conditions=$(kubectl -n outpost get httproute "$route" \
-      -o jsonpath='{range .status.parents[0].conditions[*]}{.type}={.status}{" "}{end}')
+      -o jsonpath='{range .status.parents[?(@.parentRef.sectionName=="http")].conditions[*]}{.type}={.status}{" "}{end}')
     case "$conditions" in
       *"Accepted=True "*"ResolvedRefs=True "*|*"ResolvedRefs=True "*"Accepted=True "*) break ;;
     esac
