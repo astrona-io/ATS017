@@ -106,3 +106,14 @@ for route in team-route relay; do
     sleep 5
   done
 done
+# The route status turns Accepted a moment before Envoy serves it, so send
+# the default request through the Gateway until it answers.
+gateway_address=$(kubectl -n starfleet get gateway starfleet-gateway -o jsonpath='{.status.addresses[0].value}')
+for attempt in $(seq 1 36); do
+  if kubectl -n starfleet exec deploy/shuttle -- curl --fail --silent --max-time 8 \
+    -H 'Host: team.starfleet.example' "http://$gateway_address/" >/dev/null; then
+    break
+  fi
+  [ "$attempt" -eq 36 ] && { echo "the Gateway does not answer for team.starfleet.example" >&2; exit 1; }
+  sleep 5
+done

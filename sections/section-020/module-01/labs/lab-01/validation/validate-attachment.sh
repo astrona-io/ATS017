@@ -17,11 +17,19 @@ route_ready() {
   done <<< "$parents"
   return 1
 }
+# Envoy programs a route a moment after its status says Accepted, so retry a
+# failed request a few times before calling it a failure.
 request() {
-  local hostname="$1" path="$2"
+  local hostname="$1" path="$2" attempt
   shift 2
-  kubectl -n starfleet exec deploy/shuttle -- curl --fail --silent --show-error --max-time 8 \
-    -H "Host: $hostname" "$@" "http://$gateway_address$path"
+  for attempt in $(seq 1 10); do
+    if kubectl -n starfleet exec deploy/shuttle -- curl --fail --silent --show-error --max-time 8 \
+      -H "Host: $hostname" "$@" "http://$gateway_address$path"; then
+      return 0
+    fi
+    [ "$attempt" -eq 10 ] && return 1
+    sleep 3
+  done
 }
 gateway_controller=$(kubectl get gatewayclass eg -o jsonpath='{.spec.controllerName}')
 [ -n "$gateway_controller" ] || fail "GatewayClass eg has no controller"
