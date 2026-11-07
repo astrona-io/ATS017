@@ -246,4 +246,4 @@ items:
   kind: lab
   what: "Scale Replicas By Cost (25m)"
   status: done
-  note: "untested: built without booting 2026-11-07; CNPE exam-scenario gap (scale the most expensive controller down, the least expensive up); closed-window seed waits for a clear cost ranking; two graders, no OpenCost call at grading time; YAML and shell syntax checked offline"
+  note: "tested 2026-11-07 (astrona test green in an isolated kind cluster, 10 minutes including the cost window seed); CNPE exam-scenario gap (scale the most expensive controller down, the least expensive up); closed-window seed waits for a clear cost ranking; two graders, no OpenCost call at grading time; YAML and shell syntax checked offline"
