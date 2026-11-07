@@ -241,3 +241,9 @@ items:
   what: Eight original questions with source readings
   status: done
   note: "untested: built without booting 2026-11-06; added three questions; schema, source paths and manifest count checked offline"
+
+- key: section-040/module-02/labs/lab-03
+  kind: lab
+  what: "Scale Replicas By Cost (25m)"
+  status: done
+  note: "untested: built without booting 2026-11-07; CNPE exam-scenario gap (scale the most expensive controller down, the least expensive up); closed-window seed waits for a clear cost ranking; two graders, no OpenCost call at grading time; YAML and shell syntax checked offline"

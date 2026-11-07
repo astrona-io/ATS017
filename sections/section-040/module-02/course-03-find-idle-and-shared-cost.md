@@ -175,3 +175,27 @@ When you finish, remove the mission cluster and resume the playground:
 astrona destroy ats-017-lab-040-02-02
 astrona start ats-017-playground-040-02
 ```
+
+## Your mission: Scale Replicas By Cost
+
+You can now rank the controllers of a namespace by `totalCost` and say why one is at the top. The second mission gives you four Deployments in `starfleet` with different replica counts and requests. You record the most and the least expensive one in a ConfigMap, scale the first down to one replica and the second up to three, and leave every request as it is.
+
+Pause the playground first:
+
+```sh
+astrona stop ats-017-playground-040-02
+```
+
+Start the mission and send it for grading. The start-up takes about 10 minutes, because the script waits until OpenCost has data:
+
+```sh
+astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-02/labs/lab-03
+astrona submit -c sections/section-040/module-02/labs/lab-03
+```
+
+When you finish, remove the mission cluster and resume the playground:
+
+```sh
+astrona destroy ats-017-lab-040-02-03
+astrona start ats-017-playground-040-02
+```

@@ -769,6 +769,25 @@ modules:
           - name: "OpenCost API"
             url: https://opencost.io/docs/integrations/api
       - type: reading
+        title: Question
+        path: sections/section-040/module-02/labs/lab-03/question.md
+      - type: lab
+        title: "Scale Replicas By Cost Lab"
+        path: sections/section-040/module-02/labs/lab-03
+        difficulty: intermediate
+        estimated_duration: 25m
+        topic: cost
+        task_kind: troubleshooting
+        tags: [opencost, total-cost, controller-aggregation, replicas, scaling]
+        learning_goals:
+          - Rank the Deployments of a namespace by totalCost from the OpenCost allocation API for a closed window
+          - Scale the most expensive Deployment down and the least expensive one up without changing their requests
+        resources:
+          - name: "OpenCost Documentation"
+            url: https://opencost.io/docs/
+          - name: "OpenCost API"
+            url: https://opencost.io/docs/integrations/api
+      - type: reading
         title: Summary
         path: sections/section-040/module-02/course-04-summary.md
       - type: quiz

@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+#
+# Scale Replicas By Cost (ats-017-lab-040-02-03)
+# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster.
+# A small Prometheus and OpenCost 1.121.3 (default on-premises prices) are
+# installed by the bootstrap script. The script takes about 10 minutes,
+# because OpenCost needs samples before it returns costs.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-040-02-03
+  docs:
+    solution: solution.md
+    question: question.md
+
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      metricsServer: true
+    preloadImages:
+      - curlimages/curl:8.22.0
+      - ghcr.io/stefanprodan/podinfo:6.15.0
+
+bootstrap:
+  init:
+    - name: seed
+      description: Creates four Deployments in starfleet with different replica counts and requests, installs Prometheus and OpenCost with Helm, and waits until OpenCost ranks their costs
+      type: file
+      source: bootstrap/seed.sh
+
+testing:
+  init:
+    - name: solution
+      description: Reference solution applied by `astrona test`
+      type: file
+      source: solution/apply.sh
+
+validation:
+  scripts:
+    - name: verify-cost-report
+      description: Checks that the ConfigMap cost-scaling-report names the most and the least expensive Deployment of the window
+      type: file
+      source: validation/validate-cost-report.sh
+    - name: verify-replicas
+      description: Checks that the most expensive Deployment runs one replica, the least expensive runs three, both answer, and nothing else changed
+      type: file
+      source: validation/validate-replicas.sh
+
+teardown:
+  keepCluster: false
