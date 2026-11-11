@@ -96,27 +96,3 @@ You can now change the requests and limits of a running container without a rest
 > - **Reading only `spec` to prove the change.** The `spec` shows what you asked for. The proof is `status.containerStatuses[*].resources`, which shows what the container runs with.
 > - **Expecting the Deployment to change.** An in-place resize edits one pod. The Deployment template, and every future pod, keep the old values.
 > - **Changing the QoS class.** A resize may not move a pod from one QoS class to another. The API server rejects it with the message `Pod QOS Class may not change as a result of resizing`.
-
-## Your mission: Resize A Running Pod In Place
-
-You can now resize a running pod through the `resize` subresource and prove that it kept its UID and did not restart. The mission gives you a `scout` pod that needs more CPU and must not restart. You raise its CPU request and limit in place and prove it from the pod status.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-030-02
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-02/labs/lab-02
-astrona submit -c sections/section-030/module-02/labs/lab-02
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-030-02-02
-astrona start ats-017-playground-030-02
-```

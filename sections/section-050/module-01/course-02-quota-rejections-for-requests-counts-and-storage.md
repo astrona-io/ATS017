@@ -77,27 +77,3 @@ You can now tell the three rejection messages apart: `exceeded quota` for a full
 > - **Forgetting the quota resource names.** `cpu` and `memory` are short for `requests.cpu` and `requests.memory`. Use the full names to avoid doubt. Object counts use `count/<resource>.<group>`, for example `count/deployments.apps`.
 > - **Expecting the quota to stop the old pod.** A new pod without requests is rejected, but the old pod keeps running, so the rollout stalls instead of failing.
 > - **Reading a count as a total.** The ConfigMap `kube-root-ca.crt` exists in every namespace and counts toward `count/configmaps`.
-
-## Your mission: Limit Pipeline Storage With ResourceQuota
-
-You can now use a quota to limit claim count and total requested storage. The mission asks you to inspect a reverted Git request, block storage in the pipeline namespace it names, remove that namespace's claim after stopping its consumer, and set storage limits in the other two namespaces.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-050-01
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-01/labs/lab-03
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-01/labs/lab-03
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-050-01-03
-astrona start ats-017-playground-050-01
-```

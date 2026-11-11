@@ -103,27 +103,3 @@ You can now read the three efficiency fields, explain why a workload that uses m
 > - **Reading an efficiency above `1` as good.** It means the usage is above the request. The pod is at risk of throttling or eviction, and the scheduler counted too little for it.
 > - **Trusting an efficiency of `1`.** A workload without requests shows `1`, because there is no request to compare. Check the requests before you trust the figure.
 > - **Right-sizing from a short window.** A window of a few minutes misses the busy hours. Look at a long window before you lower a request.
-
-## Your mission: Find The Least Efficient Workload
-
-You can now rank workloads by efficiency. The mission gives you a fixed window and five Deployments in `starfleet`. You find the one that uses the smallest share of its request, which is not the one that costs the most, and you name it in a ConfigMap.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-040-01
-```
-
-Start the mission and send it for grading. The start-up takes about 10 minutes, because the script waits until OpenCost has data:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-01/labs/lab-02
-astrona submit -c sections/section-040/module-01/labs/lab-02
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-040-01-02
-astrona start ats-017-playground-040-01
-```

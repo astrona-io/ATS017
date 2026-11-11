@@ -1,0 +1,169 @@
+version: 1
+labs:
+  sections/section-010/module-01/labs/lab-01:
+    preparation:
+    - sections/section-010/module-01/course-01-requests-limits-and-who-reads-them.md
+    - sections/section-010/module-01/course-02-what-happens-at-the-limit.md
+    - sections/section-010/module-01/course-03-qos-classes-and-eviction.md
+  sections/section-010/module-02/labs/lab-01:
+    preparation:
+    - sections/section-010/module-02/course-01-node-labels-and-node-affinity.md
+    - sections/section-010/module-02/course-02-taints-and-tolerations.md
+  sections/section-010/capstone/labs/lab-01:
+    preparation:
+    - sections/section-010/module-01/course-01-requests-limits-and-who-reads-them.md
+    - sections/section-010/module-01/course-03-qos-classes-and-eviction.md
+    - sections/section-010/module-02/course-01-node-labels-and-node-affinity.md
+    - sections/section-010/module-02/course-03-spreading-replicas.md
+  sections/section-020/module-01/labs/lab-01:
+    preparation:
+    - sections/section-020/module-01/course-01-gateway-classes-gateways-and-listeners.md
+    - sections/section-020/module-01/course-02-httproute-matches-backends-and-weights.md
+    - sections/section-020/module-01/course-03-request-matching-and-precedence.md
+    - sections/section-020/module-01/course-04-diagnosing-gateway-and-route-status.md
+    - sections/section-020/module-01/course-05-allowed-routes-on-a-shared-gateway.md
+    - sections/section-020/module-01/course-06-cross-namespace-backends-with-referencegrant.md
+  sections/section-020/module-02/labs/lab-01:
+    preparation:
+    - sections/section-020/module-02/course-01-default-deny-and-how-policies-select-pods.md
+    - sections/section-020/module-02/course-02-allowing-flows-with-pod-and-namespace-selectors.md
+    - sections/section-020/module-02/course-03-one-peer-or-two-selector-scope.md
+    - sections/section-020/module-02/course-04-egress-rules-and-dns.md
+    - sections/section-020/module-02/course-06-how-policies-combine.md
+    - sections/section-020/module-02/course-07-prove-a-policy-with-connection-tests.md
+  sections/section-020/module-03/labs/lab-01:
+    preparation:
+    - sections/section-020/module-03/course-01-storageclasses-and-dynamic-provisioning.md
+    - sections/section-020/module-03/course-02-persistent-data-and-readwriteonce.md
+    - sections/section-020/module-03/course-03-unsupported-access-modes.md
+  sections/section-020/module-03/labs/lab-02:
+    preparation:
+    - sections/section-020/module-03/course-01-storageclasses-and-dynamic-provisioning.md
+    - sections/section-020/module-03/course-02-persistent-data-and-readwriteonce.md
+    - sections/section-020/module-03/course-04-delete-and-retain-reclaim-policies.md
+    - sections/section-020/module-03/course-05-changing-the-default-storageclass.md
+  sections/section-020/capstone/labs/lab-01:
+    preparation:
+    - sections/section-020/module-01/course-01-gateway-classes-gateways-and-listeners.md
+    - sections/section-020/module-01/course-02-httproute-matches-backends-and-weights.md
+    - sections/section-020/module-01/course-04-diagnosing-gateway-and-route-status.md
+    - sections/section-020/module-02/course-01-default-deny-and-how-policies-select-pods.md
+    - sections/section-020/module-02/course-02-allowing-flows-with-pod-and-namespace-selectors.md
+    - sections/section-020/module-02/course-04-egress-rules-and-dns.md
+    - sections/section-020/module-02/course-07-prove-a-policy-with-connection-tests.md
+    - sections/section-020/module-03/course-01-storageclasses-and-dynamic-provisioning.md
+    - sections/section-020/module-03/course-02-persistent-data-and-readwriteonce.md
+    - sections/section-020/module-03/course-04-delete-and-retain-reclaim-policies.md
+  sections/section-030/module-01/labs/lab-01:
+    preparation:
+    - sections/section-030/module-01/course-01-the-metrics-api-and-kubectl-top.md
+    - sections/section-030/module-01/course-02-writing-an-hpa-and-its-replica-formula.md
+  sections/section-030/module-01/labs/lab-02:
+    preparation:
+    - sections/section-030/module-01/course-01-the-metrics-api-and-kubectl-top.md
+    - sections/section-030/module-01/course-02-writing-an-hpa-and-its-replica-formula.md
+    - sections/section-030/module-01/course-03-unknown-targets-and-scaling-behavior.md
+  sections/section-030/module-02/labs/lab-01:
+    preparation:
+    - sections/section-030/module-02/course-01-measuring-usage-with-kubectl-top-and-prometheus.md
+    - sections/section-030/module-02/course-02-choosing-requests-and-limits-from-usage.md
+  sections/section-030/module-02/labs/lab-02:
+    preparation:
+    - sections/section-030/module-02/course-03-resizing-a-running-pod-in-place.md
+  sections/section-030/module-03/labs/lab-01:
+    preparation:
+    - sections/section-030/module-03/course-01-read-recommendations.md
+    - sections/section-030/module-03/course-02-bound-statefulset-recommendations.md
+    - sections/section-030/module-03/course-03-apply-at-pod-creation.md
+  sections/section-030/capstone/labs/lab-01:
+    preparation:
+    - sections/section-030/module-01/course-01-the-metrics-api-and-kubectl-top.md
+    - sections/section-030/module-01/course-02-writing-an-hpa-and-its-replica-formula.md
+    - sections/section-030/module-01/course-03-unknown-targets-and-scaling-behavior.md
+    - sections/section-030/module-02/course-01-measuring-usage-with-kubectl-top-and-prometheus.md
+    - sections/section-030/module-02/course-02-choosing-requests-and-limits-from-usage.md
+    - sections/section-030/module-02/course-06-right-sizing-next-to-an-hpa.md
+  sections/section-030/capstone/labs/lab-02:
+    preparation:
+    - sections/section-030/module-01/course-01-the-metrics-api-and-kubectl-top.md
+    - sections/section-030/module-01/course-02-writing-an-hpa-and-its-replica-formula.md
+    - sections/section-030/module-02/course-01-measuring-usage-with-kubectl-top-and-prometheus.md
+    - sections/section-030/module-02/course-02-choosing-requests-and-limits-from-usage.md
+    - sections/section-030/module-02/course-06-right-sizing-next-to-an-hpa.md
+    - sections/section-030/module-03/course-01-read-recommendations.md
+    - sections/section-030/module-03/course-02-bound-statefulset-recommendations.md
+    - sections/section-030/module-03/course-03-apply-at-pod-creation.md
+  sections/section-040/module-01/labs/lab-01:
+    preparation:
+    - sections/section-040/module-01/course-01-how-opencost-computes-cost-allocation.md
+    - sections/section-040/module-01/course-02-install-and-data-sources.md
+    - sections/section-040/module-01/course-03-query-the-allocation-api.md
+  sections/section-040/module-01/labs/lab-02:
+    preparation:
+    - sections/section-040/module-01/course-03-query-the-allocation-api.md
+    - sections/section-040/module-01/course-04-read-efficiency-and-find-waste.md
+  sections/section-040/module-01/labs/lab-03:
+    preparation:
+    - sections/section-040/module-01/course-02-install-and-data-sources.md
+    - sections/section-040/module-01/course-03-query-the-allocation-api.md
+    - sections/section-040/module-01/course-05-change-prices-and-check-metrics.md
+  sections/section-040/module-02/labs/lab-01:
+    preparation:
+    - sections/section-040/module-02/course-01-labels-as-the-unit-of-showback.md
+    - sections/section-040/module-02/course-02-aggregate-by-label-namespace-and-controller.md
+  sections/section-040/module-02/labs/lab-02:
+    preparation:
+    - sections/section-040/module-02/course-03-find-idle-and-shared-cost.md
+  sections/section-040/module-02/labs/lab-03:
+    preparation:
+    - sections/section-040/module-02/course-02-aggregate-by-label-namespace-and-controller.md
+    - sections/section-040/module-02/course-04-rank-cost-before-changing-replicas.md
+  sections/section-040/capstone/labs/lab-01:
+    preparation:
+    - sections/section-040/module-01/course-02-install-and-data-sources.md
+    - sections/section-040/module-01/course-03-query-the-allocation-api.md
+    - sections/section-040/module-01/course-04-read-efficiency-and-find-waste.md
+    - sections/section-040/module-02/course-01-labels-as-the-unit-of-showback.md
+    - sections/section-040/module-02/course-02-aggregate-by-label-namespace-and-controller.md
+    - sections/section-040/module-02/course-03-find-idle-and-shared-cost.md
+  sections/section-050/module-01/labs/lab-01:
+    preparation:
+    - sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+  sections/section-050/module-01/labs/lab-03:
+    preparation:
+    - sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+    - sections/section-050/module-01/course-02-quota-rejections-for-requests-counts-and-storage.md
+  sections/section-050/module-01/labs/lab-02:
+    preparation:
+    - sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+    - sections/section-050/module-01/course-03-limitrange-sets-defaults-and-maximums.md
+  sections/section-050/module-02/labs/lab-01:
+    preparation:
+    - sections/section-050/module-02/course-01-priorityclass-and-preemption.md
+  sections/section-050/module-02/labs/lab-02:
+    preparation:
+    - sections/section-050/module-02/course-01-priorityclass-and-preemption.md
+    - sections/section-050/module-02/course-03-quota-scopes.md
+  sections/section-050/module-03/labs/lab-01:
+    preparation:
+    - sections/section-050/module-03/course-01-validate-rules-enforce-and-audit.md
+  sections/section-050/module-03/labs/lab-02:
+    preparation:
+    - sections/section-050/module-03/course-01-validate-rules-enforce-and-audit.md
+    - sections/section-050/module-03/course-02-generate-rules-for-new-tenants.md
+  sections/section-050/capstone/labs/lab-01:
+    preparation:
+    - sections/section-050/module-01/course-01-resourcequota-caps-a-namespace.md
+    - sections/section-050/module-01/course-03-limitrange-sets-defaults-and-maximums.md
+    - sections/section-050/module-02/course-01-priorityclass-and-preemption.md
+    - sections/section-050/module-02/course-03-quota-scopes.md
+additional_readings:
+- sections/section-010/module-01/course-04-node-capacity-and-pending-pods.md
+- sections/section-010/module-02/course-03-spreading-replicas.md
+- sections/section-020/module-01/course-07-filters-headers-rewrites-and-redirects.md
+- sections/section-020/module-02/course-05-named-ports-and-address-ranges.md
+- sections/section-020/module-03/course-06-statefulset-claims.md
+- sections/section-030/module-02/course-04-resize-policy-and-resizes-that-do-not-finish.md
+- sections/section-030/module-02/course-05-making-the-change-permanent.md
+- sections/section-030/module-02/course-06-right-sizing-next-to-an-hpa.md
+- sections/section-050/module-02/course-02-preemption-policy-never.md

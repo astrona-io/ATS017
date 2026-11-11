@@ -119,27 +119,3 @@ You have seen a claim that the API server accepts and the provisioner refuses. T
 > - **Taking successful claim creation as successful provisioning.** Check the phase and events after a consumer exists.
 > - **Fixing the wrong field.** A larger size or another pod does not fix an unsupported access mode; choose a supported mode or a suitable storage driver.
 > - **Assuming every local provisioner supports `ReadWriteOncePod`.** This playground accepts it, but the portable choice is a driver using the Container Storage Interface (CSI).
-
-## Your mission: Fix The Pending Claim
-
-You can now read a claim's events and tell an unsupported access mode from a normal wait. The mission gives you a `scout` Deployment whose claim cannot be provisioned. You replace the claim with a supported access mode and prove that a file survives when the pod is replaced.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-020-03
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-03/labs/lab-01
-astrona submit -c sections/section-020/module-03/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-020-03
-astrona start ats-017-playground-020-03
-```

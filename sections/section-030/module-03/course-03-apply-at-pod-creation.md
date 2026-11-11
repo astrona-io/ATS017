@@ -99,15 +99,3 @@ You can now choose when recommendations take effect and show who applied the cha
 
 > [!WARNING]
 > Restarting a container inside the same Pod does not trigger creation-time admission. Replace the Pod. `Auto` is deprecated, and `Initial` can still conflict with HPA resource utilisation when new replicas receive different requests.
-
-## Your mission: Apply Bounded VPA Requests
-
-You can now create bounded recommendations for both workload kinds. Apply them to replacement Pods and prove that the templates stayed unchanged.
-
-```sh
-astrona stop ats-017-playground-030-03
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/labs/lab-01
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/labs/lab-01
-astrona destroy ats-017-lab-030-03-01
-astrona start ats-017-playground-030-03
-```

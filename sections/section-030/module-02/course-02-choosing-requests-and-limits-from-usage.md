@@ -121,27 +121,3 @@ You can now turn a usage history into a request: take the peak or a high percent
 > - **Adding a CPU limit "to be safe".** A CPU limit throttles the container at the limit, even when the node has free CPU. Set a CPU request and leave the limit out unless the platform requires one.
 > - **Sizing from a quiet period.** A request taken from the idle night hours is too low for the day. Query a period that includes the busiest time.
 > - **No headroom.** A request equal to the peak leaves nothing for a busier moment. Add 20 to 30 percent.
-
-## Your mission: Right-Size From Measured Usage
-
-You can now read the usage of a workload and turn it into a request and a memory limit. The mission gives you two Deployments with wrong resources: one asks for far too much, and the other is killed again and again with `OOMKilled`. You measure both, set new values in the Deployments, and keep the second pod from restarting.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-030-02
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-02/labs/lab-01
-astrona submit -c sections/section-030/module-02/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-030-02-01
-astrona start ats-017-playground-030-02
-```

@@ -147,27 +147,3 @@ A scope turns one ResourceQuota into a budget for one kind of pod. The `Priority
 > - **Counting resources in a `BestEffort` quota.** The scope allows only the `pods` resource. Pods without resources have nothing else to count.
 > - **Thinking the class quota limits ordinary pods.** A pod without the class is outside the scope and uses only the other quotas of the namespace.
 > - **Reading `used` for a pod that is not created yet.** Quota counts only objects the API server accepted. A rejected pod never raises `used`.
-
-## Your mission: Limit High-Priority Pods With A Quota Scope
-
-You can now limit pods by class and by QoS with a scoped quota. The mission gives you a namespace where one tenant uses a high class for many pods. You add the scoped quota and prove that the limit holds without touching ordinary pods.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-050-02
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-02/labs/lab-02
-astrona submit -c sections/section-050/module-02/labs/lab-02
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-050-02-02
-astrona start ats-017-playground-050-02
-```

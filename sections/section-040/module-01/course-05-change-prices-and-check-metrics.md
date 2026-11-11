@@ -153,17 +153,3 @@ change workload requests.
 > - **Saving a successful but empty query.** Check the response status and
 >   the result array, including the namespace labels.
 > - **Guessing a scrape error.** Read and save the target's live `lastError`.
-
-## Your mission: Update OpenCost Pricing And Inspect Its Data
-
-You can now check a price change and collect the data behind a cost report.
-The mission asks you to apply new rates and save a plugin table, pod query
-and scrape error.
-
-```sh
-astrona stop ats-017-playground-040-01
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-01/labs/lab-03
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-01/labs/lab-03
-astrona destroy ats-017-lab-040-01-03
-astrona start ats-017-playground-040-01
-```

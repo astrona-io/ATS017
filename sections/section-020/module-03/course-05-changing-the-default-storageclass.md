@@ -98,27 +98,3 @@ The `shuttle-data` claim still names `standard-retain`. Defaults affect class as
 > [!WARNING]
 > - **Leaving two default classes by accident.** Kubernetes chooses by creation time; keep one default unless a migration needs more.
 > - **Confusing an omitted class with an empty string.** Omission requests the default; `""` requests no class.
-
-## Your mission: Keep The Volume After Claim Deletion
-
-You can now read a volume's reclaim policy, predict what claim deletion does, and set the default StorageClass. The mission gives you a claim on a `Delete` volume that holds a file. You change the policy on the existing volume without touching the claim or the pod, and you make `standard-retain` the default class.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-020-03
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-03/labs/lab-02
-astrona submit -c sections/section-020/module-03/labs/lab-02
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-020-03-02
-astrona start ats-017-playground-020-03
-```

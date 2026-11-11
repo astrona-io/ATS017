@@ -18,4 +18,6 @@ Right-sizing lowers the cost of a workload, and on a single node it moves that c
 - `shareIdle=true` needs `includeIdle=true` and no namespace filter.
 - Lowering a request moves cost to idle cost. Removing capacity lowers the bill.
 
+Replica decisions need a preserved measurement window and a record of the selected Deployments. Changing replicas affects future allocation; it cannot alter the evidence that justified the decision.
+
 <!-- astrona:playground:destroy -->

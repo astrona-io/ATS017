@@ -220,27 +220,3 @@ You can now identify which namespace owns each permission and why acceptance alo
 > - **Granting too much.** Without `name` in the `to` list, the grant allows every Service of that kind in the namespace.
 > - **Trying to deny with a second grant.** Grants are additive; remove every grant that permits an unwanted reference.
 > - **Expecting a grant to bypass NetworkPolicy.** Object reference permission does not authorise network packets.
-
-## Your mission: Repair Gateway Route Attachment
-
-You can now diagnose attachment and backend permission failures. The mission asks you to repair a team's route, choose backends by path and header, and allow one cross-namespace backend.
-
-Pause the playground, then start the lab:
-
-```sh
-astrona stop ats-017-playground-020-01
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-01/labs/lab-01
-```
-
-When the routes serve the required requests, grade your work:
-
-```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-01/labs/lab-01
-```
-
-Then remove the lab and start the playground again:
-
-```sh
-astrona destroy ats-017-lab-020-01
-astrona start ats-017-playground-020-01
-```

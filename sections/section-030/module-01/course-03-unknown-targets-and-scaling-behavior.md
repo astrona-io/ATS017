@@ -157,27 +157,3 @@ You can now read an `<unknown>` target from the `ScalingActive` condition, tell 
 > - **Putting the window under `scaleUp` when you mean `scaleDown`.** Each direction has its own block. A scale-up window delays the reaction to load.
 > - **Fixing the Deployment when the Metrics API is down.** Check `kubectl get apiservice v1beta1.metrics.k8s.io` first. When `AVAILABLE` is not `True`, no request change helps.
 > - **Testing a scale-down too early.** The first pod goes only after the window has passed. Wait the full window plus one policy period before you decide the HPA is stuck.
-
-## Your mission: Slow Down Scale-Down
-
-You can now write a `behavior.scaleDown` section with a stabilization window and a policy. The mission gives you a working HPA for `scout` with the default scale-down. You change only the scale-down, keep the metric and the bounds, and the grader proves with a load test that the replicas stay after the load ends.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-030-01
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-01/labs/lab-02
-astrona submit -c sections/section-030/module-01/labs/lab-02
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-030-01-02
-astrona start ats-017-playground-030-01
-```

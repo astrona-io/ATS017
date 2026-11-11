@@ -60,6 +60,12 @@ jobs:
         run: python3 -m pip install -r scripts/ci/requirements.txt
       - name: Test unfinished-state error handling
         run: python3 scripts/ci/test-start-state.py
+      - name: Check course registration and lifecycle files
+        run: python3 scripts/ci/check-course-structure.py
+      - name: Test teaching coverage failure cases
+        run: python3 scripts/ci/test-teaching-coverage.py
+      - name: Check teaching coverage map
+        run: python3 scripts/ci/lab-coverage.py
       - id: list
         name: List the environments to test
         env:

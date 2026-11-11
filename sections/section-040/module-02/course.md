@@ -6,7 +6,9 @@ This module uses the `team` label to attribute cost. It shows how a missing labe
 
 Keep one sentence in mind for this module: **OpenCost groups cost by the labels of pods, so a workload without the label is charged to nobody, and capacity that nobody requests is charged to the cluster as idle cost.** Every part below explains where the label must be, how to query the groups, or what to change to reduce the cost.
 
-The module has three parts. **Labels As The Unit Of Showback** explains showback and chargeback, shows where OpenCost reads the label from and finds the cost that has no owner. **Aggregate By Label, Namespace And Controller** groups the cost in several ways, fixes the missing label and reports a closed window. **Find Idle And Shared Cost** adds the idle cost, shares it between teams, and shows what a right-sized request does to it.
+The module has four parts. **Labels As The Unit Of Showback** explains showback and chargeback, shows where OpenCost reads the label from and finds the cost that has no owner. **Aggregate By Label, Namespace And Controller** groups the cost in several ways, fixes the missing label and reports a closed window. **Find Idle And Shared Cost** adds the idle cost, shares it between teams, and shows what a right-sized request does to it.
+
+**Rank Deployment Cost Before Changing Replicas** preserves a closed window and uses its ranking to make a controlled replica change.
 
 ## Learning objectives
 
