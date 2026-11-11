@@ -7,12 +7,13 @@
 #      times the lowest, plus 0.005, is accepted, so rounding does not decide)
 #   4. the workloads were not changed to fake a result
 set -u
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 API="/api/v1/namespaces/opencost/services/opencost:9003/proxy/allocation/compute"
 fail() { echo "FAIL: $*"; exit 1; }
 
 field_of() {
-  printf '%s' "$1" | sed -n "s|.*\"$2\":{\"name\":\"$2\",||p" | grep -o "\"$3\":[-0-9.e]*" | head -1 | cut -d: -f2
+  printf '%s' "$1" | python3 "$SCRIPT_DIR/cost-values.py" field "$2" "$3"
 }
 
 # --- 1. the ConfigMap ---------------------------------------------------------------

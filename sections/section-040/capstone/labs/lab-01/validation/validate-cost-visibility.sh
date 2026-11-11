@@ -13,20 +13,17 @@
 #      memory, still runs and still answers shuttle with HTTP 200
 #   5. the requests of the other workloads were not changed to fake a result
 set -u
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 API="/api/v1/namespaces/opencost/services/opencost:9003/proxy/allocation/compute"
 fail() { echo "FAIL: $*"; exit 1; }
 
 field_of() {
-  printf '%s' "$1" | sed -n "s|.*\"$2\":{\"name\":\"$2\",||p" | grep -o "\"$3\":[-0-9.e]*" | head -1 | cut -d: -f2
+  printf '%s' "$1" | python3 "$SCRIPT_DIR/cost-values.py" field "$2" "$3"
 }
-is_number() { awk -v value="$1" 'BEGIN { exit !(value ~ /^[0-9]+([.][0-9]+)?([eE][-+]?[0-9]+)?$/) }'; }
+is_number() { python3 "$SCRIPT_DIR/cost-values.py" number "$1"; }
 within_tolerance() {
-  awk -v reported="$1" -v expected="$2" 'BEGIN {
-    allowed = expected * 0.15; if (allowed < 0.00003) allowed = 0.00003
-    diff = reported - expected; if (diff < 0) diff = -diff
-    exit !(diff <= allowed)
-  }'
+  python3 "$SCRIPT_DIR/cost-values.py" within "$1" "$2" 0.00003
 }
 to_millicores() {
   case "$1" in
@@ -70,7 +67,12 @@ echo "OK: the report names the window ${window}"
 result=$(kubectl get --raw "${API}?window=${window}&aggregate=namespace,controller&filter=namespace:%22starfleet%22,%22outpost%22" 2>/dev/null)
 [ -n "$result" ] || fail "OpenCost did not answer. Check the pod in the namespace opencost"
 cost_of() { field_of "$result" "$1" totalCost; }
-sum_of() { awk -v a="$(cost_of "$1")" -v b="${2:+$(cost_of "$2")}" 'BEGIN { printf "%.8f", a + b }'; }
+sum_of() {
+  local first second=0
+  first=$(cost_of "$1") || return 1
+  if [ -n "${2:-}" ]; then second=$(cost_of "$2") || return 1; fi
+  python3 "$SCRIPT_DIR/cost-values.py" sum "$first" "$second"
+}
 for team in navigation operations science; do
   case "$team" in
     navigation) expected=$(sum_of starfleet/deployment:scout starfleet/deployment:shuttle) ;;

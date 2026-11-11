@@ -8,20 +8,17 @@
 #      total cost that OpenCost returns now for that closed window
 #   4. the workloads were not changed to fake a result
 set -u
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 API="/api/v1/namespaces/opencost/services/opencost:9003/proxy/allocation/compute"
 fail() { echo "FAIL: $*"; exit 1; }
 
 field_of() {
-  printf '%s' "$1" | sed -n "s|.*\"$2\":{\"name\":\"$2\",||p" | grep -o "\"$3\":[-0-9.e]*" | head -1 | cut -d: -f2
+  printf '%s' "$1" | python3 "$SCRIPT_DIR/cost-values.py" field "$2" "$3"
 }
-is_number() { awk -v value="$1" 'BEGIN { exit !(value ~ /^[0-9]+([.][0-9]+)?([eE][-+]?[0-9]+)?$/) }'; }
+is_number() { python3 "$SCRIPT_DIR/cost-values.py" number "$1"; }
 within_tolerance() {
-  awk -v reported="$1" -v expected="$2" 'BEGIN {
-    allowed = expected * 0.15; if (allowed < 0.00002) allowed = 0.00002
-    diff = reported - expected; if (diff < 0) diff = -diff
-    exit !(diff <= allowed)
-  }'
+  python3 "$SCRIPT_DIR/cost-values.py" within "$1" "$2" 0.00002
 }
 
 # --- 1. the ConfigMap ---------------------------------------------------------------
