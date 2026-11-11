@@ -6,8 +6,11 @@ import sys
 
 
 def verdict(code, output):
+    # Missing objects can be the assigned work; the grader must still emit FAIL.
+    diagnostics = re.sub(r'^Error from server \(NotFound\): [\w.]+ "[^"\n]+" not found$',
+                         '', output, flags=re.M)
     # A shell failure, timeout or Python exception is not a graded rejection.
-    if re.search(r'Traceback \(most recent call last\)|command not found|No such file or directory|^ERROR\b|connection refused|Unable to connect to the server|TLS handshake timeout', output, re.M | re.I):
+    if re.search(r'Traceback \(most recent call last\)|command not found|No such file or directory|^ERROR\b|connection refused|Unable to connect to the server|TLS handshake timeout', diagnostics, re.M | re.I):
         raise RuntimeError('grader reported an execution or connection error')
     failed = bool(re.search(r'^FAIL(?:\b|:)', output, re.M))
     passed = bool(re.search(r'^PASS(?:\b|:)', output, re.M))
