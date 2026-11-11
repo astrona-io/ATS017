@@ -43,9 +43,10 @@ echo "OK: the pod ${pod_name} carries team=operations"
 created_epoch=$(date -u -j -f '%Y-%m-%dT%H:%M:%SZ' "$pod_created" +%s 2>/dev/null || date -u -d "$pod_created" +%s 2>/dev/null)
 [ -n "$created_epoch" ] || fail "could not read the start time of the pod ${pod_name}"
 seen=""
-for _ in $(seq 1 24); do
+deadline=$((SECONDS + 480))
+while [ "$SECONDS" -lt "$deadline" ]; do
   now=$(date +%s)
-  result=$(kubectl get --raw "${API}?window=${created_epoch},${now}&aggregate=pod,label:team&filter=namespace:%22outpost%22" 2>/dev/null || true)
+  result=$(kubectl --request-timeout=30s get --raw "${API}?window=${created_epoch},${now}&aggregate=pod,label:team&filter=namespace:%22outpost%22" 2>/dev/null || true)
   if printf '%s' "$result" | grep -q "\"${pod_name}/operations\""; then seen=yes; break; fi
   if printf '%s' "$result" | grep -q "\"${pod_name}/__unallocated__\""; then seen=unallocated; fi
   sleep 20
@@ -63,7 +64,7 @@ window=$(kubectl -n default get configmap report-window -o jsonpath='{.data.wind
 used_window=$(report window)
 [ "$used_window" = "$window" ] || fail "the key window is '${used_window}', expected '${window}'"
 echo "OK: the report names the window ${window}"
-result=$(kubectl get --raw "${API}?window=${window}&aggregate=label:team&filter=namespace:%22starfleet%22,%22outpost%22" 2>/dev/null)
+result=$(kubectl --request-timeout=30s get --raw "${API}?window=${window}&aggregate=label:team&filter=namespace:%22starfleet%22,%22outpost%22" 2>/dev/null)
 [ -n "$result" ] || fail "OpenCost did not answer. Check the pod in the namespace opencost"
 for pair in navigation:navigation research:research unallocated:__unallocated__; do
   key=${pair%%:*}
