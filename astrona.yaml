@@ -357,6 +357,21 @@ modules:
         title: "StatefulSet Claims"
         path: sections/section-020/module-03/course-06-statefulset-claims.md
       - type: reading
+        title: Question
+        path: sections/section-020/module-03/labs/lab-03/question.md
+      - type: lab
+        title: Retain StatefulSet Claims Across Scaling Lab
+        path: sections/section-020/module-03/labs/lab-03
+        difficulty: intermediate
+        estimated_duration: 15m
+        topic: storage
+        task_kind: troubleshooting
+        tags:
+        - storage
+        learning_goals:
+        - Separate StatefulSet claim retention from PV reclaim policy
+        - Prove original data survives scale-down and Pod replacement
+      - type: reading
         title: Summary
         path: sections/section-020/module-03/course-07-summary.md
       - type: quiz
@@ -471,18 +486,33 @@ modules:
         path: sections/section-030/module-02/course-02-choosing-requests-and-limits-from-usage.md
       - type: reading
         title: Question
-        path: sections/section-030/module-02/labs/lab-01/question.md
+        path: sections/section-030/module-02/labs/lab-03/question.md
       - type: lab
-        title: "Right-Size From Measured Usage Lab"
-        path: sections/section-030/module-02/labs/lab-01
+        title: Right-Size An OOMKilled Workload Lab
+        path: sections/section-030/module-02/labs/lab-03
         difficulty: intermediate
-        estimated_duration: 25m
+        estimated_duration: 15m
         topic: autoscaling
         task_kind: troubleshooting
-        tags: [right-sizing, usage-vs-requests, requests-limits, oomkilled, metrics-server]
+        tags:
+        - autoscaling
         learning_goals:
-          - Compare requests with the usage that kubectl top shows and find an over-provisioned and an under-provisioned Deployment
-          - Set requests and limits with headroom above the measured usage and stop the OOMKilled restarts
+        - Use termination evidence to choose an initial memory ceiling
+        - Verify requests against live usage and observe restart stability
+      - type: reading
+        title: Question
+        path: sections/section-030/module-02/labs/lab-01/question.md
+      - type: lab
+        title: "Reduce Oversized Requests Lab"
+        path: sections/section-030/module-02/labs/lab-01
+        difficulty: intermediate
+        estimated_duration: 15m
+        topic: autoscaling
+        task_kind: troubleshooting
+        tags: [right-sizing, usage-vs-requests, requests-limits, metrics-server]
+        learning_goals:
+          - Compare requests with the usage that kubectl top shows and identify oversized reservations
+          - Set requests and limits with headroom above the measured usage while keeping the application healthy
           - Prove the fix with Ready pods and no restart while the grader watches
         resources:
           - name: "Resource Management for Pods and Containers"
@@ -796,7 +826,7 @@ modules:
       - type: quiz
         title: "Knowledge Check: Attribute Cost By Label And Find Idle Spend"
         path: sections/section-040/module-02/quiz.yaml
-        question_count: 5
+        question_count: 6
       - type: reading
         title: Question
         path: sections/section-040/capstone/labs/lab-01/question.md

@@ -1,27 +1,18 @@
----
-estimated_duration: 25m
----
-
 # Question
 
 Solve this question on: `terminal`
 
-Two Deployments in the namespace `starfleet` have the wrong resources. The `shuttle` Deployment in the same namespace is a client with `curl` that sends one request per second to each of them.
+Deployment `scout-overprovisioned` in `starfleet` requests 1000m CPU and 1Gi memory despite a small steady load. The `shuttle` client sends a steady request each second. Metrics Server supplies current usage; this independent lab does not install Prometheus.
 
-* `scout-overprovisioned` requests far more CPU and memory than the container uses.
-* `scout-underprovisioned` is restarted again and again. `kubectl describe pod` shows the reason `OOMKilled`. The container starts with the argument `--stress-memory=100`, which makes it hold about 100 megabytes of memory on top of what podinfo uses by itself.
+## Tasks
 
-Measure what each container uses, and set the requests and limits in the **Deployments** so that:
+1. Inspect the Deployment resources, Pod state and usage with `kubectl top`. For a restarting Pod, inspect its termination reason and arguments before choosing an initial memory increase.
+2. Set requests and limits on the Deployment using measured usage and headroom. Use a CPU request from 10m through 200m, a memory request from 20Mi through 256Mi and a memory limit no higher than 512Mi. Keep the memory request at or above observed usage and the memory limit at or above the request.
+3. Wait for the rollout, measure the new Pod and confirm it remains Ready without restarting. The grader observes the same Pod for 30 seconds.
 
-1.  `scout-overprovisioned` has a CPU request of at least `10m` and at most `200m`, and a memory request of at least `20Mi` and at most `256Mi`.
-2.  `scout-overprovisioned` has a memory limit that is at least its memory request and at most `512Mi`.
-3.  `scout-underprovisioned` has a memory request that is at least what the container uses and at most three times that.
-4.  `scout-underprovisioned` has a memory limit that is at least its memory request, so the kernel no longer kills the container.
-5.  Both pods are `Ready`, and the container of `scout-underprovisioned` is not restarted while the grader watches it.
+## Constraints
 
-Constraints:
+- Preserve the Deployment and Service identities, replicas, image, arguments, probes and selectors. Change only resource requests and limits.
+- Keep the memory limit. Do not remove the workload or its stress argument.
 
-* Do not change the images, the Services or the arguments of the containers.
-* Do not remove the memory limits.
-
-The grader reads the Deployments, reads the memory that `scout-underprovisioned` uses from `kubectl top`, and watches the pod for 30 seconds.
+Learner work: about 15 minutes. Cluster startup, metric collection and the 30-second stability observation take additional time.

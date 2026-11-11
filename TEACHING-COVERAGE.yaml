@@ -157,12 +157,17 @@ labs:
     - sections/section-050/module-01/course-03-limitrange-sets-defaults-and-maximums.md
     - sections/section-050/module-02/course-01-priorityclass-and-preemption.md
     - sections/section-050/module-02/course-03-quota-scopes.md
+  sections/section-020/module-03/labs/lab-03:
+    preparation:
+    - sections/section-020/module-03/course-06-statefulset-claims.md
+  sections/section-030/module-02/labs/lab-03:
+    preparation:
+    - sections/section-030/module-02/course-02-choosing-requests-and-limits-from-usage.md
 additional_readings:
 - sections/section-010/module-01/course-04-node-capacity-and-pending-pods.md
 - sections/section-010/module-02/course-03-spreading-replicas.md
 - sections/section-020/module-01/course-07-filters-headers-rewrites-and-redirects.md
 - sections/section-020/module-02/course-05-named-ports-and-address-ranges.md
-- sections/section-020/module-03/course-06-statefulset-claims.md
 - sections/section-030/module-02/course-04-resize-policy-and-resizes-that-do-not-finish.md
 - sections/section-030/module-02/course-05-making-the-change-permanent.md
 - sections/section-030/module-02/course-06-right-sizing-next-to-an-hpa.md

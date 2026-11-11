@@ -58,7 +58,7 @@ The 95th percentile is about `2.3m` for `scout-overprovisioned` and `2.0m` for `
 
 Memory and CPU need different rules, because the kernel treats them differently. A container that goes over its CPU limit is **throttled**, which makes it slower. A container that goes over its memory limit is killed with `OOMKilled`. A memory limit must therefore never sit below the real peak.
 
-The rules this course uses are simple, and the exam accepts any reasonable values that cover the measured usage:
+The following rules are starting points for this steady lab workload. Validate them against representative measurements:
 
 - **Memory request**: the peak working set plus about 25 percent, rounded up to the next `32Mi`.
 - **Memory limit**: equal to the memory request. The pod has a fixed memory ceiling, and the node cannot be asked for more memory than the pod reserved. Because the CPU has a request but no limit, the QoS class is `Burstable`.
@@ -121,3 +121,7 @@ You can now turn a usage history into a request: take the peak or a high percent
 > - **Adding a CPU limit "to be safe".** A CPU limit throttles the container at the limit, even when the node has free CPU. Set a CPU request and leave the limit out unless the platform requires one.
 > - **Sizing from a quiet period.** A request taken from the idle night hours is too low for the day. Query a period that includes the busiest time.
 > - **No headroom.** A request equal to the peak leaves nothing for a busier moment. Add 20 to 30 percent.
+
+## Practice one sizing decision at a time
+
+The two independent labs after this reading separate oversized reservations from an OOMKilled workload. They use Metrics Server rather than the playground's Prometheus history. `kubectl top` shows recent usage, not a historical peak. If the OOMKilled container cannot remain alive long enough to report usage, inspect its stress argument and raise the ceiling first, then measure the stable replacement Pod and refine the request. Keep the application configuration unchanged so lower usage cannot be achieved by disabling its work.

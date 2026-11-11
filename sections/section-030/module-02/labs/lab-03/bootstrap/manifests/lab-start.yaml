@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: starfleet
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: scout-underprovisioned
+  name: scout-underprovisioned
+  namespace: starfleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scout-underprovisioned
+  template:
+    metadata:
+      labels:
+        app: scout-underprovisioned
+    spec:
+      containers:
+      - args:
+        - ./podinfo
+        - --stress-memory=100
+        image: ghcr.io/stefanprodan/podinfo:6.15.0
+        name: scout
+        ports:
+        - containerPort: 9898
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+        resources:
+          limits:
+            memory: 64Mi
+          requests:
+            cpu: 20m
+            memory: 16Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scout-underprovisioned
+  namespace: starfleet
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  selector:
+    app: scout-underprovisioned
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: shuttle
+  name: shuttle
+  namespace: starfleet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shuttle
+  template:
+    metadata:
+      labels:
+        app: shuttle
+    spec:
+      containers:
+      - command:
+        - sh
+        - -c
+        - while true; do curl -s -o /dev/null -X POST http://scout-underprovisioned/token;
+          sleep 1; done
+        image: curlimages/curl:8.22.0
+        name: shuttle
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            cpu: 10m
+            memory: 16Mi

@@ -1,0 +1,35 @@
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-020-03-03
+  docs:
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    preloadImages:
+    - busybox:1.37
+bootstrap:
+  init:
+  - name: seed
+    description: Prepare the independent lab starting state
+    type: file
+    source: bootstrap/seed.sh
+testing:
+  init:
+  - name: verify-unfinished-state
+    type: file
+    source: testing/verify-start.sh
+    timeout: 10m
+  - name: solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: outcome
+    description: Check the live result and the task constraints
+    type: file
+    source: validation/validate.sh
+teardown:
+  keepCluster: false

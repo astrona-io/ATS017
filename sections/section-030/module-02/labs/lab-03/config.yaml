@@ -1,0 +1,40 @@
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-017-lab-030-02-03
+  docs:
+    solution: solution.md
+    question: question.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.8
+    addons:
+      metricsServer: true
+    preloadImages:
+    - curlimages/curl:8.22.0
+    - ghcr.io/stefanprodan/podinfo:6.15.0
+bootstrap:
+  init:
+  - name: seed-workloads
+    description: Seed scout-underprovisioned and the request client
+    type: file
+    source: bootstrap/seed-workloads.sh
+testing:
+  init:
+  - name: verify-unfinished-state
+    description: Require a ready API and an explicit grader rejection before solving
+    type: file
+    source: testing/verify-start.sh
+    timeout: 10m
+  - name: solution
+    description: Reference solution applied by `astrona test`
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: verify-right-sizing
+    description: Verify measured sizing, preserved workload and runtime stability
+    type: file
+    source: validation/validate-right-sizing.sh
+teardown:
+  keepCluster: false

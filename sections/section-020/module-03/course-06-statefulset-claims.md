@@ -144,3 +144,14 @@ You can now give each replica its own claim with `volumeClaimTemplates`, read th
 > [!WARNING]
 > - **Expecting scale-down to remove claims.** The StatefulSet's default claim retention policy keeps them.
 > - **Confusing the two retention decisions.** StatefulSet retention controls claim deletion; the volume's reclaim policy controls storage after claim deletion.
+
+## Repair an explicit deletion policy
+
+The independent lab uses busybox Pods so you can write and read a record on each claim. It starts with both retention fields set to `Delete`. Before scaling, change the controller's policy:
+
+```sh
+kubectl -n starfleet patch statefulset probe --type=merge -p '{"spec":{"persistentVolumeClaimRetentionPolicy":{"whenScaled":"Retain","whenDeleted":"Retain"}}}'
+kubectl -n starfleet get pvc data-probe-0 data-probe-1 -o yaml
+```
+
+Wait until the claims' `metadata.ownerReferences` entries have been removed by the controller. Record each claim's UID and `spec.volumeName`, then scale down and back up. Use `kubectl exec probe-1 -- cat /data/record` in `starfleet` to confirm the original bytes remain. Delete `probe-0`, wait for its replacement and repeat the read. A new Pod UID with the same claim UID and content demonstrates storage continuity. Changing only the PV reclaim policy would not preserve the claim itself.

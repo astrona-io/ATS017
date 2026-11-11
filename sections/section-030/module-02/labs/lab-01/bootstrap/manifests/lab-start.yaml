@@ -1,6 +1,3 @@
-# Starting state for ats-017-lab-030-02-01: one scout that requests far more
-# than it uses, one scout whose memory limit is below what it needs, and the
-# shuttle client with a steady request loop.
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -9,10 +6,10 @@ metadata:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scout-overprovisioned
-  namespace: starfleet
   labels:
     app: scout-overprovisioned
+  name: scout-overprovisioned
+  namespace: starfleet
 spec:
   replicas: 1
   selector:
@@ -24,21 +21,21 @@ spec:
         app: scout-overprovisioned
     spec:
       containers:
-        - name: scout
-          image: ghcr.io/stefanprodan/podinfo:6.15.0
-          ports:
-            - name: http
-              containerPort: 9898
-          readinessProbe:
-            httpGet:
-              path: /readyz
-              port: http
-          resources:
-            requests:
-              cpu: 1000m
-              memory: 1Gi
-            limits:
-              memory: 1Gi
+      - image: ghcr.io/stefanprodan/podinfo:6.15.0
+        name: scout
+        ports:
+        - containerPort: 9898
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: http
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 1000m
+            memory: 1Gi
 ---
 apiVersion: v1
 kind: Service
@@ -46,68 +43,20 @@ metadata:
   name: scout-overprovisioned
   namespace: starfleet
 spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
   selector:
     app: scout-overprovisioned
-  ports:
-    - name: http
-      port: 80
-      targetPort: http
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: scout-underprovisioned
-  namespace: starfleet
-  labels:
-    app: scout-underprovisioned
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: scout-underprovisioned
-  template:
-    metadata:
-      labels:
-        app: scout-underprovisioned
-    spec:
-      containers:
-        - name: scout
-          image: ghcr.io/stefanprodan/podinfo:6.15.0
-          args: ["./podinfo", "--stress-memory=100"]
-          ports:
-            - name: http
-              containerPort: 9898
-          readinessProbe:
-            httpGet:
-              path: /readyz
-              port: http
-          resources:
-            requests:
-              cpu: 20m
-              memory: 16Mi
-            limits:
-              memory: 64Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: scout-underprovisioned
-  namespace: starfleet
-spec:
-  selector:
-    app: scout-underprovisioned
-  ports:
-    - name: http
-      port: 80
-      targetPort: http
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: shuttle
-  namespace: starfleet
   labels:
     app: shuttle
+  name: shuttle
+  namespace: starfleet
 spec:
   replicas: 1
   selector:
@@ -119,22 +68,16 @@ spec:
         app: shuttle
     spec:
       containers:
-        - name: shuttle
-          image: curlimages/curl:8.22.0
-          command:
-            - sh
-            - -c
-            - |
-              while true; do
-                for _ in 1 2 3 4 5; do
-                  curl -s -o /dev/null -X POST http://scout-overprovisioned/token
-                  curl -s -o /dev/null -X POST http://scout-underprovisioned/token
-                done
-                sleep 1
-              done
-          resources:
-            requests:
-              cpu: 10m
-              memory: 16Mi
-            limits:
-              memory: 32Mi
+      - command:
+        - sh
+        - -c
+        - while true; do curl -s -o /dev/null -X POST http://scout-overprovisioned/token;
+          sleep 1; done
+        image: curlimages/curl:8.22.0
+        name: shuttle
+        resources:
+          limits:
+            memory: 32Mi
+          requests:
+            cpu: 10m
+            memory: 16Mi

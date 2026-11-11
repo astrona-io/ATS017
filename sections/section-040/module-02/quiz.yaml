@@ -70,7 +70,7 @@ questions:
     explanation: OpenCost does not rewrite history. The pods that ran in that window had no label.
   - id: b
     text: Under `__unallocated__`, because the pods that ran in that window had no label
-    explanation: Correct. A closed window returns the same numbers every time, with the attribution that the pods had then.
+    explanation: Correct. Attribution uses the labels of the pods during that period. A fixed window does not freeze its numeric results; late samples can still change costs.
   - id: c
     text: Under `__idle__`
     explanation: Idle cost is capacity that no pod requested. The pods requested their resources in that window.
@@ -123,3 +123,27 @@ questions:
     explanation: A lower request lowers the charge for the workload.
   correct_option: a
   explanation: A smaller request moves cost from the workload to idle cost. The saving becomes real when the freed capacity lets you remove a node or run more workloads on the same node.
+- id: ats017-040-02-q06
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Preserve the evidence behind a cost-based scaling decision.
+  source_readings:
+  - sections/section-040/module-02/course-04-rank-cost-before-changing-replicas.md
+  prompt: You ranked Deployments by totalCost and must justify a replica change next week. Which evidence best preserves
+    the basis of the decision?
+  options:
+  - id: a
+    text: The exact query, its saved JSON response, the numeric ranking and the original replica counts
+    explanation: These record the measured period, observed costs and reversible change.
+  - id: b
+    text: Only the same fixed-window URL
+    explanation: The period stays fixed, but late samples can change a later response.
+  - id: c
+    text: A screenshot of the replica counts after scaling
+    explanation: This does not show which cost evidence justified the choice.
+  - id: d
+    text: The names sorted alphabetically
+    explanation: Names do not establish a numeric cost ranking.
+  correct_option: a
+  explanation: Keep the response used for the decision as well as the query. Sort numeric costs and record the original
+    replica counts before changing them.
