@@ -3,11 +3,11 @@
 set -euo pipefail
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
-for attempt in $(seq 1 36); do
+for attempt in $(seq 1 60); do
   end=$(( $(date -u +%s) - 180 )); start=$((end - 300))
   window="${start},${end}"
   kubectl get --raw "/api/v1/namespaces/opencost/services/opencost:9003/proxy/allocation/compute?window=${window}&aggregate=namespace,controller&filter=namespace:%22starfleet%22" > "$work/allocation.json"
-  jq '[.data[0] | to_entries[] | select(.key | startswith("starfleet/deployment:")) | {deployment: (.key|split(":")[1]),cost:.value.totalCost}] | sort_by(.cost)' "$work/allocation.json" > "$work/ranked.json"
+  jq '[(.data[0] // {}) | to_entries[] | select(.key | startswith("starfleet/deployment:")) | {deployment: (.key|split(":")[1]),cost:.value.totalCost}] | sort_by(.cost)' "$work/allocation.json" > "$work/ranked.json"
   if jq -e 'length>=2 and all(.[]; (.cost|type=="number") and .cost>0)' "$work/ranked.json" >/dev/null; then break; fi
   sleep 10
 done

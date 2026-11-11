@@ -27,5 +27,11 @@ bootstrap:
       type: file
       source: bootstrap/prepare.sh
 
+  waitFor:
+    - resource: deploy/prometheus-server
+      namespace: monitoring
+    - resource: deploy/opencost
+      namespace: opencost
+
 teardown:
   keepCluster: false

@@ -17,7 +17,7 @@ kubectl get --raw "/api/v1/namespaces/opencost/services/opencost:9003/proxy/allo
 jq -e '.code == 200 and (.data[0] | type == "object")' allocation-before.json
 ```
 
-The response must contain data. An empty result, a missing cost or a failed request is not a zero-cost workload. Wait for samples and repeat the query before proceeding.
+After renewing the playground, allow about eight to ten minutes for a five-minute window and the three-minute sample delay. Recompute `END`, `START` and `WINDOW` when retrying. This collection time is separate from the exercise. The response must contain data. An empty result, a missing cost or a failed request is not a zero-cost workload. Wait for samples and repeat the query before proceeding.
 
 ## Select Deployments and compare costs
 
