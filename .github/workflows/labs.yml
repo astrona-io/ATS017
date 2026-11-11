@@ -66,6 +66,10 @@ jobs:
         run: python3 scripts/ci/test-teaching-coverage.py
       - name: Check teaching coverage map
         run: python3 scripts/ci/lab-coverage.py
+      - name: Test assessment validation failure cases
+        run: python3 scripts/ci/test-assessments.py
+      - name: Check quiz answers and teaching links
+        run: python3 scripts/ci/check-assessments.py
       - id: list
         name: List the environments to test
         env:

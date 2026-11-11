@@ -13,3 +13,9 @@ A grader must distinguish a wrong answer from an unavailable dependency. Pair de
 Run the structure, coverage and regression checks before pushing. Run astrona validate and astrona test for changed labs; run scripts/ci/test-playground.sh for changed playgrounds. CI discovers changed sections, and changes to shared scripts, course registration or the coverage map select every environment. The all environments pass job depends on discovery and all selected runtimes. Keep failure diagnostics and report external failures separately.
 
 Continue on the existing review branch and PR, with separate commits for distinct changes. Do not merge automatically. Record what actually ran and which checks remain unverified in the PR description.
+
+## Quiz and example verification
+
+Keep each question linked to the registered reading that teaches its answer. Update `question_count` when adding questions, and preserve published IDs. Run `scripts/ci/check-assessments.py` and its failure-case tests. A structural pass does not replace technical review of the answer and distractors.
+
+For a new practical outcome, add a playground procedure test where the lesson has runnable commands. Record exactly which example it covers. Keep task-work estimates separate from cluster startup, reconciliation and telemetry waits; do not shorten a duration without narrowing or measuring the work.
