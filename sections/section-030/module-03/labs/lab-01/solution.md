@@ -134,11 +134,12 @@ kubectl -n starfleet get pod probe-0 -o yaml
 
 Look for a new UID, a Ready container and `vpaUpdates` naming `probe`. Check that both requests fall inside the policy. Compare the Pod's requests with `status.containerStatuses[0].resources.requests`. Limits must remain unchanged.
 
-Replace the Deployment's Pod too:
+Replace the Deployment's Pod through its existing ReplicaSet. A rollout restart creates a new ReplicaSet, which the VPA admission controller may not have discovered when the first Pod arrives. Deleting this single practice Pod briefly interrupts the workload:
 
 ```sh
-kubectl -n starfleet rollout restart deployment/scout
+kubectl -n starfleet delete pod -l app=scout
 kubectl -n starfleet rollout status deployment/scout --timeout=180s
+kubectl -n starfleet wait --for=condition=Ready pod -l app=scout --timeout=180s
 kubectl -n starfleet get pods -l app=scout -o yaml
 kubectl -n starfleet get deployment scout -o yaml
 ```

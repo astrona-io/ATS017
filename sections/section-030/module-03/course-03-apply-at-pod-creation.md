@@ -49,11 +49,12 @@ kubectl -n starfleet get vpa scout -o yaml
 kubectl -n starfleet get pods -l app=scout -o yaml
 ```
 
-Read the bounded `target` and note the existing Pod's UID and requests. The old Pod should remain unchanged. Now ask the Deployment to replace its Pods:
+Read the bounded `target` and note the existing Pod's UID and requests. The old Pod should remain unchanged. Delete the existing Pod so its established ReplicaSet creates the replacement. This avoids creating a new ReplicaSet that the VPA admission controller may not have discovered yet. Deleting the only Pod briefly interrupts this practice workload:
 
 ```sh
-kubectl -n starfleet rollout restart deployment/scout
+kubectl -n starfleet delete pod -l app=scout
 kubectl -n starfleet rollout status deployment/scout --timeout=180s
+kubectl -n starfleet wait --for=condition=Ready pod -l app=scout --timeout=180s
 kubectl -n starfleet get pods -l app=scout -o yaml
 kubectl -n starfleet get deployment scout -o yaml
 ```

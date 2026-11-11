@@ -8,5 +8,6 @@ for name in probe scout; do
 done
 kubectl -n starfleet delete pod probe-0
 kubectl -n starfleet rollout status statefulset/probe --timeout=180s
-kubectl -n starfleet rollout restart deployment/scout
+kubectl -n starfleet delete pod -l app=scout
 kubectl -n starfleet rollout status deployment/scout --timeout=180s
+kubectl -n starfleet wait --for=condition=Ready pod -l app=scout --timeout=180s
