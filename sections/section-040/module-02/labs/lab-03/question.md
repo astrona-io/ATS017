@@ -8,7 +8,7 @@ Solve this question on: `terminal`
 
 The namespace `starfleet` runs four Deployments: `scout`, `relay`, `beacon` and `shuttle`. OpenCost runs in the namespace `opencost` and has already collected data. The finance team wants the cluster to spend less on the Deployment that costs the most, and the platform team wants more replicas of the Deployment that costs the least, because it is cheap to run.
 
-A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window is closed, so OpenCost returns the same costs for it every time.
+A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window fixes the start and end of the measurement. Late samples can still change its costs; compare the same window after collection settles.
 
 1.  Query OpenCost for that window, grouped by namespace and controller, and look only at the namespace `starfleet`. Rank the Deployments by `totalCost`.
 2.  Create the ConfigMap `cost-scaling-report` in the namespace `default` with these keys:

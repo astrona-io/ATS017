@@ -10,7 +10,7 @@ The namespace `starfleet` runs `scout`, `probe` and `shuttle`. The namespace `ou
 
 Every Deployment carries the pod label `team` except `archive` in the namespace `outpost`. The team `operations` owns `archive`. The finance team wants the cost of each team, and it wants the cost of `archive` to appear under `operations` from now on.
 
-A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window is closed, so OpenCost returns the same costs for it every time.
+A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window fixes the start and end of the measurement. Late samples can still change its costs; compare the same window after collection settles.
 
 1.  Ask OpenCost for the cost of each team in that window. Group by the label `team`, and look only at the namespaces `starfleet` and `outpost`.
 2.  Create the ConfigMap `team-cost-report` in the namespace `default` with these keys:

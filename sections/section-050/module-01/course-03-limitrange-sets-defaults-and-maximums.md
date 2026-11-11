@@ -182,27 +182,3 @@ You now know the pair. The quota caps the namespace, the LimitRange sets each co
 > - **Setting `max` without `default`.** The default limit becomes the `max`. A CPU `max` of `100m` gives every container a CPU limit of `100m` and can throttle it.
 > - **Defaults that do not fit the quota.** If the default request is larger than what is left in the quota, the pod gets `exceeded quota`. Size the defaults so that several pods fit.
 > - **Reading only the first rule.** A rejection lists every broken rule. Fix all of them.
-
-## Your mission: Default Resources With A LimitRange
-
-You can now fill in missing resources and bound containers with a LimitRange. The mission gives you a Deployment whose pods the quota rejects because they declare nothing. You fix the namespace, not the Deployment, and prove the defaults and the maximum.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-050-01
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-01/labs/lab-02
-astrona submit -c sections/section-050/module-01/labs/lab-02
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-050-01-02
-astrona start ats-017-playground-050-01
-```

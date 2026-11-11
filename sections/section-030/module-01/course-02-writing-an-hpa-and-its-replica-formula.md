@@ -239,27 +239,3 @@ You can now write an `autoscaling/v2` HPA, predict its replica count with `ceil(
 > - **Reading the formula with the wrong current count.** The HPA uses the current replicas, not `minReplicas`. Use the `REPLICAS` column.
 > - **Expecting an instant scale-down.** The default stabilization window is 300 seconds. The replicas stay for about five minutes after the load ends.
 > - **Judging the HPA by one pod.** `kubectl top` can show one hot pod and several idle ones. The HPA uses the average.
-
-## Your mission: Fix The Unknown HPA Target
-
-You can now read an HPA's conditions and events and link an `<unknown>` target to a missing CPU request. The mission gives you an HPA for `scout` that never scales. You find the reason, fix it without deleting the HPA, and prove that the target resolves and that `scout` gets more replicas under load.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-030-01
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-01/labs/lab-01
-astrona submit -c sections/section-030/module-01/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-030-01-01
-astrona start ats-017-playground-030-01
-```

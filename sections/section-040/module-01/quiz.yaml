@@ -60,14 +60,14 @@ questions:
 - id: ats017-040-01-q03
   type: single_choice
   difficulty: intermediate
-  learning_objective: Choose the query that returns a repeatable cost.
+  learning_objective: Choose a query that preserves the measurement period.
   source_readings:
   - sections/section-040/module-01/course-03-query-the-allocation-api.md
-  prompt: You want the cost of the namespaces for a period, and you want to get the same numbers every time you ask. Which query does that?
+  prompt: You want to query namespace costs for the same measurement period tomorrow. Late samples may still change the result. Which query keeps the start and end times fixed?
   options:
   - id: a
     text: "`window=1793570659,1793571019&aggregate=namespace`"
-    explanation: Correct. A pair of Unix timestamps is a closed window. OpenCost returns the same costs for it each time.
+    explanation: Correct. A pair of Unix timestamps fixes the measurement period. Save the returned JSON when a report needs an immutable evidence snapshot.
   - id: b
     text: "`window=1h&aggregate=namespace`"
     explanation: The window `1h` is aligned to the clock, so it moves and its numbers change.
@@ -78,7 +78,7 @@ questions:
     text: "`aggregate=namespace` with no window"
     explanation: The API needs a window. Without one it does not return a cost.
   correct_option: a
-  explanation: Only a closed pair of Unix timestamps always gives the same numbers. Durations such as `1h` and names such as `today` move.
+  explanation: A closed pair of Unix timestamps fixes the period, but late samples or corrections can change the calculated costs. Preserve the query and response for a reproducible report. Relative windows move as time passes.
 - id: ats017-040-01-q04
   type: single_choice
   difficulty: intermediate

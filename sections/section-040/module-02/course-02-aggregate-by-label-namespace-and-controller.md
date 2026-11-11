@@ -92,7 +92,7 @@ The old pod `archive-5ccc47f8db-gbz9f` ran before the patch, so it stays under `
 
 ## See that history does not change
 
-A closed window returns the same numbers every time, and that includes the attribution. Ask again for the window that you stored in `BEFORE_WINDOW` before the patch:
+A closed window keeps the measurement period and the attribution recorded for it. Late samples can still change the numbers until collection settles. Ask again for the window that you stored in `BEFORE_WINDOW` before the patch:
 
 ```sh
 query_opencost "window=${BEFORE_WINDOW}&aggregate=label:team&filter=namespace:%22starfleet%22,%22outpost%22" | jq -r '.data[0] | to_entries[] | "\(.key) total=\(.value.totalCost) eff=\(.value.totalEfficiency)"'
@@ -140,27 +140,3 @@ You can now join groupings, find a workload without a team, repair its label and
 > - **Querying too early.** OpenCost needs about five minutes after a pod starts before it lists the pod under its team. An empty or unchanged answer means "wait", not "the label is wrong".
 > - **Grouping by controller without the namespace.** `aggregate=controller` merges Deployments with the same name from different namespaces. Use `namespace,controller` when the names can repeat.
 > - **Deleting the old pod by hand.** The Deployment controller already replaces the pod when you change the template. Change the Deployment, never the pod.
-
-## Your mission: Attribute Cost To Teams
-
-You can now find a workload without a team in the OpenCost report and give it one. The mission starts a fresh cluster with a stored closed window. You record the cost of each team for that window in a ConfigMap, and you add the missing `team` label so that OpenCost lists the new pod under its team.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-040-02
-```
-
-Start the mission and send it for grading. The start-up takes about 10 minutes, because the script waits until OpenCost has data. The grader waits up to 8 minutes for OpenCost to show the new pod under its team:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-02/labs/lab-01
-astrona submit -c sections/section-040/module-02/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-040-02-01
-astrona start ats-017-playground-040-02
-```

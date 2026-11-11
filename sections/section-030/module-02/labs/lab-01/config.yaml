@@ -1,15 +1,9 @@
-# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
-#
-# Right-Size From Measured Usage (ats-017-lab-030-02-01)
-# Astrona hands-on lab. kind runtime: a single-node Kubernetes 1.35 cluster
-# with metrics-server from the astrona addon.
 apiVersion: astrona.io/v1
 metadata:
   name: ats-017-lab-030-02-01
   docs:
     solution: solution.md
     question: question.md
-
 runtime:
   type: kind
   kind:
@@ -17,29 +11,30 @@ runtime:
     addons:
       metricsServer: true
     preloadImages:
-      - curlimages/curl:8.22.0
-      - ghcr.io/stefanprodan/podinfo:6.15.0
-
+    - curlimages/curl:8.22.0
+    - ghcr.io/stefanprodan/podinfo:6.15.0
 bootstrap:
   init:
-    - name: seed-workloads
-      description: Creates the starfleet namespace, scout-overprovisioned, scout-underprovisioned (OOMKilled) and the shuttle client
-      type: file
-      source: bootstrap/seed-workloads.sh
-
+  - name: seed-workloads
+    description: Seed scout-overprovisioned and the request client
+    type: file
+    source: bootstrap/seed-workloads.sh
 testing:
   init:
-    - name: solution
-      description: Reference solution applied by `astrona test`
-      type: file
-      source: solution/apply.sh
-
+  - name: verify-unfinished-state
+    description: Require a ready API and an explicit grader rejection before solving
+    type: file
+    source: testing/verify-start.sh
+    timeout: 10m
+  - name: solution
+    description: Reference solution applied by `astrona test`
+    type: file
+    source: solution/apply.sh
 validation:
   scripts:
-    - name: verify-right-sizing
-      description: Checks both scouts request what they use plus headroom, are Ready, and the underprovisioned scout is no longer OOMKilled
-      type: file
-      source: validation/validate-right-sizing.sh
-
+  - name: verify-right-sizing
+    description: Verify measured sizing, preserved workload and runtime stability
+    type: file
+    source: validation/validate-right-sizing.sh
 teardown:
   keepCluster: false

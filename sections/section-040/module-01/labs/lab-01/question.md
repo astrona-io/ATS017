@@ -8,7 +8,7 @@ Solve this question on: `terminal`
 
 Two teams share this cluster. The namespace `starfleet` runs `scout`, `probe` and `shuttle`. The namespace `outpost` runs `probe`, which mounts a 20Gi PersistentVolumeClaim named `archive`. OpenCost runs in the namespace `opencost` and has already collected data.
 
-A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window is closed, so OpenCost returns the same costs for it every time.
+A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window fixes the start and end of the measurement. Late samples can still change its costs; compare the same window after collection settles.
 
 Ask OpenCost for the cost of each namespace in that window, and store the result in a new ConfigMap:
 

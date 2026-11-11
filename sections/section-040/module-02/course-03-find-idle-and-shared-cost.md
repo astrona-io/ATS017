@@ -65,7 +65,7 @@ The team `science` carries the largest share of the idle cost, because it has th
 
 ## Pick the workload to right-size
 
-Idle cost shrinks when requests match usage. Efficiency tells you which requests are too big. Sort the Deployments of the two namespaces by `totalEfficiency`, the lowest first:
+Lower requests free capacity; on a fixed node, that capacity becomes idle. Efficiency tells you which requests are too big. Sort the Deployments of the two namespaces by `totalEfficiency`, the lowest first:
 
 ```sh
 query_opencost "window=${BEFORE_WINDOW}&aggregate=namespace,controller&filter=namespace:%22starfleet%22,%22outpost%22" | jq -r '[.data[0] | to_entries[]] | sort_by(.value.totalEfficiency) | .[] | "\(.key) eff=\(.value.totalEfficiency) total=\(.value.totalCost)"'
@@ -151,51 +151,3 @@ You can now add idle cost to a report, share it between teams, choose the worklo
 > - **Ranking by efficiency alone.** A cheap workload with a tiny request has a low ratio and saves little. Multiply the cost by the unused share to see the money.
 > - **Expecting a lower bill from a smaller request on one node.** The cost moves to `__idle__`. The bill falls only when you remove capacity.
 > - **Comparing windows of different lengths.** Divide by `minutes` and multiply by 60 to get a cost per hour.
-
-## Your mission: Cut Idle Cost By Right-Sizing
-
-You can now find the workload that wastes the most of its request and lower the request so it fits. The mission gives you four Deployments in `starfleet`. One of them requests far more than it uses, and another one uses everything it requests. You change only the first.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-040-02
-```
-
-Start the mission and send it for grading. The start-up takes about 10 minutes, because the script waits until OpenCost has data:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-02/labs/lab-02
-astrona submit -c sections/section-040/module-02/labs/lab-02
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-040-02-02
-astrona start ats-017-playground-040-02
-```
-
-## Your mission: Scale Replicas By Cost
-
-You can now rank the controllers of a namespace by `totalCost` and say why one is at the top. The second mission gives you four Deployments in `starfleet` with different replica counts and requests. You record the most and the least expensive one in a ConfigMap, scale the first down to one replica and the second up to three, and leave every request as it is.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-040-02
-```
-
-Start the mission and send it for grading. The start-up takes about 10 minutes, because the script waits until OpenCost has data:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-02/labs/lab-03
-astrona submit -c sections/section-040/module-02/labs/lab-03
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-040-02-03
-astrona start ats-017-playground-040-02
-```

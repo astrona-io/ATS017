@@ -117,27 +117,3 @@ You can now cap a namespace with a ResourceQuota, read used against hard, and fi
 > - **Looking for the rejection in the wrong place.** A rejected Deployment pod never reaches your terminal. Read the `ReplicaFailure` condition of the Deployment or the events of its ReplicaSet.
 > - **Expecting a new quota to stop running pods.** A quota only decides about new objects. Existing pods count in `used` but keep running, even when `used` is above `hard`.
 > - **Lowering requests during a rolling update with a full quota.** A rolling update creates new pods before it removes old ones. When the quota is full, the new ReplicaSet cannot create more pods, and the old ReplicaSet cannot shrink below the minimum available count. In a test, a Deployment of four pods requesting `200m` under a `500m` quota stopped at `3/4` ready after its request was lowered to `100m`. Use the `Recreate` strategy, or delete old pods, to break the stall.
-
-## Your mission: Fit A Deployment Inside A ResourceQuota
-
-You can now read a quota rejection and see which line of the quota is full. The mission gives you a Deployment that asks for more CPU than its namespace quota allows. You find the full line, change the Deployment so that all replicas fit, and leave the quota as it is.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-050-01
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-01/labs/lab-01
-astrona submit -c sections/section-050/module-01/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-050-01-01
-astrona start ats-017-playground-050-01
-```

@@ -30,6 +30,11 @@ bootstrap:
 
 testing:
   init:
+    - name: verify-unfinished-state
+      description: Require a ready API and an explicit grader rejection before solving
+      type: file
+      source: testing/verify-start.sh
+      timeout: 10m
     - name: solution
       description: Reference solution applied by `astrona test`
       type: file
@@ -41,6 +46,7 @@ validation:
       description: Checks the label on the archive pods in the live OpenCost API and the ConfigMap team-cost-report against the stored window
       type: file
       source: validation/validate-team-costs.sh
+      timeout: 12m
 
 teardown:
   keepCluster: false

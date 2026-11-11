@@ -178,27 +178,3 @@ You can now reserve a node with a taint, let one tenant past it with a toleratio
 > - **Mismatching the effect.** A toleration for `NoSchedule` does not tolerate a `NoExecute` taint with the same key and value.
 > - **Tolerating everything.** A toleration with `operator: Exists` and no key passes every taint, including the control plane's.
 > - **Using `NoExecute` without thinking about running pods.** It evicts every pod on the node that does not tolerate it.
-
-## Your mission: Run Probe On The Dedicated Node
-
-You can now read an untolerated taint in a `FailedScheduling` message and add a toleration that matches it. The mission gives you a `probe` Deployment that selects the `zone-b` node but stays `Pending` because of that node's taint. You let it onto the node without removing the taint.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-010-02
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-010/module-02/labs/lab-01
-astrona submit -c sections/section-010/module-02/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-010-02-01
-astrona start ats-017-playground-010-02
-```

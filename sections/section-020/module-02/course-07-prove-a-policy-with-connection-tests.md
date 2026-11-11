@@ -132,27 +132,3 @@ You can now locate a failure among name resolution, Service forwarding, server r
 > - **Testing from the node or through port-forward.** Use an ordinary client Pod on the path the policy controls.
 > - **Accepting every nonzero curl exit as a deny.** Rule out DNS failure, a missing Pod and an unavailable listener first.
 > - **Testing only the allowed path.** Include a wrong source and a wrong port that would otherwise answer.
-
-## Your mission: Lock Down A Tenant Namespace
-
-You can now prove both required access and isolation. The mission asks you to repair an overly broad monitoring rule and isolate a tenant while preserving DNS and one frontend-to-backend connection.
-
-Pause the playground, then start the lab and read the task:
-
-```sh
-astrona stop ats-017-playground-020-02
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-02/labs/lab-01
-```
-
-When the required flows work and the other flows time out, grade your work:
-
-```sh
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-020/module-02/labs/lab-01
-```
-
-Then remove the lab and start the playground again:
-
-```sh
-astrona destroy ats-017-lab-020-02
-astrona start ats-017-playground-020-02
-```

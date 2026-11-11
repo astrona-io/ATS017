@@ -49,11 +49,12 @@ kubectl -n starfleet get vpa scout -o yaml
 kubectl -n starfleet get pods -l app=scout -o yaml
 ```
 
-Read the bounded `target` and note the existing Pod's UID and requests. The old Pod should remain unchanged. Now ask the Deployment to replace its Pods:
+Read the bounded `target` and note the existing Pod's UID and requests. The old Pod should remain unchanged. Delete the existing Pod so its established ReplicaSet creates the replacement. This avoids creating a new ReplicaSet that the VPA admission controller may not have discovered yet. Deleting the only Pod briefly interrupts this practice workload:
 
 ```sh
-kubectl -n starfleet rollout restart deployment/scout
+kubectl -n starfleet delete pod -l app=scout
 kubectl -n starfleet rollout status deployment/scout --timeout=180s
+kubectl -n starfleet wait --for=condition=Ready pod -l app=scout --timeout=180s
 kubectl -n starfleet get pods -l app=scout -o yaml
 kubectl -n starfleet get deployment scout -o yaml
 ```
@@ -99,15 +100,3 @@ You can now choose when recommendations take effect and show who applied the cha
 
 > [!WARNING]
 > Restarting a container inside the same Pod does not trigger creation-time admission. Replace the Pod. `Auto` is deprecated, and `Initial` can still conflict with HPA resource utilisation when new replicas receive different requests.
-
-## Your mission: Apply Bounded VPA Requests
-
-You can now create bounded recommendations for both workload kinds. Apply them to replacement Pods and prove that the templates stayed unchanged.
-
-```sh
-astrona stop ats-017-playground-030-03
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/labs/lab-01
-astrona submit --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-030/module-03/labs/lab-01
-astrona destroy ats-017-lab-030-03-01
-astrona start ats-017-playground-030-03
-```

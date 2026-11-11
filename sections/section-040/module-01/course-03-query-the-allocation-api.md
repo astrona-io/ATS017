@@ -46,7 +46,7 @@ You should see something like:
 {"start":"2026-11-01T23:00:00Z","end":"2026-11-02T00:00:00Z"}
 ```
 
-OpenCost answered with the whole clock hour that contains the present, from `23:00` to `00:00`. Only the part of the hour that has already passed holds data. The next hour starts a new window, so a duration always moves and its numbers change. A pair of Unix timestamps in the past is closed: OpenCost returns the same numbers every time you ask. Build a closed window of the last 10 minutes with `date`:
+OpenCost answered with the whole clock hour that contains the present, from `23:00` to `00:00`. Only the part of the hour that has already passed holds data. The next hour starts a new window, so a duration always moves and its numbers change. A pair of Unix timestamps in the past fixes the measurement period. Allow time for late samples before treating its values as settled. Build a closed window of the last 10 minutes with `date`:
 
 ```sh
 END=$(date -u +%s); START=$((END - 600)); echo "$START,$END"
@@ -124,27 +124,3 @@ You can now ask OpenCost for the cost of any period and any grouping, and you kn
 > - **Using `aggregate=controller` without the namespace.** Controllers with the same name in two namespaces merge into one entry.
 > - **Leaving out the window.** The API answers `BadRequest` and gives no reason.
 > - **Reading `__idle__` as a workload.** It is the cost of node capacity that no pod requests. It does not belong to any namespace.
-
-## Your mission: Report Cost Per Namespace
-
-You can now ask OpenCost for the cost of each namespace in a closed window. The mission gives you a fixed window and two namespaces. You read their `totalCost` and write the window and both costs into a ConfigMap.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-040-01
-```
-
-Start the mission and send it for grading. The start-up takes about 10 minutes, because the script waits until OpenCost has data:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-040/module-01/labs/lab-01
-astrona submit -c sections/section-040/module-01/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-040-01-01
-astrona start ats-017-playground-040-01
-```

@@ -1,0 +1,7 @@
+
+__pycache__/
+# Runtime snapshots created by lab and example checks.
+sections/section-020/module-03/labs/lab-03/initial-*.json
+sections/section-020/module-03/labs/lab-03/record-*
+sections/section-030/module-02/labs/lab-*/original-*.json
+sections/section-020/module-03/playground/testing/*-before.json

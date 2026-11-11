@@ -166,27 +166,3 @@ A PriorityClass gives a pod a number through `priorityClassName`, and the API se
 > - **Setting `globalDefault: true` by accident.** Only one class may be the default, and it changes the priority of every new pod without a class. Existing pods keep their value.
 > - **Forgetting that the victim loses its work.** A preempted pod is deleted, not paused. Its Deployment creates a replacement, which may stay `Pending`.
 > - **Using system class values for tenants.** Values above one billion are reserved for `system-cluster-critical` and `system-node-critical`.
-
-## Your mission: Make Room With A PriorityClass
-
-You can now create a PriorityClass and read a preemption. The mission gives you a full node and a pod that cannot run. You choose the priority, and you must keep the other tenant's rules intact.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-050-02
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-02/labs/lab-01
-astrona submit -c sections/section-050/module-02/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-050-02-01
-astrona start ats-017-playground-050-02
-```

@@ -12,20 +12,17 @@
 #      5 decimals) of what OpenCost returns for that closed window
 #   4. the requests of the workloads were not changed to fake a result
 set -u
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 API="/api/v1/namespaces/opencost/services/opencost:9003/proxy/allocation/compute"
 fail() { echo "FAIL: $*"; exit 1; }
 
 field_of() {
-  printf '%s' "$1" | sed -n "s|.*\"$2\":{\"name\":\"$2\",||p" | grep -o "\"$3\":[-0-9.e]*" | head -1 | cut -d: -f2
+  printf '%s' "$1" | python3 "$SCRIPT_DIR/cost-values.py" field "$2" "$3"
 }
-is_number() { awk -v value="$1" 'BEGIN { exit !(value ~ /^[0-9]+([.][0-9]+)?([eE][-+]?[0-9]+)?$/) }'; }
+is_number() { python3 "$SCRIPT_DIR/cost-values.py" number "$1"; }
 within_tolerance() {
-  awk -v reported="$1" -v expected="$2" 'BEGIN {
-    allowed = expected * 0.15; if (allowed < 0.00003) allowed = 0.00003
-    diff = reported - expected; if (diff < 0) diff = -diff
-    exit !(diff <= allowed)
-  }'
+  python3 "$SCRIPT_DIR/cost-values.py" within "$1" "$2" 0.00003
 }
 
 # --- 1. the label in Kubernetes ---------------------------------------------------------
@@ -46,9 +43,10 @@ echo "OK: the pod ${pod_name} carries team=operations"
 created_epoch=$(date -u -j -f '%Y-%m-%dT%H:%M:%SZ' "$pod_created" +%s 2>/dev/null || date -u -d "$pod_created" +%s 2>/dev/null)
 [ -n "$created_epoch" ] || fail "could not read the start time of the pod ${pod_name}"
 seen=""
-for _ in $(seq 1 24); do
+deadline=$((SECONDS + 480))
+while [ "$SECONDS" -lt "$deadline" ]; do
   now=$(date +%s)
-  result=$(kubectl get --raw "${API}?window=${created_epoch},${now}&aggregate=pod,label:team&filter=namespace:%22outpost%22" 2>/dev/null || true)
+  result=$(kubectl --request-timeout=30s get --raw "${API}?window=${created_epoch},${now}&aggregate=pod,label:team&filter=namespace:%22outpost%22" 2>/dev/null || true)
   if printf '%s' "$result" | grep -q "\"${pod_name}/operations\""; then seen=yes; break; fi
   if printf '%s' "$result" | grep -q "\"${pod_name}/__unallocated__\""; then seen=unallocated; fi
   sleep 20
@@ -66,7 +64,7 @@ window=$(kubectl -n default get configmap report-window -o jsonpath='{.data.wind
 used_window=$(report window)
 [ "$used_window" = "$window" ] || fail "the key window is '${used_window}', expected '${window}'"
 echo "OK: the report names the window ${window}"
-result=$(kubectl get --raw "${API}?window=${window}&aggregate=label:team&filter=namespace:%22starfleet%22,%22outpost%22" 2>/dev/null)
+result=$(kubectl --request-timeout=30s get --raw "${API}?window=${window}&aggregate=label:team&filter=namespace:%22starfleet%22,%22outpost%22" 2>/dev/null)
 [ -n "$result" ] || fail "OpenCost did not answer. Check the pod in the namespace opencost"
 for pair in navigation:navigation research:research unallocated:__unallocated__; do
   key=${pair%%:*}

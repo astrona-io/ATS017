@@ -235,27 +235,3 @@ Kyverno is a webhook that applies `ClusterPolicy` objects to requests. A `valida
 > - **Expecting `Enforce` to stop running pods.** A policy checks create and update requests. Pods that already run stay, and only the report shows them.
 > - **Reading the report too early.** The `PolicyReport` for a new resource appears after about half a minute.
 > - **Matching only `Pod`.** Kyverno adds `autogen-` rules for controllers by itself. A rule on `Pod` also rejects the Deployment that would create the pod.
-
-## Your mission: Require Resources With A Kyverno Policy
-
-You can now write a `validate` rule, read its rejection and switch it to audit. The mission gives you a namespace where pods without resources run, and asks for a policy that stops new ones while it leaves the existing pods alone.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-050-03
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-03/labs/lab-01
-astrona submit -c sections/section-050/module-03/labs/lab-01
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-050-03-01
-astrona start ats-017-playground-050-03
-```

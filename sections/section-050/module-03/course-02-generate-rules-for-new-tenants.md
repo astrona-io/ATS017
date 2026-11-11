@@ -178,27 +178,3 @@ A `generate` rule matches a namespace by label and creates other objects in it. 
 > - **Expecting `generate` to change old namespaces.** The rule runs when a matching namespace is created or updated. Add the label to an existing namespace to trigger it.
 > - **Editing the generated quota.** With `synchronize: true`, Kyverno reverts the change. Edit the policy instead.
 > - **Using `data` and `clone` together.** A generate rule creates content from `data` or copies an object with `clone`. Use one of them.
-
-## Your mission: Generate Tenant Defaults With Kyverno
-
-You can now write a `generate` rule that gives each tenant namespace a quota and a LimitRange. The mission asks for a policy that does this for namespaces with a tenant label, and nothing for others.
-
-Pause the playground first:
-
-```sh
-astrona stop ats-017-playground-050-03
-```
-
-Start the mission and send it for grading:
-
-```sh
-astrona run --git ssh://git@github.com/astrona-io/ATS017.git -c sections/section-050/module-03/labs/lab-02
-astrona submit -c sections/section-050/module-03/labs/lab-02
-```
-
-When you finish, remove the mission cluster and resume the playground:
-
-```sh
-astrona destroy ats-017-lab-050-03-02
-astrona start ats-017-playground-050-03
-```
