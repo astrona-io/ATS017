@@ -58,6 +58,8 @@ jobs:
           fetch-depth: 0
       - name: Install course validation dependencies
         run: python3 -m pip install -r scripts/ci/requirements.txt
+      - name: Test unfinished-state error handling
+        run: python3 scripts/ci/test-start-state.py
       - id: list
         name: List the environments to test
         env:

@@ -27,6 +27,11 @@ bootstrap:
       source: bootstrap/prepare.sh
 testing:
   init:
+    - name: verify-unfinished-state
+      description: Require a ready API and an explicit grader rejection before solving
+      type: file
+      source: testing/verify-start.sh
+      timeout: 10m
     - name: solution
       type: file
       source: solution/apply.sh
