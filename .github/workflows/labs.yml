@@ -1,0 +1,192 @@
+# Proves that the labs and playgrounds still work:
+#   - lab grader tests in testing/test-*.py must pass;
+#   - each lab: `astrona validate`, then `astrona test` (bootstrap, reference
+#     solution, graders, teardown) must pass;
+#   - each playground: `astrona run` must finish with every readiness check,
+#     and its testing/smoke.sh (if any) must pass.
+# Each environment runs on its own runner with its declared kind or QEMU runtime.
+#
+# Which environments (scripts/ci/list-environments.sh):
+#   - pull request: the sections with a changed file; every section when
+#     scripts/ or this file changes;
+#   - every Monday: every section (a floating image tag or a removed download
+#     can break a lab without a commit);
+#   - by hand: every section, or the paths given in the "paths" input.
+#
+# The lab scripts default to podman; ASTRONA_CONTAINER_ENGINE points them at
+# Docker on the runner. Playgrounds use each guard's kind-astro-<name>
+# fallback; the lab test step names its astro-test-<lab> cluster.
+name: labs
+
+on:
+  # Every pull request, with no path filter, so "all environments pass" reports
+  # on every pull request and can be made a required check. When no
+  # section changed, the list is empty, the tests are skipped and the check
+  # passes within a minute.
+  pull_request:
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+    inputs:
+      paths:
+        description: "Space-separated paths to test, for example sections/section-030"
+        required: false
+        default: "sections"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: labs-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  ASTRONA_VERSION: "0.5.3"
+  ASTRONA_SHA256: "74ec8e8c9ec3cca380f7f3b48124fef50dd2257bb76023334c0b78caf7f3f9a5"
+  KIND_VERSION: "0.33.0"
+  ASTRONA_NO_UPDATE_CHECK: "1"
+  ASTRONA_CONTAINER_ENGINE: docker
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    outputs:
+      environments: ${{ steps.list.outputs.environments }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Install course validation dependencies
+        run: python3 -m pip install -r scripts/ci/requirements.txt
+      - id: list
+        name: List the environments to test
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PATHS: ${{ inputs.paths }}
+        run: |
+          case "$EVENT" in
+            pull_request) environments=$(scripts/ci/list-environments.sh --changed-since "$BASE_SHA") ;;
+            # shellcheck disable=SC2086  # PATHS is a space-separated list
+            workflow_dispatch) environments=$(scripts/ci/list-environments.sh ${PATHS:-sections}) ;;
+            *) environments=$(scripts/ci/list-environments.sh) ;;
+          esac
+          echo "$environments" | jq -r '.[] | "\(.kind)\t\(.path)"'
+          echo "environments=$environments" >>"$GITHUB_OUTPUT"
+
+  test:
+    needs: list
+    if: needs.list.outputs.environments != '[]'
+    name: ${{ matrix.env.kind }} ${{ matrix.env.path }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        env: ${{ fromJSON(needs.list.outputs.environments) }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install course validation dependencies
+        run: python3 -m pip install -r scripts/ci/requirements.txt
+
+      - name: Test lab grader failure cases
+        if: matrix.env.kind == 'lab'
+        env:
+          LAB_DIR: ${{ matrix.env.path }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for test_script in "$LAB_DIR"/testing/test-*.py; do
+            python3 "$test_script"
+          done
+
+      - name: Install kind and astrona
+        run: |
+          mkdir -p "$HOME/bin"
+          curl -fsSLo "$HOME/bin/kind" "https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64"
+          echo "$(curl -fsSL "https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-amd64.sha256sum" | cut -d' ' -f1)  $HOME/bin/kind" | sha256sum -c -
+          curl -fsSLo "$HOME/bin/astrona" "https://github.com/astrona-io/astrona-cli/releases/download/v${ASTRONA_VERSION}/astrona-linux-amd64"
+          echo "${ASTRONA_SHA256}  $HOME/bin/astrona" | sha256sum -c -
+          chmod +x "$HOME/bin/kind" "$HOME/bin/astrona"
+          echo "$HOME/bin" >>"$GITHUB_PATH"
+
+      # Docker on a hosted runner sometimes answers slowly right after the job
+      # starts, and `astrona check` then fails with "context deadline exceeded".
+      - name: Wait for Docker
+        if: matrix.env.runtime == 'kind'
+        run: |
+          timeout 180 bash -c 'until docker info >/dev/null 2>&1; do echo "waiting for Docker..."; sleep 5; done'
+          docker version --format 'Docker {{.Server.Version}}'
+
+      # GitHub runners are cloud VMs, so the cloud metadata address
+      # 169.254.169.254 answers there. Reject it for containers, as on a laptop
+      # where the address does not answer, so no lab can reach the runner's
+      # cloud credentials.
+      - name: Block the cloud metadata address for containers
+        if: matrix.env.runtime == 'kind'
+        run: sudo iptables -I DOCKER-USER -d 169.254.169.254 -j REJECT
+
+      - name: Install QEMU and enable native acceleration
+        if: matrix.env.runtime == 'qemu'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y qemu-system-x86 qemu-utils genisoimage acl
+          test -c /dev/kvm
+          sudo setfacl -m "u:$(id -un):rw" /dev/kvm
+          test -r /dev/kvm && test -w /dev/kvm
+          # QEMU user-mode networking originates traffic from the runner.
+          sudo iptables -I OUTPUT -d 169.254.169.254 -j REJECT
+
+      - name: Check the runner
+        run: |
+          astrona --help | grep -m1 Version
+          astrona check --accept-terms --headless -c "${{ matrix.env.path }}"
+
+      - name: Validate the lab
+        if: matrix.env.kind == 'lab'
+        run: astrona validate --accept-terms --headless -c "${{ matrix.env.path }}"
+
+      - name: Test the lab with its reference solution
+        if: matrix.env.kind == 'lab'
+        # `astrona test` names its cluster astro-test-<lab>, not astro-<lab>,
+        # so tell the lab scripts which context and cluster to accept. Their
+        # guards still refuse every other context. (astrona-cli #276 sets
+        # these itself once released.)
+        run: |
+          name=$(python3 -c 'import sys, yaml; print(yaml.safe_load(open(sys.argv[1]))["metadata"]["name"])' "${{ matrix.env.path }}/config.yaml")
+          export ASTRONA_KIND_CLUSTER="astro-test-$name"
+          export ASTRONA_KUBE_CONTEXT="kind-astro-test-$name"
+          astrona test --accept-terms --headless --install-version \
+            -c "${{ matrix.env.path }}" \
+            --junit-xml "$RUNNER_TEMP/junit.xml" \
+            --diagnostics-dir "$RUNNER_TEMP/diagnostics"
+
+      - name: Start the playground and run its smoke test
+        if: matrix.env.kind == 'playground'
+        env:
+          DIAGNOSTICS_DIR: ${{ runner.temp }}/diagnostics
+        run: scripts/ci/test-playground.sh "${{ matrix.env.path }}"
+
+      - name: Upload diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: diagnostics-${{ strategy.job-index }}
+          path: |
+            ${{ runner.temp }}/diagnostics
+            ${{ runner.temp }}/junit.xml
+          if-no-files-found: ignore
+
+  result:
+    name: all environments pass
+    needs: [list, test]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      # "skipped" means the pull request changed no section, so nothing to test.
+      - run: |
+          echo "list result: ${{ needs.list.result }}, test result: ${{ needs.test.result }}"
+          [ "${{ needs.list.result }}" = "success" ]
+          [ "${{ needs.test.result }}" = "success" ] || [ "${{ needs.test.result }}" = "skipped" ]
