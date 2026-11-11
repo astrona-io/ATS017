@@ -33,30 +33,35 @@ Read the first and last entries as the least and most expensive Deployments for 
 
 ## Record the decision and change only replicas
 
-Save the chosen names in shell variables and record them with the window. This example changes only the highest-cost Deployment, after checking which workload it is:
+Save the chosen names in shell variables and record them with the window. This example sets the highest-cost Deployment to one replica and the lowest-cost Deployment to three. Check both workloads first:
 
 ```sh
 LOWEST=$(jq -r 'first.deployment' ranked-costs.json)
 HIGHEST=$(jq -r 'last.deployment' ranked-costs.json)
-kubectl -n starfleet get deployment "$HIGHEST" -o yaml
+kubectl -n starfleet get deployment "$HIGHEST" "$LOWEST" -o yaml
 kubectl -n starfleet get hpa
 kubectl -n starfleet create configmap allocation-decision --from-literal=window="$WINDOW" --from-literal=highest="$HIGHEST" --from-literal=lowest="$LOWEST" --dry-run=client -o yaml | kubectl apply -f -
 ```
 
-Check that the selected Deployment has no HPA controlling its replicas. Read its current replica count and save it before scaling:
+Check that neither selected Deployment has an HPA controlling its replicas. Save both counts before scaling. The highest-cost Deployment may already have one replica; the cheapest starts with one, so scaling it to three exercises a change without adding another oversized Pod:
 
 ```sh
-ORIGINAL_REPLICAS=$(kubectl -n starfleet get deployment "$HIGHEST" -o jsonpath='{.spec.replicas}')
+ORIGINAL_HIGH=$(kubectl -n starfleet get deployment "$HIGHEST" -o jsonpath='{.spec.replicas}')
+ORIGINAL_LOW=$(kubectl -n starfleet get deployment "$LOWEST" -o jsonpath='{.spec.replicas}')
 kubectl -n starfleet scale deployment "$HIGHEST" --replicas=1
+kubectl -n starfleet scale deployment "$LOWEST" --replicas=3
 kubectl -n starfleet rollout status deployment "$HIGHEST" --timeout=120s
+kubectl -n starfleet rollout status deployment "$LOWEST" --timeout=120s
 kubectl -n starfleet get deployment "$HIGHEST" -o jsonpath='{.spec.replicas}{" desired; "}{.status.availableReplicas}{" available\n"}'
 ```
 
 Scaling changes `spec.replicas`, leaving the pod template and its requests intact. Check the application's Service as well as availability before accepting the change. Restore the playground's count when finished:
 
 ```sh
-kubectl -n starfleet scale deployment "$HIGHEST" --replicas="$ORIGINAL_REPLICAS"
+kubectl -n starfleet scale deployment "$HIGHEST" --replicas="$ORIGINAL_HIGH"
+kubectl -n starfleet scale deployment "$LOWEST" --replicas="$ORIGINAL_LOW"
 kubectl -n starfleet rollout status deployment "$HIGHEST" --timeout=120s
+kubectl -n starfleet rollout status deployment "$LOWEST" --timeout=120s
 ```
 
 A later cost comparison needs a new window entirely after the change and enough time for samples to arrive. Reusing the earlier window proves the original ranking; it cannot prove a saving from the new replica count. On this fixed kind node, lower workload allocation leaves more idle capacity and does not reduce a cloud bill.

@@ -92,7 +92,7 @@ The old pod `archive-5ccc47f8db-gbz9f` ran before the patch, so it stays under `
 
 ## See that history does not change
 
-A closed window returns the same numbers every time, and that includes the attribution. Ask again for the window that you stored in `BEFORE_WINDOW` before the patch:
+A closed window keeps the measurement period and the attribution recorded for it. Late samples can still change the numbers until collection settles. Ask again for the window that you stored in `BEFORE_WINDOW` before the patch:
 
 ```sh
 query_opencost "window=${BEFORE_WINDOW}&aggregate=label:team&filter=namespace:%22starfleet%22,%22outpost%22" | jq -r '.data[0] | to_entries[] | "\(.key) total=\(.value.totalCost) eff=\(.value.totalEfficiency)"'

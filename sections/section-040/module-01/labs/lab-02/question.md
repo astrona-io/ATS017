@@ -8,7 +8,7 @@ Solve this question on: `terminal`
 
 The namespace `starfleet` runs five Deployments: `scout`, `probe`, `shuttle`, `crunch` and `reports`. The namespace `outpost` runs `probe`. OpenCost runs in the namespace `opencost` and has already collected data.
 
-A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window is closed, so OpenCost returns the same values for it every time.
+A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window fixes the start and end of the measurement. Late samples can still change its values; compare the same window after collection settles.
 
 Find the Deployment in the namespace `starfleet` that uses the smallest share of what it requests, and name it in a new ConfigMap:
 

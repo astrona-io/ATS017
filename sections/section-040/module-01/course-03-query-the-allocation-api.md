@@ -46,7 +46,7 @@ You should see something like:
 {"start":"2026-11-01T23:00:00Z","end":"2026-11-02T00:00:00Z"}
 ```
 
-OpenCost answered with the whole clock hour that contains the present, from `23:00` to `00:00`. Only the part of the hour that has already passed holds data. The next hour starts a new window, so a duration always moves and its numbers change. A pair of Unix timestamps in the past is closed: OpenCost returns the same numbers every time you ask. Build a closed window of the last 10 minutes with `date`:
+OpenCost answered with the whole clock hour that contains the present, from `23:00` to `00:00`. Only the part of the hour that has already passed holds data. The next hour starts a new window, so a duration always moves and its numbers change. A pair of Unix timestamps in the past fixes the measurement period. Allow time for late samples before treating its values as settled. Build a closed window of the last 10 minutes with `date`:
 
 ```sh
 END=$(date -u +%s); START=$((END - 600)); echo "$START,$END"

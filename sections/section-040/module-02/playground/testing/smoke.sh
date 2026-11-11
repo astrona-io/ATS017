@@ -12,20 +12,20 @@ for attempt in $(seq 1 60); do
   sleep 10
 done
 jq -e 'length>=2 and all(.[]; (.cost|type=="number") and .cost>0)' "$work/ranked.json" >/dev/null
-highest=$(jq -r 'last.deployment' "$work/ranked.json")
-kubectl -n starfleet get deployment "$highest" -o json > "$work/before.json"
+lowest=$(jq -r 'first.deployment' "$work/ranked.json")
+kubectl -n starfleet get deployment "$lowest" -o json > "$work/before.json"
 original=$(jq -r '.spec.replicas' "$work/before.json")
-kubectl -n starfleet scale deployment "$highest" --replicas=$((original + 1))
-kubectl -n starfleet rollout status deployment/"$highest" --timeout=120s
-kubectl -n starfleet get deployment "$highest" -o json > "$work/after.json"
+kubectl -n starfleet scale deployment "$lowest" --replicas=3
+kubectl -n starfleet rollout status deployment/"$lowest" --timeout=120s
+kubectl -n starfleet get deployment "$lowest" -o json > "$work/after.json"
 python3 - "$work/before.json" "$work/after.json" <<'CHECK'
 import json, sys
 before, after=(json.load(open(p)) for p in sys.argv[1:])
 assert before['metadata']['uid']==after['metadata']['uid']
 assert before['spec']['template']==after['spec']['template']
-assert after['spec']['replicas']==before['spec']['replicas']+1
+assert after['spec']['replicas']==3
 assert after['status']['availableReplicas']==after['spec']['replicas']
 CHECK
-kubectl -n starfleet scale deployment "$highest" --replicas="$original"
-kubectl -n starfleet rollout status deployment/"$highest" --timeout=120s
+kubectl -n starfleet scale deployment "$lowest" --replicas="$original"
+kubectl -n starfleet rollout status deployment/"$lowest" --timeout=120s
 echo 'PASS: cost ranking uses numeric Deployment allocations and scaling preserves the pod template'

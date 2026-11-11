@@ -20,7 +20,7 @@ kubectl -n default get configmap report-window -o jsonpath='{.data.window}'
 1793584449,1793584659
 ```
 
-The two numbers are Unix timestamps in seconds. The window is closed, so OpenCost returns the same costs for it every time you ask. Your timestamps are different from the ones shown here.
+The two numbers are Unix timestamps in seconds. The window fixes the start and end of the measurement. Late samples can still change its costs; compare the same window after collection settles. Your timestamps are different from the ones shown here.
 
 ## Step 2: Ask OpenCost for the cost of each team
 

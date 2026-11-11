@@ -24,7 +24,7 @@ kubectl -n default get configmap report-window -o jsonpath='{.data.window}'
 1793572455,1793572815
 ```
 
-Your timestamps are different from the ones shown here. Because the window is closed, OpenCost returns the same values for it every time.
+Your timestamps are different from the ones shown here. The closed window fixes the measurement period. Late samples can still change its values until collection settles.
 
 ## Step 2: Ask OpenCost for each Deployment
 

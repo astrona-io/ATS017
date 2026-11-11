@@ -14,7 +14,7 @@ Three teams own the Deployments:
 * `operations` owns `probe` and `archive`.
 * `science` owns `analytics`.
 
-Only `scout` and `shuttle` carry the pod label `team` today. A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window is closed, so OpenCost returns the same costs for it every time. The labels did not exist in that window, so you cannot group it by the label.
+Only `scout` and `shuttle` carry the pod label `team` today. A fixed time window is stored in the ConfigMap `report-window` in the namespace `default`. Its key `window` holds two Unix timestamps, in seconds, separated by a comma. The window fixes the start and end of the measurement. Late samples can still change its costs; compare the same window after collection settles. The labels did not exist in that window, so you cannot group it by the label.
 
 1.  Ask OpenCost for the cost of each Deployment in that window. Look only at the namespaces `starfleet` and `outpost`.
 2.  Create the ConfigMap `cost-report` in the namespace `default` with these keys:
